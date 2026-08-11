@@ -1,0 +1,14 @@
+{
+    "af": {
+	    "name": "Afghanistan",
+	    "code": "af",
+	    "indicatif": "Yes",
+	    "currency": "No!"
+	},
+	"ax": {
+	    "name": "Iles Aland",
+	    "code": "ax",
+	    "indicatif": "Yes",
+	    "currency": "No!"
+	}
+}

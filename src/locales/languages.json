@@ -1,0 +1,19 @@
+[
+    {"name": "English", "code": "en", "country_code": "gb", "active": true, "order": 1},
+    {"name": "中国人", "code": "cn", "country_code": "cn", "active": true, "order": 2},
+    {"name": "Tiếng Việt", "code": "vn", "country_code": "vn", "active": true, "order": 3},
+    {"name": "عربي", "code": "ar", "country_code": "ae", "active": true, "order": 4},
+    {"name": "Español", "code": "es", "country_code": "es", "active": true, "order": 5},
+    {"name": "Français", "code": "fr", "country_code": "fr", "active": true, "order": 6},
+    {"name": "Filipino", "code": "fil", "country_code": "ph", "active": true, "order": 7},
+    {"name": "Bahasa Indo", "code": "id", "country_code": "id", "active": true, "order": 8},
+    {"name": "한국어", "code": "ko", "country_code": "kr", "active": true, "order": 9},
+    {"name": "Deutsch", "code": "de", "country_code": "de", "active": true, "order": 10},
+    {"name": "Italiano", "code": "it", "country_code": "it", "active": true, "order": 11},
+    {"name": "日本語", "code": "ja", "country_code": "jp", "active": true, "order": 12},
+    {"name": "Türkçe", "code": "tr", "country_code": "tr", "active": true, "order": 13},
+    {"name": "Nederlands", "code": "nl", "country_code": "nl", "active": true, "order": 14},
+    {"name": "हिन्दी", "code": "hi", "country_code": "in", "active": true, "order": 15},
+    {"name": "Русский", "code": "ru", "country_code": "ru", "active": true, "order": 16},
+    {"name": "Bahasa Melayu", "code": "ms", "country_code": "my", "active": true, "order": 17}
+]

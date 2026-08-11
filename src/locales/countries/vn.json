@@ -1,0 +1,31 @@
+{
+    "af": {
+	    "name": "Afghanistan",
+	    "code": "af",
+	    "indicatif": "Yes",
+	    "currency": "No!"
+	},
+	"ax": {
+	    "name": "Iles Aland",
+	    "code": "ax",
+	    "indicatif": "Yes",
+	    "currency": "No!"
+	},
+	"dz": {
+      "name":"Algerie",
+      "code":"DZ",
+      "capital":"Algiers",
+      "region":"AF",
+      "currency":{
+         "code":"DZD",
+         "name":"Algerian dinar",
+         "symbol":"د.ج"
+      },
+      "language":{
+         "code":"ar",
+         "name":"Arabic"
+      },
+      "flag":"https://restcountries.eu/data/dza.svg",
+      "dialling_code":"+213"
+   }
+}
