@@ -85,6 +85,7 @@
     "deconnection": "Отключение",
     "log_in": "Войти",
     "log_out": "Выйти",
+    "logout_confirmation_text": "Вы собираетесь выйти из своего аккаунта.",
     "you_logged_out_click_to_login": "Вы вышли, нажмите для входа",
     "log_in_first": "Сначала войдите",
     "are you sure delete": "Вы уверены, что хотите удалить?",

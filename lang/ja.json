@@ -85,6 +85,7 @@
     "deconnection": "切断",
     "log_in": "ログイン",
     "log_out": "ログアウト",
+    "logout_confirmation_text": "アカウントからログアウトしようとしています。",
     "you_logged_out_click_to_login": "ログアウトしています。クリックしてログイン",
     "log_in_first": "先にログインしてください",
     "are you sure delete": "削除してもよろしいですか？",

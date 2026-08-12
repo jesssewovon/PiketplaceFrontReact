@@ -85,6 +85,7 @@
     "deconnection": "डिस्कनेक्शन",
     "log_in": "लॉग इन करें",
     "log_out": "लॉग आउट करें",
+    "logout_confirmation_text": "आप अपने खाते से लॉग आउट करने वाले हैं।",
     "you_logged_out_click_to_login": "आप लॉग आउट हैं, लॉग इन करने के लिए क्लिक करें",
     "log_in_first": "पहले लॉग इन करें",
     "are you sure delete": "क्या आप वाकई हटाना चाहते हैं?",

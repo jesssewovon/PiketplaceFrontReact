@@ -85,6 +85,7 @@
     "deconnection": "Pemutusan sambungan",
     "log_in": "Log masuk",
     "log_out": "Log keluar",
+    "logout_confirmation_text": "Anda akan log keluar dari akaun anda.",
     "you_logged_out_click_to_login": "Anda telah log keluar, klik untuk log masuk",
     "log_in_first": "Log masuk dahulu",
     "are you sure delete": "Adakah anda pasti mahu memadam?",

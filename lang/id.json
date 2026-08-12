@@ -85,6 +85,7 @@
     "deconnection": "Keluar",
     "log_in": "Gabung",
     "log_out": "Keluar",
+    "logout_confirmation_text": "Anda akan keluar dari akun Anda.",
     "you_logged_out_click_to_login": "Anda keluar, klik untuk masuk",
     "log_in_first": "Masuk terlebih dahulu",
     "are you sure delete": "Apakah Anda yakin ingin menghapus?",

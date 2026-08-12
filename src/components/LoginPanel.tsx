@@ -54,10 +54,8 @@ export default function LoginPanel() {
   }
 
   return (
-    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-white/70 px-6 text-center backdrop-blur-md">
-      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-deep text-3xl font-bold text-white shadow-soft">
-        π
-      </span>
+    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-white/40 px-6 text-center backdrop-blur-[4px]">
+      <img src="/Piketplace.png" alt="Piketplace" className="h-20 w-20 object-contain" />
       <div>
         <h2 className="text-lg font-bold text-primary-dark">{t('login_title', { defaultValue: 'Sign in to continue' })}</h2>
         <p className="mx-auto mt-1 max-w-[260px] text-xs leading-relaxed text-ink-soft">
@@ -72,7 +70,7 @@ export default function LoginPanel() {
         type="button"
         onClick={handleLogin}
         disabled={loggingIn}
-        className="flex w-full max-w-[260px] items-center justify-center gap-2.5 rounded-2xl bg-[#593b8b] px-5 py-3.5 text-sm font-bold text-[#fbb148] shadow-soft transition hover:brightness-110 disabled:opacity-60"
+        className="flex w-full max-w-[260px] items-center justify-center gap-2.5 rounded-2xl bg-primary px-5 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-primary-dark disabled:opacity-60"
       >
         {loggingIn ? (
           <>

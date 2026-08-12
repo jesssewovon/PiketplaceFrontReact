@@ -85,6 +85,7 @@
     "deconnection": "Verbinding verbreken",
     "log_in": "Inloggen",
     "log_out": "Uitloggen",
+    "logout_confirmation_text": "Je staat op het punt uit te loggen uit je account.",
     "you_logged_out_click_to_login": "Je bent uitgelogd, klik om in te loggen",
     "log_in_first": "Log eerst in",
     "are you sure delete": "Weet je zeker dat je wilt verwijderen?",

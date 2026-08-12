@@ -85,6 +85,7 @@
     "deconnection": "Desconectar",
     "log_in": "Conectarse",
     "log_out": "Cerrar sesión",
+    "logout_confirmation_text": "Estás a punto de cerrar sesión en tu cuenta.",
     "you_logged_out_click_to_login": "Estás desconectado, haz clic para iniciar sesión",
     "log_in_first": "Inicie sesión primero",
     "are you sure delete": "¿Estás seguro de que quieres eliminar?",

@@ -85,6 +85,7 @@
     "deconnection": "단절",
     "log_in": "로그인",
     "log_out": "로그 아웃",
+    "logout_confirmation_text": "계정에서 로그아웃하려고 합니다.",
     "you_logged_out_click_to_login": "로그아웃되었습니다. 로그인하려면 클릭하세요.",
     "log_in_first": "먼저 로그인하세요",
     "are you sure delete": "삭제하시겠습니까?",

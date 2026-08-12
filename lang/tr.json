@@ -85,6 +85,7 @@
     "deconnection": "Bağlantıyı kes",
     "log_in": "Giriş yap",
     "log_out": "Çıkış yap",
+    "logout_confirmation_text": "Hesabınızdan çıkış yapmak üzeresiniz.",
     "you_logged_out_click_to_login": "Çıkış yaptınız, giriş yapmak için tıklayın",
     "log_in_first": "Önce giriş yapın",
     "are you sure delete": "Silmek istediğinize emin misiniz?",

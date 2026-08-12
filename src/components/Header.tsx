@@ -11,6 +11,7 @@ const PAGE_TITLES: Record<string, { key: string; fallback: string }> = {
   '/account/sales': { key: 'side_menu.my_sales', fallback: 'My Sales' },
   '/account/orders': { key: 'side_menu.my_orders', fallback: 'My Orders' },
   '/account/products': { key: 'page_title_my_products', fallback: 'My Products' },
+  '/mining': { key: 'side_menu.mining', fallback: 'Mining' },
   '/account/mining': { key: 'side_menu.mining', fallback: 'Mining' },
   '/account/messages': { key: 'messages', fallback: 'Messages' },
   '/account/wallet': { key: 'wallet', fallback: 'Wallet' },

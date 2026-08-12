@@ -85,6 +85,7 @@
     "deconnection": "Trennung",
     "log_in": "Anmelden",
     "log_out": "Abmelden",
+    "logout_confirmation_text": "Sie sind dabei, sich aus Ihrem Konto abzumelden.",
     "you_logged_out_click_to_login": "Sie sind abgemeldet, klicken Sie zum Anmelden",
     "log_in_first": "Zuerst anmelden",
     "are you sure delete": "Sind Sie sicher, dass Sie löschen möchten?",

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import Swal from 'sweetalert2'
 import {
   Store,
   BadgeDollarSign,
@@ -134,7 +135,7 @@ export default function MyAccountPage() {
 
   const currentLang = i18n.language.split('-')[0]
 
-  const handleLogout = async () => {
+  const performLogout = async () => {
     setSigningOut(true)
     try {
       await signOut(token ?? undefined)
@@ -143,6 +144,24 @@ export default function MyAccountPage() {
       dispatch(setSettings(null))
       setSigningOut(false)
     }
+  }
+
+  const handleLogout = () => {
+    void Swal.fire({
+      icon: 'warning',
+      title: t('confirmation.you_sure', { defaultValue: 'Are you sure?' }),
+      text: t('logout_confirmation_text', {
+        defaultValue: 'You are about to log out of your account.',
+      }),
+      showCancelButton: true,
+      confirmButtonText: t('side_menu.log_out', { defaultValue: 'Log out' }),
+      cancelButtonText: t('confirmation.no_cancel', { defaultValue: 'No, cancel' }),
+      confirmButtonColor: '#ec11b5',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        void performLogout()
+      }
+    })
   }
 
   const selectLanguage = (code: string) => {

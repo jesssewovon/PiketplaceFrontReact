@@ -85,6 +85,7 @@
     "deconnection": "Disconnection",
     "log_in": "Log in",
     "log_out": "Log out",
+    "logout_confirmation_text": "You are about to log out of your account.",
     "you_logged_out_click_to_login": "You're logged out, click to log in",
     "log_in_first": "Log in first",
     "are you sure delete": "Are you sure you want to delete?",

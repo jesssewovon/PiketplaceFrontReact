@@ -85,6 +85,7 @@
     "deconnection": "注销",
     "log_in": "登录",
     "log_out": "登出",
+    "logout_confirmation_text": "您即将退出您的账户。",
     "you_logged_out_click_to_login": "您已注销，点击登录",
     "log_in_first": "先登录",
     "are you sure delete": "您确定要删除吗？",

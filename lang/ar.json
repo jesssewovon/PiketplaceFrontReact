@@ -85,6 +85,7 @@
     "deconnection": "قطع الاتصال",
     "log_in": "تسجيل الدخول",
     "log_out": "تسجيل خروج",
+    "logout_confirmation_text": "أنت على وشك تسجيل الخروج من حسابك.",
     "you_logged_out_click_to_login": "لقد قمت بتسجيل الخروج، انقر لتسجيل الدخول",
     "log_in_first": "سجل الدخول أولا",
     "are you sure delete": "هل أنت متأكد أنك تريد الحذف؟",

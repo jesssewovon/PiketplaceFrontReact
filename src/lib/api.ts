@@ -155,6 +155,44 @@ export async function signIn(authResult: PiAuthResult): Promise<SigninResponse> 
   return data
 }
 
+export interface MiningResponse {
+  status?: string
+  message?: string
+  mining_remaining_time?: number
+  wallet_user?: {
+    mining_data?: {
+      mining_rate?: number
+    }
+  }
+  [key: string]: unknown
+}
+
+export async function checkMining(token?: string): Promise<MiningResponse> {
+  const headers: Record<string, string> = { Accept: 'application/json' }
+  if (token) headers.Authorization = `Bearer ${token}`
+  const response = await fetch(`${API_BASE}/check-mining`, { headers })
+  if (!response.ok) {
+    throw new Error(`Failed to check mining (${response.status})`)
+  }
+  const data = (await response.json()) as MiningResponse
+  syncSettingsFromPayload(data)
+  syncAttributesFromPayload(data)
+  return data
+}
+
+export async function startMining(token?: string): Promise<MiningResponse> {
+  const headers: Record<string, string> = { Accept: 'application/json' }
+  if (token) headers.Authorization = `Bearer ${token}`
+  const response = await fetch(`${API_BASE}/mining`, { method: 'POST', headers })
+  if (!response.ok) {
+    throw new Error(`Failed to start mining (${response.status})`)
+  }
+  const data = (await response.json()) as MiningResponse
+  syncSettingsFromPayload(data)
+  syncAttributesFromPayload(data)
+  return data
+}
+
 export async function signOut(token?: string): Promise<void> {
   const headers: Record<string, string> = { Accept: 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`

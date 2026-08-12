@@ -85,6 +85,7 @@
     "deconnection": "Nagla-log out",
     "log_in": "Mag log in",
     "log_out": "Mag-sign out",
+    "logout_confirmation_text": "Malapit ka nang mag-sign out sa iyong account.",
     "you_logged_out_click_to_login": "Naka-log out ka, i-click upang mag-log in",
     "log_in_first": "Log in muna",
     "are you sure delete": "Sigurado ka bang gusto mong tanggalin?",

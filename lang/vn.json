@@ -85,6 +85,7 @@
     "deconnection": "Thoát ra",
     "log_in": "Đăng nhập",
     "log_out": "Đăng xuất",
+    "logout_confirmation_text": "Bạn sắp đăng xuất khỏi tài khoản của mình.",
     "you_logged_out_click_to_login": "Bạn đã đăng xuất, nhấp để đăng nhập",
     "log_in_first": "Đăng nhập trước",
     "are you sure delete": "Bạn có chắc chắn muốn xóa không?",

@@ -85,6 +85,7 @@
     "deconnection": "Disconnessione",
     "log_in": "Accedi",
     "log_out": "Esci",
+    "logout_confirmation_text": "Stai per uscire dal tuo account.",
     "you_logged_out_click_to_login": "Sei disconnesso, clicca per accedere",
     "log_in_first": "Accedi prima",
     "are you sure delete": "Sei sicuro di voler eliminare?",
