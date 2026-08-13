@@ -6,6 +6,21 @@ import type {
   SalesResponse,
   OrdersResponse,
   CancellationReason,
+  MessageContactsResponse,
+  PartnershipsResponse,
+  AdsDataResponse,
+  AdsHistoriesResponse,
+  RewardAdsResponse,
+  PartnerAccountResponse,
+  PartnerOrdersResponse,
+  DonationResponse,
+  PaymentVerifierResponse,
+  AddressesResponse,
+  ShippingAddress,
+  ProductDetailResponse,
+  BoostResponse,
+  AddToCartPayload,
+  Product,
 } from '../types'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
@@ -233,6 +248,160 @@ export async function submitForReview(
   return data
 }
 
+export async function fetchProduct(
+  id: number,
+  token?: string,
+): Promise<ProductDetailResponse> {
+  const endpoint = token ? `/products/${id}` : `/${id}/products`
+  const response = await fetch(`${API_BASE}${endpoint}`, { headers: authHeaders(token) })
+  if (!response.ok) {
+    throw new Error(`Failed to load product (${response.status})`)
+  }
+  const data = (await response.json()) as ProductDetailResponse
+  syncSettingsFromPayload(data)
+  syncAttributesFromPayload(data)
+  return data
+}
+
+export async function deleteProduct(
+  token: string | undefined,
+  productId: number,
+): Promise<{ status?: boolean; message?: string }> {
+  const response = await fetch(`${API_BASE}/products/${productId}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as { status?: boolean; message?: string }
+  if (!response.ok) {
+    throw new Error(`Failed to delete product (${response.status})`)
+  }
+  return data
+}
+
+export interface BoostPayload {
+  amount: string
+  currencies_code?: string
+  period?: string
+  products_id?: number
+  status?: string
+  code_pin?: string
+}
+
+export async function boostProduct(
+  token: string | undefined,
+  payload: BoostPayload,
+): Promise<BoostResponse> {
+  const response = await fetch(`${API_BASE}/boost-products`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as BoostResponse
+  if (!response.ok) {
+    throw new Error(`Failed to boost product (${response.status})`)
+  }
+  return data
+}
+
+export async function upgradeBoostProduct(
+  token: string | undefined,
+  payload: BoostPayload,
+): Promise<BoostResponse> {
+  const response = await fetch(`${API_BASE}/upgrade-boost-products`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as BoostResponse
+  if (!response.ok) {
+    throw new Error(`Failed to upgrade product boost (${response.status})`)
+  }
+  return data
+}
+
+export async function addToCart(
+  token: string | undefined,
+  payload: AddToCartPayload,
+): Promise<{ status?: string | boolean; message?: string }> {
+  const response = await fetch(`${API_BASE}/addToCart`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as {
+    status?: string | boolean
+    message?: string
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to add to cart (${response.status})`)
+  }
+  return data
+}
+
+export async function updatePromotionActivation(
+  token: string | undefined,
+  product: Product,
+): Promise<{ status?: boolean; message?: string; product?: Product }> {
+  const response = await fetch(`${API_BASE}/update-promotion-activation`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...product, products_id: product.id }),
+  })
+  const data = (await response.json().catch(() => ({}))) as {
+    status?: boolean
+    message?: string
+    product?: Product
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to update promotion activation (${response.status})`)
+  }
+  return data
+}
+
+export async function validateProduct(
+  token: string | undefined,
+  productId: number,
+  status: string,
+  reasons?: string[],
+): Promise<{ status?: boolean; message?: string }> {
+  const body = status === 'validated' ? { status } : { status, reasons }
+  const response = await fetch(`${API_BASE}/validate-product/${productId}`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  const data = (await response.json().catch(() => ({}))) as { status?: boolean; message?: string }
+  if (!response.ok) {
+    throw new Error(`Failed to validate product (${response.status})`)
+  }
+  return data
+}
+
+export function isEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+export async function postComment(
+  token: string | undefined,
+  payload: { comment: string; products_id: number; pi_users_id?: number },
+): Promise<{ status?: boolean; message?: string; product?: Product; comments?: unknown }> {
+  const response = await fetch(`${API_BASE}/comments`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as {
+    status?: boolean
+    message?: string
+    product?: Product
+    comments?: unknown
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to post comment (${response.status})`)
+  }
+  return data
+}
+
 export interface SalesQuery {
   seller_id: number
   shipped?: string
@@ -391,4 +560,232 @@ export async function signOut(token?: string): Promise<void> {
   } catch {
     // local logout must proceed even if the server is unreachable
   }
+}
+
+export interface MessageContactsQuery {
+  page?: number
+  search?: string
+}
+
+export async function fetchMessageContacts(
+  token: string | undefined,
+  params: MessageContactsQuery,
+): Promise<MessageContactsResponse> {
+  const search = new URLSearchParams()
+  if (params.page) search.set('page', String(params.page))
+  if (params.search) search.set('search', params.search)
+  const response = await fetch(`${API_BASE}/message-contacts?${search.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load message contacts (${response.status})`)
+  }
+  return (await response.json()) as MessageContactsResponse
+}
+
+export async function fetchPartnerships(
+  token: string | undefined,
+): Promise<PartnershipsResponse> {
+  const response = await fetch(`${API_BASE}/get-partnerships`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load partnerships (${response.status})`)
+  }
+  return (await response.json()) as PartnershipsResponse
+}
+
+export async function fetchAdsData(
+  token: string | undefined,
+  failedRewardedAds: unknown[] = [],
+): Promise<AdsDataResponse> {
+  const response = await fetch(
+    `${API_BASE}/load-ads-data?failed_rewarded_ads=${encodeURIComponent(
+      JSON.stringify(failedRewardedAds),
+    )}`,
+    { headers: authHeaders(token) },
+  )
+  if (!response.ok) {
+    throw new Error(`Failed to load ads data (${response.status})`)
+  }
+  const data = (await response.json()) as AdsDataResponse
+  syncAttributesFromPayload(data)
+  return data
+}
+
+export async function fetchAdsHistories(
+  token: string | undefined,
+  page = 1,
+): Promise<AdsHistoriesResponse> {
+  const response = await fetch(`${API_BASE}/load-pi-ads-histories?page=${page}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load ads histories (${response.status})`)
+  }
+  return (await response.json()) as AdsHistoriesResponse
+}
+
+export async function rewardUserAds(
+  token: string | undefined,
+  adId: string,
+  failedRewardedAds: unknown[] = [],
+): Promise<RewardAdsResponse> {
+  const response = await fetch(`${API_BASE}/reward-user-ads`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adId, failed_rewarded_ads: failedRewardedAds }),
+  })
+  const data = (await response.json().catch(() => ({}))) as RewardAdsResponse
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to reward user ads (${response.status})`)
+  }
+  return data
+}
+
+export async function fetchPartnerAccount(
+  token: string | undefined,
+): Promise<PartnerAccountResponse> {
+  const response = await fetch(`${API_BASE}/partner/get-partner-account`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load partner account (${response.status})`)
+  }
+  return (await response.json()) as PartnerAccountResponse
+}
+
+export async function fetchPartnerOrders(
+  token: string | undefined,
+  requestType: string,
+  page = 1,
+): Promise<PartnerOrdersResponse> {
+  const search = new URLSearchParams()
+  search.set('page', String(page))
+  search.set('request_type', requestType)
+  const response = await fetch(`${API_BASE}/partner/get-orders-partner?${search.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load partner orders (${response.status})`)
+  }
+  const data = (await response.json()) as PartnerOrdersResponse
+  syncSettingsFromPayload(data)
+  syncAttributesFromPayload(data)
+  return data
+}
+
+export async function donateToPiketplaceWallet(
+  token: string | undefined,
+  userId: number,
+  amount: string,
+  codePin: string,
+): Promise<DonationResponse> {
+  const response = await fetch(`${API_BASE}/donate-piketplace-wallet`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: userId, amount, code_pin: codePin }),
+  })
+  const data = (await response.json().catch(() => ({}))) as DonationResponse
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to donate (${response.status})`)
+  }
+  return data
+}
+
+export async function verifyPayment(
+  token: string | undefined,
+  uniqueId: string,
+  userId?: number,
+): Promise<PaymentVerifierResponse> {
+  const response = await fetch(`${API_BASE}/payment-verifier`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uniqueId, userId }),
+  })
+  const data = (await response.json().catch(() => ({}))) as PaymentVerifierResponse
+  if (!response.ok) {
+    throw new Error(`Failed to verify payment (${response.status})`)
+  }
+  return data
+}
+
+export async function postPiPayment(
+  token: string | undefined,
+  uid: string | undefined,
+  endpoint: 'approve' | 'complete' | 'incomplete',
+  payload: Record<string, unknown>,
+): Promise<unknown> {
+  const response = await fetch(`${API_BASE}/${endpoint}`, {
+    method: 'POST',
+    headers: {
+      ...authHeaders(token, uid),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to ${endpoint} payment (${response.status})`)
+  }
+  return response.json().catch(() => ({}))
+}
+
+export async function fetchMyAddresses(
+  token: string | undefined,
+): Promise<AddressesResponse> {
+  const response = await fetch(`${API_BASE}/get-my-addresses`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load addresses (${response.status})`)
+  }
+  return (await response.json()) as AddressesResponse
+}
+
+export async function saveAddress(
+  token: string | undefined,
+  address: ShippingAddress,
+): Promise<AddressesResponse> {
+  const response = await fetch(`${API_BASE}/save-address`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ address }),
+  })
+  const data = (await response.json().catch(() => ({}))) as AddressesResponse
+  if (!response.ok) {
+    throw new Error(`Failed to save address (${response.status})`)
+  }
+  return data
+}
+
+export async function deleteAddress(
+  token: string | undefined,
+  index: number,
+): Promise<AddressesResponse> {
+  const response = await fetch(`${API_BASE}/delete-address`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ index }),
+  })
+  const data = (await response.json().catch(() => ({}))) as AddressesResponse
+  if (!response.ok) {
+    throw new Error(`Failed to delete address (${response.status})`)
+  }
+  return data
+}
+
+export async function setAddressAsDefault(
+  token: string | undefined,
+  index: number,
+): Promise<AddressesResponse> {
+  const response = await fetch(`${API_BASE}/set-address-as-default`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ index }),
+  })
+  const data = (await response.json().catch(() => ({}))) as AddressesResponse
+  if (!response.ok) {
+    throw new Error(`Failed to set default address (${response.status})`)
+  }
+  return data
 }

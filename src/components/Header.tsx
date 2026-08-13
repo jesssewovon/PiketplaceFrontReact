@@ -14,6 +14,15 @@ const PAGE_TITLES: Record<string, { key: string; fallback: string }> = {
   '/my-store': { key: 'my_store', fallback: 'My Store' },
   '/my-sales': { key: 'my_sales', fallback: 'My Sales' },
   '/my-orders': { key: 'my_orders', fallback: 'My Orders' },
+  '/message-contacts': { key: 'messages', fallback: 'Messages' },
+  '/terms': { key: 'side_menu.terms_and_conditions', fallback: 'Terms & Conditions' },
+  '/faq': { key: 'faq', fallback: 'FAQ' },
+  '/partnerships': { key: 'our_partnerships', fallback: 'Partnerships' },
+  '/unlock-boost': { key: 'unlock_boost', fallback: 'Unlock Boost' },
+  '/partner-account': { key: 'side_menu.representative_account', fallback: 'Representative Account' },
+  '/partner-orders': { key: 'side_menu.orders_verification', fallback: 'Orders Verification' },
+  '/donation': { key: 'donation', fallback: 'Donation' },
+  '/my-addresses': { key: 'side_menu.my_addresses', fallback: 'My Addresses' },
   '/mining': { key: 'side_menu.mining', fallback: 'Mining' },
   '/account/mining': { key: 'side_menu.mining', fallback: 'Mining' },
   '/account/messages': { key: 'messages', fallback: 'Messages' },
@@ -127,7 +136,7 @@ export default function Header() {
     )
   }
 
-  const pageTitle = PAGE_TITLES[location.pathname]
+  const pageTitle = PAGE_TITLES[location.pathname] ?? (location.pathname.startsWith('/product/') ? { key: 'product.details', fallback: 'Product' } : undefined)
   const title = t(pageTitle?.key ?? 'app_name', { defaultValue: pageTitle?.fallback ?? 'Piketplace' })
   const isAccountPage = location.pathname === '/account'
   const showConnectedUser = isAccountPage && isLoggedIn && user

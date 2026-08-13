@@ -38,6 +38,16 @@ export interface Product {
   isBoosted?: boolean
   comments_count?: number
   user?: ProductUser
+  visible?: boolean
+  last_validation?: ProductValidation | null
+  comments?: ProductComment[]
+  shipping_zone?: ProductShippingZone[]
+  free_shipping_zone?: ProductShippingZone[]
+  promotion_fees_activated?: boolean
+  promotion_fees_percentage?: number
+  last_boost?: ProductBoost | null
+  phone_code?: string
+  phone_number?: string
 }
 
 export interface PaginatedProducts {
@@ -104,11 +114,14 @@ export interface ShippingInfo {
 
 export interface ShippingAddress {
   name?: string
+  country_code?: string
   country_name?: string
   city?: string
   address?: string
+  phone_code?: string
   phone_number?: string
   email?: string
+  is_default?: boolean
 }
 
 export interface LineOrderUser {
@@ -191,6 +204,129 @@ export interface MyProductsResponse {
   approbation_active?: boolean
 }
 
+export interface MessageContact {
+  id: number
+  reference?: string
+  product?: {
+    pi_users_id?: number
+    [key: string]: unknown
+  } | null
+  created_at?: string
+  last_message?: {
+    created_at?: string
+    isImage?: boolean
+    imageName?: string
+    message?: string
+  } | null
+  messages_count?: number
+}
+
+export interface PaginatedMessageContacts {
+  current_page: number
+  data: MessageContact[]
+  last_page?: number
+  next_page_url?: string | null
+  total?: number
+}
+
+export interface MessageContactsResponse {
+  contacts: PaginatedMessageContacts
+}
+
+export interface Partnership {
+  id?: number
+  name?: string
+  description?: string
+  logo_link?: string | null
+  code?: string
+}
+
+export interface PartnershipsResponse {
+  partnerships?: Partnership[]
+}
+
+export interface AdsBalanceItem {
+  id?: number
+  period?: string
+  month?: string
+  amount?: number | null
+  number_ads_views?: number
+  paid?: boolean
+}
+
+export interface AdsData {
+  current_balance?: {
+    month?: string
+    period?: string
+    number_ads_views?: number
+  } | null
+  remaining_time?: number
+  limit_reached?: boolean
+  ads_history_data?: {
+    current_balance?: AdsData['current_balance']
+    [key: string]: unknown
+  } | null
+  [key: string]: unknown
+}
+
+export interface AdsDataResponse {
+  status?: boolean
+  ads_data?: AdsData
+  cost_per_pi?: number
+  activate_pi_rewarded_ads?: boolean
+  [key: string]: unknown
+}
+
+export interface AdsHistoriesResponse {
+  balances?: { data?: AdsBalanceItem[]; [key: string]: unknown }
+}
+
+export interface RewardAdsResponse {
+  status?: boolean
+  message?: string
+  ads_data?: AdsData
+  activate_pi_rewarded_ads?: boolean
+  data?: unknown
+}
+
+export interface PartnerAccountInfo {
+  id?: number
+  country_code?: string
+  balance?: number
+  wallet_address?: string | null
+  [key: string]: unknown
+}
+
+export interface PartnerAccountResponse {
+  partnerAccount?: PartnerAccountInfo | null
+  today_amount?: number
+  yesterday_amount?: number
+  this_month_amount?: number
+  last_month_amount?: number
+  nb_orders?: number
+  [key: string]: unknown
+}
+
+export interface PartnerOrdersResponse {
+  orders?: PaginatedLineOrders
+}
+
+export interface DonationResponse {
+  status?: boolean
+  message?: string
+  payment?: unknown
+}
+
+export interface PaymentVerifierResponse {
+  payment?: unknown | null
+  [key: string]: unknown
+}
+
+export interface AddressesResponse {
+  addresses?: ShippingAddress[]
+  status?: boolean
+}
+
 export type NewProductPayload = {
   category_selected_id: string
   libelle: string
@@ -210,4 +346,78 @@ export type NewProductPayload = {
   product_available: boolean
   saling_terms_agreements: boolean
   images: File[]
+}
+
+export interface ProductComment {
+  id?: number
+  comment?: string
+  created_at?: string
+  user?: {
+    username?: string
+    avatar?: string
+  }
+  [key: string]: unknown
+}
+
+export interface ProductShippingZone {
+  country_name?: string
+  city?: string
+  zone?: string
+  fee_amount?: number
+  fee?: number
+  fee_pi?: number
+  [key: string]: unknown
+}
+
+export interface ProductBoost {
+  id?: number
+  amount?: number
+  currencies_code?: string
+  period?: string
+  boost_ends_at?: string
+  [key: string]: unknown
+}
+
+export interface BoostPeriod {
+  id?: string
+  [key: string]: unknown
+}
+
+export interface BoostPosition {
+  global_position?: number
+  country_position?: number
+  [key: string]: unknown
+}
+
+export interface ProductDetailResponse {
+  status?: boolean
+  message?: string
+  product?: Product
+  boost_periods?: BoostPeriod[]
+  approbation_active?: boolean
+  deletion_active?: boolean
+  update_active?: boolean
+  boostPositionCheck?: BoostPosition
+  boostPosition?: BoostPosition
+  reasons?: CancellationReason[]
+  [key: string]: unknown
+}
+
+export interface BoostResponse {
+  status?: boolean
+  message?: string
+  product?: Product
+  boostPositionCheck?: BoostPosition
+  boostPosition?: BoostPosition
+  amount_min_required?: number | string
+  currencies_code?: string
+  [key: string]: unknown
+}
+
+export interface AddToCartPayload {
+  products_id: number
+  username?: string
+  quantity: number
+  in_free_shipping_zone: string
+  in_paid_shipping_zone: string
 }

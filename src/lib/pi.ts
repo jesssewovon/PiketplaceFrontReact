@@ -32,3 +32,27 @@ export async function authenticateWithPi(): Promise<PiAuthResult> {
   if (!window.Pi) throw new Error('Pi SDK is not available')
   return window.Pi.authenticate([...SCOPES])
 }
+
+export async function createPiPayment(
+  paymentData: PiPaymentData,
+  callbacks: PiPaymentCallbacks,
+): Promise<void> {
+  await waitForPi()
+  initPi()
+  if (!window.Pi) throw new Error('Pi SDK is not available')
+  window.Pi.createPayment(paymentData, callbacks)
+}
+
+export async function showRewardedAd(): Promise<PiAdResponse> {
+  await waitForPi()
+  initPi()
+  if (!window.Pi?.Ads) throw new Error('Pi Ads is not available')
+  const ready = await window.Pi.Ads.isAdReady('rewarded')
+  if (ready.ready !== true) {
+    const requestAdResponse = await window.Pi.Ads.requestAd('rewarded')
+    if (requestAdResponse.result === 'ADS_NOT_SUPPORTED') {
+      return { result: 'ADS_NOT_SUPPORTED' }
+    }
+  }
+  return window.Pi.Ads.showAd('rewarded')
+}
