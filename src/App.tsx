@@ -13,6 +13,7 @@ import TermsPage from './pages/TermsPage'
 import FaqPage from './pages/FaqPage'
 import PartnershipsPage from './pages/PartnershipsPage'
 import UnlockBoostPage from './pages/UnlockBoostPage'
+import PiAdBoostHistoriesPage from './pages/PiAdBoostHistoriesPage'
 import PartnerAccountPage from './pages/PartnerAccountPage'
 import PartnerOrdersPage from './pages/PartnerOrdersPage'
 import DonationPage from './pages/DonationPage'
@@ -35,6 +36,7 @@ function App() {
         <Route path="faq" element={<FaqPage />} />
         <Route path="partnerships" element={<PartnershipsPage />} />
         <Route path="unlock-boost" element={<UnlockBoostPage />} />
+        <Route path="pi-ad-boost-histories" element={<PiAdBoostHistoriesPage />} />
         <Route path="partner-account" element={<PartnerAccountPage />} />
         <Route path="partner-orders" element={<PartnerOrdersPage />} />
         <Route path="donation" element={<DonationPage />} />

@@ -19,6 +19,7 @@ const PAGE_TITLES: Record<string, { key: string; fallback: string }> = {
   '/faq': { key: 'faq', fallback: 'FAQ' },
   '/partnerships': { key: 'our_partnerships', fallback: 'Partnerships' },
   '/unlock-boost': { key: 'unlock_boost', fallback: 'Unlock Boost' },
+  '/pi-ad-boost-histories': { key: 'history', fallback: 'History' },
   '/partner-account': { key: 'side_menu.representative_account', fallback: 'Representative Account' },
   '/partner-orders': { key: 'side_menu.orders_verification', fallback: 'Orders Verification' },
   '/donation': { key: 'donation', fallback: 'Donation' },
