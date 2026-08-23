@@ -24,6 +24,7 @@ import type {
 } from '../types'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
+import { authFetch } from './authFetch'
 
 export const API_BASE =
   (import.meta.env.VITE_APP_BACKEND_URL as string | undefined) ??
@@ -169,8 +170,8 @@ function authHeaders(token?: string, uid?: string): Record<string, string> {
   return headers
 }
 
-export async function fetchMyStoreData(token: string | undefined, userId: number): Promise<StoreData> {
-  const response = await fetch(`${API_BASE}/category/products?id=${userId}`, {
+export async function fetchMyStoreData(token: string | undefined): Promise<StoreData> {
+  const response = await authFetch(`${API_BASE}/category/products`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -181,10 +182,9 @@ export async function fetchMyStoreData(token: string | undefined, userId: number
 
 export async function fetchMyProducts(
   token: string | undefined,
-  userIdStore: number,
   page = 1,
 ): Promise<MyProductsResponse> {
-  const response = await fetch(`${API_BASE}/my-products?userIdStore=${userIdStore}&page=${page}`, {
+  const response = await authFetch(`${API_BASE}/my-products?page=${page}`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -200,7 +200,7 @@ export async function updateProductVisibility(
   productId: number,
   forceHide = false,
 ): Promise<{ status?: boolean; message?: string; product?: unknown }> {
-  const response = await fetch(`${API_BASE}/update-product-visibility`, {
+  const response = await authFetch(`${API_BASE}/update-product-visibility`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ product_id: productId, force_hide: forceHide }),
@@ -221,7 +221,7 @@ export async function addStock(
   productsId: number,
   quantity: number,
 ): Promise<{ status?: boolean; product?: unknown }> {
-  const response = await fetch(`${API_BASE}/add-stock`, {
+  const response = await authFetch(`${API_BASE}/add-stock`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ products_id: productsId, quantity }),
@@ -237,7 +237,7 @@ export async function submitForReview(
   token: string | undefined,
   productId: number,
 ): Promise<{ status?: boolean }> {
-  const response = await fetch(`${API_BASE}/submit-for-review/${productId}`, {
+  const response = await authFetch(`${API_BASE}/submit-for-review/${productId}`, {
     method: 'POST',
     headers: authHeaders(token),
   })
@@ -253,7 +253,7 @@ export async function fetchProduct(
   token?: string,
 ): Promise<ProductDetailResponse> {
   const endpoint = token ? `/products/${id}` : `/${id}/products`
-  const response = await fetch(`${API_BASE}${endpoint}`, { headers: authHeaders(token) })
+  const response = await authFetch(`${API_BASE}${endpoint}`, { headers: authHeaders(token) })
   if (!response.ok) {
     throw new Error(`Failed to load product (${response.status})`)
   }
@@ -267,7 +267,7 @@ export async function deleteProduct(
   token: string | undefined,
   productId: number,
 ): Promise<{ status?: boolean; message?: string }> {
-  const response = await fetch(`${API_BASE}/products/${productId}`, {
+  const response = await authFetch(`${API_BASE}/products/${productId}`, {
     method: 'DELETE',
     headers: authHeaders(token),
   })
@@ -291,7 +291,7 @@ export async function boostProduct(
   token: string | undefined,
   payload: BoostPayload,
 ): Promise<BoostResponse> {
-  const response = await fetch(`${API_BASE}/boost-products`, {
+  const response = await authFetch(`${API_BASE}/boost-products`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -307,7 +307,7 @@ export async function upgradeBoostProduct(
   token: string | undefined,
   payload: BoostPayload,
 ): Promise<BoostResponse> {
-  const response = await fetch(`${API_BASE}/upgrade-boost-products`, {
+  const response = await authFetch(`${API_BASE}/upgrade-boost-products`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -323,7 +323,7 @@ export async function addToCart(
   token: string | undefined,
   payload: AddToCartPayload,
 ): Promise<{ status?: string | boolean; message?: string }> {
-  const response = await fetch(`${API_BASE}/addToCart`, {
+  const response = await authFetch(`${API_BASE}/addToCart`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -342,7 +342,7 @@ export async function updatePromotionActivation(
   token: string | undefined,
   product: Product,
 ): Promise<{ status?: boolean; message?: string; product?: Product }> {
-  const response = await fetch(`${API_BASE}/update-promotion-activation`, {
+  const response = await authFetch(`${API_BASE}/update-promotion-activation`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...product, products_id: product.id }),
@@ -365,7 +365,7 @@ export async function validateProduct(
   reasons?: string[],
 ): Promise<{ status?: boolean; message?: string }> {
   const body = status === 'validated' ? { status } : { status, reasons }
-  const response = await fetch(`${API_BASE}/validate-product/${productId}`, {
+  const response = await authFetch(`${API_BASE}/validate-product/${productId}`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -385,7 +385,7 @@ export async function postComment(
   token: string | undefined,
   payload: { comment: string; products_id: number; pi_users_id?: number },
 ): Promise<{ status?: boolean; message?: string; product?: Product; comments?: unknown }> {
-  const response = await fetch(`${API_BASE}/comments`, {
+  const response = await authFetch(`${API_BASE}/comments`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -418,7 +418,7 @@ export async function fetchSales(
   if (params.shipped) search.set('shipped', params.shipped)
   if (params.page) search.set('page', String(params.page))
   if (params.reference) search.set('reference', params.reference)
-  const response = await fetch(`${API_BASE}/get-sales?${search.toString()}`, {
+  const response = await authFetch(`${API_BASE}/get-sales?${search.toString()}`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -445,7 +445,7 @@ export async function fetchOrders(
   search.set('type', 'in_progress')
   if (params.page) search.set('page', String(params.page))
   if (params.reference) search.set('reference', params.reference)
-  const response = await fetch(`${API_BASE}/orders?${search.toString()}`, {
+  const response = await authFetch(`${API_BASE}/orders?${search.toString()}`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -465,7 +465,7 @@ export async function fetchShippedOrders(
   search.set('user_id', String(params.user_id))
   if (params.page) search.set('page', String(params.page))
   if (params.reference) search.set('reference', params.reference)
-  const response = await fetch(`${API_BASE}/shipped-line-orders?${search.toString()}`, {
+  const response = await authFetch(`${API_BASE}/shipped-line-orders?${search.toString()}`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -482,7 +482,7 @@ export async function updateLineOrder(
   lineOrderId: number,
   data: { type: string; reasons?: CancellationReason[] | null },
 ): Promise<{ status?: boolean; message?: string; line_order?: unknown }> {
-  const response = await fetch(`${API_BASE}/line-orders-api/${lineOrderId}`, {
+  const response = await authFetch(`${API_BASE}/line-orders-api/${lineOrderId}`, {
     method: 'PUT',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -529,7 +529,7 @@ export interface MiningResponse {
 export async function checkMining(token?: string): Promise<MiningResponse> {
   const headers: Record<string, string> = { Accept: 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`
-  const response = await fetch(`${API_BASE}/check-mining`, { headers })
+  const response = await authFetch(`${API_BASE}/check-mining`, { headers })
   if (!response.ok) {
     throw new Error(`Failed to check mining (${response.status})`)
   }
@@ -542,7 +542,7 @@ export async function checkMining(token?: string): Promise<MiningResponse> {
 export async function startMining(token?: string): Promise<MiningResponse> {
   const headers: Record<string, string> = { Accept: 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`
-  const response = await fetch(`${API_BASE}/mining`, { method: 'POST', headers })
+  const response = await authFetch(`${API_BASE}/mining`, { method: 'POST', headers })
   if (!response.ok) {
     throw new Error(`Failed to start mining (${response.status})`)
   }
@@ -556,7 +556,7 @@ export async function signOut(token?: string): Promise<void> {
   const headers: Record<string, string> = { Accept: 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`
   try {
-    await fetch(`${API_BASE}/signout`, { method: 'POST', headers })
+    await authFetch(`${API_BASE}/signout`, { method: 'POST', headers })
   } catch {
     // local logout must proceed even if the server is unreachable
   }
@@ -574,7 +574,7 @@ export async function fetchMessageContacts(
   const search = new URLSearchParams()
   if (params.page) search.set('page', String(params.page))
   if (params.search) search.set('search', params.search)
-  const response = await fetch(`${API_BASE}/message-contacts?${search.toString()}`, {
+  const response = await authFetch(`${API_BASE}/message-contacts?${search.toString()}`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -586,7 +586,7 @@ export async function fetchMessageContacts(
 export async function fetchPartnerships(
   token: string | undefined,
 ): Promise<PartnershipsResponse> {
-  const response = await fetch(`${API_BASE}/get-partnerships`, {
+  const response = await authFetch(`${API_BASE}/get-partnerships`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -599,7 +599,7 @@ export async function fetchAdsData(
   token: string | undefined,
   failedRewardedAds: unknown[] = [],
 ): Promise<AdsDataResponse> {
-  const response = await fetch(
+  const response = await authFetch(
     `${API_BASE}/load-ads-data?failed_rewarded_ads=${encodeURIComponent(
       JSON.stringify(failedRewardedAds),
     )}`,
@@ -617,7 +617,7 @@ export async function fetchAdsHistories(
   token: string | undefined,
   page = 1,
 ): Promise<AdsHistoriesResponse> {
-  const response = await fetch(`${API_BASE}/load-pi-ads-histories?page=${page}`, {
+  const response = await authFetch(`${API_BASE}/load-pi-ads-histories?page=${page}`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -631,7 +631,7 @@ export async function rewardUserAds(
   adId: string,
   failedRewardedAds: unknown[] = [],
 ): Promise<RewardAdsResponse> {
-  const response = await fetch(`${API_BASE}/reward-user-ads`, {
+  const response = await authFetch(`${API_BASE}/reward-user-ads`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ adId, failed_rewarded_ads: failedRewardedAds }),
@@ -646,7 +646,7 @@ export async function rewardUserAds(
 export async function fetchPartnerAccount(
   token: string | undefined,
 ): Promise<PartnerAccountResponse> {
-  const response = await fetch(`${API_BASE}/partner/get-partner-account`, {
+  const response = await authFetch(`${API_BASE}/partner/get-partner-account`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -663,7 +663,7 @@ export async function fetchPartnerOrders(
   const search = new URLSearchParams()
   search.set('page', String(page))
   search.set('request_type', requestType)
-  const response = await fetch(`${API_BASE}/partner/get-orders-partner?${search.toString()}`, {
+  const response = await authFetch(`${API_BASE}/partner/get-orders-partner?${search.toString()}`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -681,7 +681,7 @@ export async function donateToPiketplaceWallet(
   amount: string,
   codePin: string,
 ): Promise<DonationResponse> {
-  const response = await fetch(`${API_BASE}/donate-piketplace-wallet`, {
+  const response = await authFetch(`${API_BASE}/donate-piketplace-wallet`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ user_id: userId, amount, code_pin: codePin }),
@@ -698,7 +698,7 @@ export async function verifyPayment(
   uniqueId: string,
   userId?: number,
 ): Promise<PaymentVerifierResponse> {
-  const response = await fetch(`${API_BASE}/payment-verifier`, {
+  const response = await authFetch(`${API_BASE}/payment-verifier`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ uniqueId, userId }),
@@ -716,7 +716,7 @@ export async function postPiPayment(
   endpoint: 'approve' | 'complete' | 'incomplete',
   payload: Record<string, unknown>,
 ): Promise<unknown> {
-  const response = await fetch(`${API_BASE}/${endpoint}`, {
+  const response = await authFetch(`${API_BASE}/${endpoint}`, {
     method: 'POST',
     headers: {
       ...authHeaders(token, uid),
@@ -733,7 +733,7 @@ export async function postPiPayment(
 export async function fetchMyAddresses(
   token: string | undefined,
 ): Promise<AddressesResponse> {
-  const response = await fetch(`${API_BASE}/get-my-addresses`, {
+  const response = await authFetch(`${API_BASE}/get-my-addresses`, {
     headers: authHeaders(token),
   })
   if (!response.ok) {
@@ -746,7 +746,7 @@ export async function saveAddress(
   token: string | undefined,
   address: ShippingAddress,
 ): Promise<AddressesResponse> {
-  const response = await fetch(`${API_BASE}/save-address`, {
+  const response = await authFetch(`${API_BASE}/save-address`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ address }),
@@ -762,7 +762,7 @@ export async function deleteAddress(
   token: string | undefined,
   index: number,
 ): Promise<AddressesResponse> {
-  const response = await fetch(`${API_BASE}/delete-address`, {
+  const response = await authFetch(`${API_BASE}/delete-address`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ index }),
@@ -778,7 +778,7 @@ export async function setAddressAsDefault(
   token: string | undefined,
   index: number,
 ): Promise<AddressesResponse> {
-  const response = await fetch(`${API_BASE}/set-address-as-default`, {
+  const response = await authFetch(`${API_BASE}/set-address-as-default`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ index }),

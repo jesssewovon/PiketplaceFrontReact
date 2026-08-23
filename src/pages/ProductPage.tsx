@@ -33,8 +33,10 @@ import {
 } from '../lib/api'
 import { formatAmount, formatDate } from '../lib/format'
 import { flagEmoji } from '../lib/geo'
-import { useAppSelector } from '../store/hooks'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { initPi, waitForPi } from '../lib/pi'
+import { loginWithPi } from '../lib/auth'
+import FullScreenLoader from '../components/FullScreenLoader'
 import { postPiPayment } from '../lib/api'
 
 function sanitizeAmount(raw: string): string {
@@ -91,6 +93,7 @@ export default function ProductPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
+  const dispatch = useAppDispatch()
 
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const token = useAppSelector((state) => state.auth.token)
@@ -158,6 +161,7 @@ export default function ProductPage() {
 
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
 
   const isOwner = Boolean(isLoggedIn && user && product && user.id === product.pi_users_id)
 
@@ -239,6 +243,31 @@ export default function ProductPage() {
       text: t('log_in_first', { defaultValue: 'Log in first' }),
       confirmButtonColor: '#ec11b5',
     })
+  }
+
+  const handleBuyNow = async () => {
+    if (!isLoggedIn) {
+      const result = await Swal.fire({
+        icon: 'question',
+        title: t('connection', { defaultValue: 'Connection' }),
+        text: t('log_in_first', { defaultValue: 'Log in first' }),
+        showCancelButton: true,
+        confirmButtonText: t('login_sign_in', { defaultValue: 'Log in' }),
+        cancelButtonText: t('confirmation.no_cancel', { defaultValue: 'No, cancel' }),
+        confirmButtonColor: '#ec11b5',
+      })
+      if (!result.isConfirmed) return
+      setIsLoggingIn(true)
+      try {
+        await loginWithPi(dispatch)
+      } catch {
+        showError(t('login_error', { defaultValue: 'Login failed. Please open this app in the Pi Browser.' }))
+      } finally {
+        setIsLoggingIn(false)
+      }
+      return
+    }
+    await axiosAdding(true)
   }
 
   const shareProduct = () => {
@@ -1163,7 +1192,7 @@ export default function ProductPage() {
                 )}
                 <button
                   type="button"
-                  onClick={() => void axiosAdding(true)}
+                  onClick={() => void handleBuyNow()}
                   className="flex items-center justify-center rounded-xl border-2 border-primary px-4 py-2.5 text-xs font-bold text-primary transition hover:bg-primary/5"
                 >
                   {t('product.buy_now', { defaultValue: 'Buy now' })}
@@ -1185,7 +1214,7 @@ export default function ProductPage() {
               <div className="flex w-1/3 items-end">
                 <button
                   type="button"
-                  onClick={() => void axiosAdding(true)}
+                  onClick={() => void handleBuyNow()}
                   className="w-full rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-2.5 text-xs font-bold text-white shadow-soft transition hover:shadow-hover"
                 >
                   {t('product.buy_now', { defaultValue: 'Buy now' })}
@@ -1317,6 +1346,8 @@ export default function ProductPage() {
           <Loader2 size={32} className="animate-spin text-white" />
         </div>
       )}
+
+      {isLoggingIn && <FullScreenLoader />}
 
       {commentOpen && (
         <div

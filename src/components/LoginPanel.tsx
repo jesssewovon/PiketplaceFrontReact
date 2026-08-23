@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { authenticateWithPi } from '../lib/pi'
-import { signIn } from '../lib/api'
-import { loginSuccess } from '../store/authSlice'
+import { loginWithPi } from '../lib/auth'
 import { useAppDispatch } from '../store/hooks'
 
 export default function LoginPanel() {
@@ -16,30 +14,7 @@ export default function LoginPanel() {
     setLoggingIn(true)
     setError(null)
     try {
-      const authResult = await authenticateWithPi()
-      const response = await signIn(authResult)
-
-      const token =
-        response.token ??
-        response.access_token ??
-        ((response.data as Record<string, unknown> | null | undefined)?.token as string | undefined)
-
-      if (!token) {
-        throw new Error(response.message ?? 'Backend authentication failed')
-      }
-
-      const user =
-        response.user ??
-        ((response.data as Record<string, unknown> | null | undefined)?.user as PiUser | undefined) ??
-        authResult.user ??
-        null
-
-      const permissions =
-        response.permissions ??
-        (response.data as Record<string, unknown> | null | undefined)?.permissions ??
-        null
-
-      dispatch(loginSuccess({ user, token, permissions }))
+      await loginWithPi(dispatch)
     } catch (err) {
       setError(
         err instanceof Error

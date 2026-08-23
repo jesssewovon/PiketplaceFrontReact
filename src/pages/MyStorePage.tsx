@@ -220,23 +220,25 @@ export default function MyStorePage() {
   }
 
   const loadStoreData = useCallback(async () => {
-    if (!user?.id) return
     try {
-      const data = await fetchMyStoreData(token ?? undefined, user.id)
+      const data = await fetchMyStoreData(token ?? undefined)
       setCategories(data.categories ?? [])
       setLastProducts(data.products ?? [])
     } catch {
       // keep current data when the request fails
     }
-  }, [token, user?.id])
+  }, [token])
 
   const loadMyProducts = useCallback(
     async (page: number, append: boolean) => {
-      if (!user?.id || lockRef.current) return
+      if (lockRef.current) {
+        setIsLoading(false)
+        return
+      }
       lockRef.current = true
       if (append) setIsLoadingMore(true)
       try {
-        const data = await fetchMyProducts(token ?? undefined, user.id, page)
+        const data = await fetchMyProducts(token ?? undefined, page)
         setApprobationActive(Boolean(data.approbation_active))
         if (append) {
           setProducts((prev) => {
@@ -263,14 +265,13 @@ export default function MyStorePage() {
 
   useEffect(() => {
     if (!isLoggedIn) return
-    setIsLoading(true)
     setActiveTab(hasShop ? 'home' : 'products')
     reinitPagination()
     if (hasShop) {
-      void loadStoreData().finally(() => setIsLoading(false))
-    } else {
-      void loadMyProducts(1, false)
+      void loadStoreData()
     }
+    setIsLoading(true)
+    void loadMyProducts(1, false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn])
 

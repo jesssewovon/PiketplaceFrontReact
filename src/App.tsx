@@ -1,4 +1,7 @@
-import { Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Route, Routes, useNavigate } from 'react-router-dom'
+import { useAppDispatch } from './store/hooks'
+import { initAuthFetch } from './lib/authFetch'
 import Layout from './components/Layout'
 import IndexPage from './pages/IndexPage'
 import ProductPage from './pages/ProductPage'
@@ -21,6 +24,13 @@ import MyAddressesPage from './pages/MyAddressesPage'
 import ComingSoonPage from './pages/ComingSoonPage'
 
 function App() {
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    initAuthFetch(dispatch, navigate)
+  }, [dispatch, navigate])
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
