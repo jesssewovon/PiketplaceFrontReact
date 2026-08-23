@@ -153,6 +153,7 @@ export default function ProfilPage() {
       const res = await updateProfil(token ?? undefined, formData)
       setIsSaving(false)
       if (res.status === true) {
+        console.log("res", res)
         showAlert('success', t('saved', { defaultValue: 'Saved' }))
       } else if (emailErrorsInclude(res, 'email_exists')) {
         showAlert('error', t('email_exists', { defaultValue: 'E-mail exists' }))

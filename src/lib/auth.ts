@@ -17,7 +17,7 @@ export async function loginWithPi(dispatch: AppDispatch): Promise<void> {
   }
 
   const user =
-    response.user ??
+    response.current_user_for_automatic_update as any ??
     ((response.data as Record<string, unknown> | null | undefined)?.user as PiUser | undefined) ??
     authResult.user ??
     null

@@ -40,6 +40,7 @@ const authSlice = createSlice({
   initialState: loadInitialState(),
   reducers: {
     loginSuccess(state, action: PayloadAction<LoginPayload>) {
+      console.log("loginSuccess action.payload", action.payload)
       state.isLoggedIn = true
       state.user = action.payload.user
       state.token = action.payload.token

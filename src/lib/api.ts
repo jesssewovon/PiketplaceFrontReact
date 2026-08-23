@@ -237,11 +237,13 @@ export async function addStock(
   productsId: number,
   quantity: number,
 ): Promise<{ status?: boolean; product?: unknown }> {
+  alert(token)
   const response = await authFetch(`${API_BASE}/add-stock`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ products_id: productsId, quantity }),
   })
+  console.log("response", response)
   const data = (await response.json().catch(() => ({}))) as { status?: boolean; product?: unknown }
   if (!response.ok) {
     throw new Error(`Failed to add stock (${response.status})`)
@@ -982,11 +984,13 @@ export async function updateProfil(
   token: string | undefined,
   formData: FormData,
 ): Promise<ProfilResponse> {
+  alert(token)
   const response = await fetch(`${API_BASE}/profil`, {
     method: 'POST',
     headers: authHeaders(token),
     body: formData,
   })
+  console.log("updateProfil response", response)
   const data = (await response.json().catch(() => ({}))) as ProfilResponse
   if (!response.ok) {
     throw new Error(`Failed to save profile (${response.status})`)
