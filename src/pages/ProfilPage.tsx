@@ -155,6 +155,13 @@ export default function ProfilPage() {
       const res = await updateProfil(token ?? undefined, formData)
       setIsSaving(false)
       if (res.status === true) {
+        const resAvatar =
+          typeof res.avatar === 'string'
+            ? res.avatar
+            : typeof (res.user as { avatar?: unknown } | undefined)?.avatar === 'string'
+              ? ((res.user as { avatar: string }).avatar)
+              : null
+        const newAvatar = resAvatar ?? (avatarFile ? avatarPreview : null)
         dispatch(
           updateUser({
             firstname,
@@ -164,6 +171,7 @@ export default function ProfilPage() {
             phone_number: phoneNumber,
             email,
             user_country: userCountry as PiUser['user_country'],
+            ...(newAvatar ? { avatar: newAvatar } : {}),
           }),
         )
         showAlert('success', t('saved', { defaultValue: 'Saved' }))
