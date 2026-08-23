@@ -4,7 +4,8 @@ import Swal from 'sweetalert2'
 import { Check, ChevronDown, Loader2, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { isEmail, sendEmailValidation, updateProfil } from '../lib/api'
-import { useAppSelector } from '../store/hooks'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { updateUser } from '../store/authSlice'
 import LoginPanel from '../components/LoginPanel'
 import countriesJson from '../locales/countries.json'
 
@@ -54,6 +55,7 @@ function emailErrorsInclude(res: { message?: unknown }, needle: string): boolean
 export default function ProfilPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const token = useAppSelector((state) => state.auth.token)
   const user = useAppSelector((state) => state.auth.user)
@@ -153,6 +155,17 @@ export default function ProfilPage() {
       const res = await updateProfil(token ?? undefined, formData)
       setIsSaving(false)
       if (res.status === true) {
+        dispatch(
+          updateUser({
+            firstname,
+            lastname,
+            shop_name: shopName,
+            phone_code: phoneCode,
+            phone_number: phoneNumber,
+            email,
+            user_country: userCountry as PiUser['user_country'],
+          }),
+        )
         showAlert('success', t('saved', { defaultValue: 'Saved' }))
       } else if (emailErrorsInclude(res, 'email_exists')) {
         showAlert('error', t('email_exists', { defaultValue: 'E-mail exists' }))
