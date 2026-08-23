@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next'
 import type { Product } from '../types'
 import { fetchProducts } from '../lib/api'
 import { productsCache, saveProductsScroll } from '../lib/productsStore'
+import { useAppDispatch } from '../store/hooks'
+import { setProductsLoaded } from '../store/uiSlice'
 import ProductCard from '../components/ProductCard'
 
 const SKELETON_HEIGHTS = [200, 280, 240, 320, 180, 300, 220, 260]
@@ -38,6 +40,7 @@ function matchesQuery(product: Product, query: string): boolean {
 
 export default function IndexPage() {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState<Product[]>(productsCache.products)
   const [page, setPage] = useState(productsCache.page)
@@ -83,6 +86,7 @@ export default function IndexPage() {
       setError(null)
       productsCache.error = null
       productsCache.loaded = true
+      dispatch(setProductsLoaded(true))
     } catch (err) {
       const message = err instanceof Error ? err.message : t('index_load_failed', { defaultValue: "Couldn't load products" })
       setError(message)
@@ -91,13 +95,16 @@ export default function IndexPage() {
       setLoadingMore(false)
       lockRef.current = false
     }
-  }, [t])
+  }, [dispatch, t])
 
   useEffect(() => {
-    if (productsCache.loaded) return
+    if (productsCache.loaded) {
+      dispatch(setProductsLoaded(true))
+      return
+    }
     setLoading(true)
     loadPage(1).finally(() => setLoading(false))
-  }, [loadPage])
+  }, [dispatch, loadPage])
 
   useEffect(() => {
     const sentinel = sentinelRef.current
