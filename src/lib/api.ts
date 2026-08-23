@@ -984,13 +984,11 @@ export async function updateProfil(
   token: string | undefined,
   formData: FormData,
 ): Promise<ProfilResponse> {
-  alert(token)
   const response = await fetch(`${API_BASE}/profil`, {
     method: 'POST',
     headers: authHeaders(token),
     body: formData,
   })
-  console.log("updateProfil response", response)
   const data = (await response.json().catch(() => ({}))) as ProfilResponse
   if (!response.ok) {
     throw new Error(`Failed to save profile (${response.status})`)
