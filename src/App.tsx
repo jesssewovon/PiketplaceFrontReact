@@ -6,6 +6,13 @@ import Layout from './components/Layout'
 import IndexPage from './pages/IndexPage'
 import ProductPage from './pages/ProductPage'
 import CartBuyNowPage from './pages/CartBuyNowPage'
+import ProfilPage from './pages/ProfilPage'
+import ReferralsPage from './pages/ReferralsPage'
+import NotificationsPage from './pages/NotificationsPage'
+import ShippingManagementPage from './pages/ShippingManagementPage'
+import AddShippingImagesPage from './pages/AddShippingImagesPage'
+import PayDeliveryPenaltiesPage from './pages/PayDeliveryPenaltiesPage'
+import MaintenancePage from './pages/MaintenancePage'
 import PublishPage from './pages/PublishPage'
 import MyAccountPage from './pages/MyAccountPage'
 import MiningPage from './pages/MiningPage'
@@ -38,6 +45,13 @@ function App() {
         <Route index element={<IndexPage />} />
         <Route path="product/:id" element={<ProductPage />} />
         <Route path="cart-buy-now/:id/:inFreeShippingZone?" element={<CartBuyNowPage />} />
+        <Route path="profil" element={<ProfilPage />} />
+        <Route path="referrals" element={<ReferralsPage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="shipping-management/line-order/:id" element={<ShippingManagementPage />} />
+        <Route path="add-update-shipping-images/:type" element={<AddShippingImagesPage />} />
+        <Route path="pay-delivery-penalities" element={<PayDeliveryPenaltiesPage />} />
+        <Route path="maintenance" element={<MaintenancePage />} />
         <Route path="publish" element={<PublishPage />} />
         <Route path="account" element={<MyAccountPage />} />
         <Route path="my-store" element={<MyStorePage />} />

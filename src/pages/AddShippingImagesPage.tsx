@@ -74,14 +74,17 @@ export default function AddShippingImagesPage() {
     }
   }, [isLoggedIn, token, lineOrderId, type])
 
-  const showAlert = (icon: 'success' | 'error', text: string) => {
-    void Swal.fire({
-      icon,
-      title: t('info', { defaultValue: 'Info' }),
-      text,
-      confirmButtonColor: '#ec11b5',
-    })
-  }
+  const showAlert = useCallback(
+    (icon: 'success' | 'error', text: string) => {
+      void Swal.fire({
+        icon,
+        title: t('info', { defaultValue: 'Info' }),
+        text,
+        confirmButtonColor: '#ec11b5',
+      })
+    },
+    [t],
+  )
 
   const uploadOneFile = useCallback(
     async (file: File) => {
@@ -101,7 +104,7 @@ export default function AddShippingImagesPage() {
         setPendingUploads((prev) => Math.max(0, prev - 1))
       }
     },
-    [t],
+    [showAlert, t],
   )
 
   const onChange = useCallback(
@@ -114,11 +117,8 @@ export default function AddShippingImagesPage() {
         return
       }
       const fileExist = incoming.some((file) =>
-        previews.some(
-          (p, i) =>
-            current[i] &&
-            file.name === p.src.split('/').pop() &&
-            false,
+        pickedFilesRef.current.some(
+          (picked) => picked.name === file.name && picked.size === file.size,
         ),
       )
       if (fileExist) {
@@ -149,10 +149,11 @@ export default function AddShippingImagesPage() {
         showAlert('error', t('max_files_reached', { defaultValue: '{nb} max files reached', nb: nbFilesAccepted }))
       }
       for (const file of incoming) {
+        pickedFilesRef.current.push({ name: file.name, size: file.size })
         void uploadOneFile(file)
       }
     },
-    [nbFilesAccepted, previews, t, uploadOneFile],
+    [nbFilesAccepted, showAlert, t, uploadOneFile],
   )
 
   const removeItem = (index: number) => {
@@ -160,6 +161,10 @@ export default function AddShippingImagesPage() {
     if (preview?.revoke) URL.revokeObjectURL(preview.src)
     setPreviews((prev) => prev.filter((_, i) => i !== index))
     setImages((prev) => prev.filter((_, i) => i !== index))
+    const existingCount = Math.max(0, imagesRef.current.length - pickedFilesRef.current.length)
+    if (index >= existingCount) {
+      pickedFilesRef.current.splice(index - existingCount, 1)
+    }
   }
 
   const save = async () => {

@@ -25,6 +25,11 @@ const PAGE_TITLES: Record<string, { key: string; fallback: string }> = {
   '/donation': { key: 'donation', fallback: 'Donation' },
   '/my-addresses': { key: 'side_menu.my_addresses', fallback: 'My Addresses' },
   '/mining': { key: 'side_menu.mining', fallback: 'Mining' },
+  '/profil': { key: 'side_menu.my_profile', fallback: 'My profile' },
+  '/referrals': { key: 'referral_team', fallback: 'Referral team' },
+  '/notifications': { key: 'notification.notifications', fallback: 'Notifications' },
+  '/pay-delivery-penalities': { key: 'penalties', fallback: 'Penalties' },
+  '/maintenance': { key: 'we_on_maintenance', fallback: 'We on maintenance' },
   '/account/mining': { key: 'side_menu.mining', fallback: 'Mining' },
   '/account/messages': { key: 'messages', fallback: 'Messages' },
   '/account/wallet': { key: 'wallet', fallback: 'Wallet' },
@@ -137,7 +142,15 @@ export default function Header() {
     )
   }
 
-  const pageTitle = PAGE_TITLES[location.pathname] ?? (location.pathname.startsWith('/product/') ? { key: 'product.details', fallback: 'Product' } : undefined)
+  const pageTitle =
+    PAGE_TITLES[location.pathname] ??
+    (location.pathname.startsWith('/product/')
+      ? { key: 'product.details', fallback: 'Product' }
+      : location.pathname.startsWith('/shipping-management/')
+        ? { key: 'shipping_confirmation', fallback: 'Shipping confirmation' }
+        : location.pathname.startsWith('/add-update-shipping-images/')
+          ? { key: 'add_shipping_images', fallback: 'Add shipping images' }
+          : undefined)
   const title = t(pageTitle?.key ?? 'app_name', { defaultValue: pageTitle?.fallback ?? 'Piketplace' })
   const isAccountPage = location.pathname === '/account'
   const showConnectedUser = isAccountPage && isLoggedIn && user

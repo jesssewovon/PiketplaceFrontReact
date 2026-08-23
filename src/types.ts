@@ -635,3 +635,25 @@ export interface DeliveryPenalitiesDataResponse {
   remaining_time?: number
   [key: string]: unknown
 }
+
+export interface AppNotification {
+  id?: number
+  is_new?: number
+  message: string
+  datas?: Record<string, unknown> | null
+  url?: { name?: string; params?: Record<string, unknown>; [key: string]: unknown } | null
+  created_at?: string
+  type?: number
+}
+
+export interface PaginatedNotifications {
+  current_page: number
+  data: AppNotification[]
+  last_page?: number
+  total?: number
+}
+
+export interface NotificationsResponse {
+  notifications?: PaginatedNotifications
+  [key: string]: unknown
+}

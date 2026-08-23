@@ -36,6 +36,7 @@ import type {
   FileStoreResponse,
   ProfilResponse,
   DeliveryPenalitiesDataResponse,
+  NotificationsResponse,
 } from '../types'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
@@ -881,6 +882,22 @@ export async function fetchReferredUsers(
   const data = (await response.json().catch(() => ({}))) as ReferredUsersResponse
   if (!response.ok) {
     throw new Error(`Failed to load referred users (${response.status})`)
+  }
+  return data
+}
+
+export async function fetchNotifications(
+  token: string | undefined,
+  userId: number | undefined,
+  page: number,
+): Promise<NotificationsResponse> {
+  const params = new URLSearchParams({ user_id: String(userId ?? ''), page: String(page) })
+  const response = await fetch(`${API_BASE}/notifications?${params.toString()}`, {
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as NotificationsResponse
+  if (!response.ok) {
+    throw new Error(`Failed to load notifications (${response.status})`)
   }
   return data
 }

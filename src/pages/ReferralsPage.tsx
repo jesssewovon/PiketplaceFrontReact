@@ -15,8 +15,6 @@ export default function ReferralsPage() {
   const [keyword, setKeyword] = useState('')
   const [users, setUsers] = useState<ReferredUser[]>([])
   const [totalFound, setTotalFound] = useState(0)
-  const [page, setPage] = useState(1)
-  const [lastPage, setLastPage] = useState(2)
   const [noMoreData, setNoMoreData] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -38,9 +36,7 @@ export default function ReferralsPage() {
         const list = pagination?.data ?? []
         setUsers((prev) => (targetPage === 1 ? list : [...prev, ...list]))
         setTotalFound(pagination?.total ?? list.length)
-        setLastPage(pagination?.last_page ?? 2)
         lastPageRef.current = pagination?.last_page ?? 2
-        setPage(targetPage)
         pageRef.current = targetPage
       } catch {
         if (targetPage === 1) setUsers([])
