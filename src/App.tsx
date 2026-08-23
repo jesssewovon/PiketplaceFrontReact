@@ -5,6 +5,7 @@ import { initAuthFetch } from './lib/authFetch'
 import Layout from './components/Layout'
 import IndexPage from './pages/IndexPage'
 import ProductPage from './pages/ProductPage'
+import CartBuyNowPage from './pages/CartBuyNowPage'
 import PublishPage from './pages/PublishPage'
 import MyAccountPage from './pages/MyAccountPage'
 import MiningPage from './pages/MiningPage'
@@ -36,6 +37,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<IndexPage />} />
         <Route path="product/:id" element={<ProductPage />} />
+        <Route path="cart-buy-now/:id/:inFreeShippingZone?" element={<CartBuyNowPage />} />
         <Route path="publish" element={<PublishPage />} />
         <Route path="account" element={<MyAccountPage />} />
         <Route path="my-store" element={<MyStorePage />} />

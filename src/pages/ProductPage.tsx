@@ -132,6 +132,7 @@ export default function ProductPage() {
   const [boostPeriods, setBoostPeriods] = useState<BoostPeriod[]>([])
   const [qty, setQty] = useState(1)
   const [email, setEmail] = useState('')
+  const [inFreeShippingZone] = useState('')
   const [commentOpen, setCommentOpen] = useState(false)
   const [commentText, setCommentText] = useState('')
   const [isCommenting, setIsCommenting] = useState(false)
@@ -348,32 +349,30 @@ export default function ProductPage() {
       showError(t('email_required_with_format', { defaultValue: 'E-mail required with email format' }))
       return
     }
-    let zone = ''
+    //No question if product is digital
     if (product.is_digital) {
-      zone = 'true'
-    } else if (isBuyNow) {
-      zone = 'false'
+      navigate(`/cart-buy-now/${product.id}/true`)
+      return
     }
+    if (isBuyNow) {
+      let inFreeShipParam = 'false'
+      if (product.free_shipping && inFreeShippingZone === 'yes') {
+        inFreeShipParam = 'true'
+      }
+      navigate(`/cart-buy-now/${product.id}/${inFreeShipParam}`)
+      return
+    }
+    let zone = ''
     try {
       const res = await addToCart(token ?? undefined, {
         products_id: product.id,
         username: user?.username,
-        quantity: isBuyNow ? qty : qty,
+        quantity: qty,
         in_free_shipping_zone: zone,
         in_paid_shipping_zone: 'no',
       })
       if (String(res.status) === 'success' || res.status === true) {
-        if (isBuyNow) {
-          await Swal.fire({
-            icon: 'success',
-            title: t('info', { defaultValue: 'Info' }),
-            text: t('cart.added_to_cart', { defaultValue: 'Added to cart' }),
-            confirmButtonColor: '#ec11b5',
-          })
-          navigate('/')
-        } else {
-          showSuccess(t('cart.added_to_cart', { defaultValue: 'Added to cart' }))
-        }
+        showSuccess(t('cart.added_to_cart', { defaultValue: 'Added to cart' }))
       } else {
         showError(
           typeof res.message === 'string'

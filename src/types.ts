@@ -48,6 +48,8 @@ export interface Product {
   last_boost?: ProductBoost | null
   phone_code?: string
   phone_number?: string
+  quantity_selling?: number
+  city?: string
 }
 
 export interface PaginatedProducts {
