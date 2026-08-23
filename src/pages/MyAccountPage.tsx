@@ -11,6 +11,7 @@ import {
   HeartHandshake,
   Rocket,
   UserCheck,
+  UserCircle,
   Globe,
   HandCoins,
   Pickaxe,
@@ -48,6 +49,7 @@ const groups: AccountGroup[] = [
     titleKey: 'side_menu.shop_orders',
     titleFallback: 'Shop & Orders',
     items: [
+      { to: '/profil', labelKey: 'side_menu.my_profile', labelFallback: 'My profile', icon: UserCircle },
       { to: '/my-store', labelKey: 'side_menu.my_store', labelFallback: 'My store', icon: Store },
       { to: '/my-sales', labelKey: 'side_menu.my_sales', labelFallback: 'My sales', icon: BadgeDollarSign },
       { to: '/my-orders', labelKey: 'side_menu.my_orders', labelFallback: 'My orders', icon: ShoppingBag },
