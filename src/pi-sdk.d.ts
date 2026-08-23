@@ -18,6 +18,19 @@ declare global {
       shopname?: string
       [key: string]: unknown
     } | null
+    firstname?: string | null
+    lastname?: string | null
+    shop_name?: string | null
+    phone_code?: string | null
+    phone_number?: string | null
+    user_country?: {
+      iso2?: string
+      name?: string
+      phone_code?: string
+      translations?: Record<string, string>
+      [key: string]: unknown
+    } | null
+    remainingTimeEmailVerification?: number
   }
 
   interface PiAuthResult {

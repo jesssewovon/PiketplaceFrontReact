@@ -28,6 +28,14 @@ import type {
   PiketplaceWalletPaymentResponse,
   SearchDeliveryCompaniesPayload,
   SearchDeliveryCompaniesResponse,
+  ReferredUsersResponse,
+  SettingsUserResponse,
+  LineOrderResponse,
+  SaveShippingImagesPayload,
+  SaveShippingImagesResponse,
+  FileStoreResponse,
+  ProfilResponse,
+  DeliveryPenalitiesDataResponse,
 } from '../types'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
@@ -857,6 +865,159 @@ export async function searchDeliveryCompanies(
   const data = (await response.json().catch(() => ({}))) as SearchDeliveryCompaniesResponse
   if (!response.ok) {
     throw new Error(`Failed to search delivery companies (${response.status})`)
+  }
+  return data
+}
+
+export async function fetchReferredUsers(
+  token: string | undefined,
+  keyword: string,
+  page: number,
+): Promise<ReferredUsersResponse> {
+  const params = new URLSearchParams({ keyword, page: String(page) })
+  const response = await fetch(`${API_BASE}/referred-users?${params.toString()}`, {
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as ReferredUsersResponse
+  if (!response.ok) {
+    throw new Error(`Failed to load referred users (${response.status})`)
+  }
+  return data
+}
+
+export async function getSettingsUser(token: string | undefined): Promise<SettingsUserResponse> {
+  const response = await fetch(`${API_BASE}/get-settings`, {
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as SettingsUserResponse
+  if (!response.ok) {
+    throw new Error(`Failed to load settings (${response.status})`)
+  }
+  return data
+}
+
+export async function fetchLineOrder(
+  token: string | undefined,
+  id: number,
+): Promise<LineOrderResponse> {
+  const response = await fetch(`${API_BASE}/line-orders-api/${id}`, {
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as LineOrderResponse
+  if (!response.ok) {
+    throw new Error(`Failed to load line order (${response.status})`)
+  }
+  return data
+}
+
+export async function updateLineOrderShippingStatus(
+  token: string | undefined,
+  lineOrderId: number,
+  type: string,
+): Promise<LineOrderResponse & { status?: boolean; message?: string }> {
+  const response = await fetch(`${API_BASE}/line-orders-api/${lineOrderId}`, {
+    method: 'PUT',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type }),
+  })
+  const data = (await response.json().catch(() => ({}))) as LineOrderResponse & {
+    status?: boolean
+    message?: string
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to update line order (${response.status})`)
+  }
+  return data
+}
+
+export async function saveShippingImages(
+  token: string | undefined,
+  payload: SaveShippingImagesPayload,
+): Promise<SaveShippingImagesResponse> {
+  const response = await fetch(`${API_BASE}/save-shipping-images`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as SaveShippingImagesResponse
+  if (!response.ok) {
+    throw new Error(`Failed to save shipping images (${response.status})`)
+  }
+  return data
+}
+
+export async function uploadFileToStore(file: File): Promise<FileStoreResponse> {
+  const formData = new FormData()
+  formData.append('selectedFiles', file, file.name)
+  const response = await fetch(`${API_BASE}/file-store`, {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+    body: formData,
+  })
+  const data = (await response.json().catch(() => ({}))) as FileStoreResponse
+  if (!response.ok) {
+    throw new Error(`Failed to upload file (${response.status})`)
+  }
+  return data
+}
+
+export async function updateProfil(
+  token: string | undefined,
+  formData: FormData,
+): Promise<ProfilResponse> {
+  const response = await fetch(`${API_BASE}/profil`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: formData,
+  })
+  const data = (await response.json().catch(() => ({}))) as ProfilResponse
+  if (!response.ok) {
+    throw new Error(`Failed to save profile (${response.status})`)
+  }
+  return data
+}
+
+export async function sendEmailValidation(
+  token: string | undefined,
+  email: string,
+): Promise<ProfilResponse> {
+  const response = await fetch(`${API_BASE}/send-email-validation`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+  const data = (await response.json().catch(() => ({}))) as ProfilResponse
+  if (!response.ok) {
+    throw new Error(`Failed to send email validation (${response.status})`)
+  }
+  return data
+}
+
+export async function fetchDeliveryPenalitiesData(
+  token: string | undefined,
+): Promise<DeliveryPenalitiesDataResponse> {
+  const response = await fetch(`${API_BASE}/get-delivery-penalities-data`, {
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as DeliveryPenalitiesDataResponse
+  if (!response.ok) {
+    throw new Error(`Failed to load penalties data (${response.status})`)
+  }
+  return data
+}
+
+export async function payDeliveryPenaltiesPiketplaceWallet(
+  token: string | undefined,
+  codePin: string,
+): Promise<DeliveryPenalitiesDataResponse> {
+  const response = await fetch(`${API_BASE}/get-delivery-penalities-data`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code_pin: codePin }),
+  })
+  const data = (await response.json().catch(() => ({}))) as DeliveryPenalitiesDataResponse
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to pay penalties (${response.status})`)
   }
   return data
 }

@@ -155,6 +155,23 @@ export interface LineOrder {
   cancellableDirectly?: boolean
   line_order_cancellation?: unknown | null
   statusPercentDisplay?: number
+  statusPercent?: number
+  statusColor?: string
+  hasDeliver?: boolean
+  deliver_pi_users_id?: number
+  seller_to_deliver_at?: string | boolean | null
+  deliver_from_seller_at?: string | boolean | null
+  deliver_to_buyer_at?: string | boolean | null
+  buyer_from_deliver_at?: string | boolean | null
+  seller_to_buyer_at?: string | boolean | null
+  buyer_from_seller_at?: string | boolean | null
+  shipping_images?: Record<string, ShippingImageLine[]> | null
+  hasAtLeastOneSellerToDeliverImage?: boolean
+  hasAtLeastOneDeliverFromSellerImage?: boolean
+  hasAtLeastOneDeliverToBuyerImage?: boolean
+  hasAtLeastOneBuyerFromDeliverImage?: boolean
+  hasAtLeastOneSellerToBuyerImage?: boolean
+  hasAtLeastOneBuyerFromSellerImage?: boolean
   shippingAddress?: string
   messages_count?: number
   noshipping?: boolean
@@ -166,6 +183,8 @@ export interface LineOrder {
   shipping_info?: ShippingInfo | null
   product?: LineOrderProduct
   order?: {
+    pi_users_id?: number
+    paid?: boolean
     user?: LineOrderUser
     ordered_at?: string
     shipping?: ShippingAddress
@@ -173,6 +192,11 @@ export interface LineOrder {
   total?: number
   fee?: number
   [key: string]: unknown
+}
+
+export interface ShippingImageLine {
+  id?: number
+  lien: string
 }
 
 export interface PaginatedLineOrders {
@@ -528,5 +552,86 @@ export interface SearchDeliveryCompaniesPayload {
 
 export interface SearchDeliveryCompaniesResponse {
   deliverCompanies?: DeliveryCompany[]
+  [key: string]: unknown
+}
+
+export interface ReferredUser {
+  id: number
+  username?: string
+  avatar?: string
+  locale?: string
+  user_country?: { iso2?: string } | null
+}
+
+export interface PaginatedReferredUsers {
+  current_page: number
+  data: ReferredUser[]
+  last_page?: number
+  total?: number
+}
+
+export interface ReferredUsersResponse {
+  referred_users?: PaginatedReferredUsers
+  [key: string]: unknown
+}
+
+export interface SettingsUserResponse {
+  settings_user?: Record<string, unknown>
+  [key: string]: unknown
+}
+
+export interface LineOrderResponse {
+  line_order?: LineOrder
+  [key: string]: unknown
+}
+
+export interface SaveShippingImagesPayload {
+  user_id?: number
+  line_order_id: number
+  images: string[]
+  type: string
+}
+
+export interface SaveShippingImagesResponse {
+  status?: boolean
+  message?: string
+  line_order?: LineOrder
+  [key: string]: unknown
+}
+
+export interface FileStoreResponse {
+  name?: string
+  [key: string]: unknown
+}
+
+export interface ProfilResponse {
+  status?: boolean
+  message?:
+    | {
+        email?: string[] | string
+        [key: string]: unknown
+      }
+    | string
+  [key: string]: unknown
+}
+
+export interface PenaltiesData {
+  delivery_penalties_limit?: number
+  penalties_amount_pi?: number
+  penalties_amount_piket?: number
+  delivery_penalties_payment_with_time_activate?: boolean
+  memo?: string
+  uniqueId?: string
+  userId?: number
+  [key: string]: unknown
+}
+
+export interface DeliveryPenalitiesDataResponse {
+  status?: boolean
+  message?: string
+  is_still_penalized?: boolean
+  penalities_data?: PenaltiesData
+  text?: string
+  remaining_time?: number
   [key: string]: unknown
 }
