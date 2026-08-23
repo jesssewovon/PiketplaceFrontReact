@@ -126,7 +126,7 @@ export default function Header() {
           </span>
 
           <Link
-            to="/account/messages"
+            to="/notifications"
             className={`relative ${iconButton}`}
             aria-label={t('header_notifications', { defaultValue: 'Notifications' })}
           >
@@ -196,7 +196,7 @@ export default function Header() {
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           <Link
-            to="/account/messages"
+            to="/notifications"
             className={`relative ${iconButton}`}
             aria-label={t('header_notifications', { defaultValue: 'Notifications' })}
           >
