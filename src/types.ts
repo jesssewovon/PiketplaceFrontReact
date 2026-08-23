@@ -421,3 +421,110 @@ export interface AddToCartPayload {
   in_free_shipping_zone: string
   in_paid_shipping_zone: string
 }
+
+export interface CartBuyNowResponse {
+  status?: boolean
+  message?: string
+  product?: Product
+  addresses?: ShippingAddress[]
+  handling_fee_percentage?: number
+  [key: string]: unknown
+}
+
+export interface BuyNowCartItem {
+  id: number
+  quantity: number
+  noshipping: boolean
+  final_free_shipping: boolean
+  final_paid_shipping: boolean
+  paid_shipping_info: BuyNowPaidShippingInfo | Record<string, never>
+  pre_order: boolean
+  purchase_referrer?: number
+}
+
+export interface BuyNowPaidShippingInfo {
+  selected?: ProductShippingZone
+  zone_list?: string
+  fee?: number
+  [key: string]: unknown
+}
+
+export interface ConfirmCartPayload {
+  user_id?: number
+  cart: BuyNowCartItem[]
+  address: ShippingAddress
+  price_usd_accepted: boolean | null
+  save_cart: boolean
+}
+
+export interface ConfirmCartResponse {
+  status?: boolean
+  message?: string
+  data_cart?: {
+    total?: number
+    cart?: BuyNowCartItem[]
+    price_usd_accepted?: boolean
+    pi_usdt_value?: number
+    handling_fee_percentage?: number
+    [key: string]: unknown
+  }
+  data?: {
+    product?: Product
+    [key: string]: unknown
+  }
+  [key: string]: unknown
+}
+
+export interface PiketplaceWalletPaymentPayload {
+  code_pin: string
+  isNewAddress: string | boolean
+  total: number
+  address: ShippingAddress
+  product: {
+    id: number
+    quantity: number
+    noshipping: boolean
+    direct_free_shipping: boolean
+    direct_paid_shipping: boolean
+  }
+  cart: BuyNowCartItem[]
+  isBuyNow: true
+  handling_fee_percentage: number
+}
+
+export interface PiketplaceWalletPaymentResponse {
+  status?: boolean
+  message?: string
+  data?: {
+    product?: Product
+    [key: string]: unknown
+  } | null
+  [key: string]: unknown
+}
+
+export interface DeliveryCompanyZoneLine {
+  city?: string
+  zone?: string
+  [key: string]: unknown
+}
+
+export interface DeliveryCompany {
+  name?: string
+  pickup_zones?: DeliveryCompanyZoneLine[]
+  drop_zones?: DeliveryCompanyZoneLine[]
+  [key: string]: unknown
+}
+
+export interface SearchDeliveryCompaniesPayload {
+  departure_country_code?: string
+  departure_city?: string
+  departure_address?: string
+  arrival_country_code?: string
+  arrival_city?: string
+  arrival_address?: string
+}
+
+export interface SearchDeliveryCompaniesResponse {
+  deliverCompanies?: DeliveryCompany[]
+  [key: string]: unknown
+}

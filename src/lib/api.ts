@@ -21,6 +21,13 @@ import type {
   BoostResponse,
   AddToCartPayload,
   Product,
+  CartBuyNowResponse,
+  ConfirmCartPayload,
+  ConfirmCartResponse,
+  PiketplaceWalletPaymentPayload,
+  PiketplaceWalletPaymentResponse,
+  SearchDeliveryCompaniesPayload,
+  SearchDeliveryCompaniesResponse,
 } from '../types'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
@@ -786,6 +793,70 @@ export async function setAddressAsDefault(
   const data = (await response.json().catch(() => ({}))) as AddressesResponse
   if (!response.ok) {
     throw new Error(`Failed to set default address (${response.status})`)
+  }
+  return data
+}
+
+export async function fetchCartBuyNowData(
+  token: string | undefined,
+  productId: number,
+): Promise<CartBuyNowResponse> {
+  const response = await fetch(`${API_BASE}/products/${productId}`, {
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as CartBuyNowResponse
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to load product (${response.status})`)
+  }
+  syncSettingsFromPayload(data)
+  syncAttributesFromPayload(data)
+  return data
+}
+
+export async function confirmCart(
+  token: string | undefined,
+  payload: ConfirmCartPayload,
+): Promise<ConfirmCartResponse> {
+  const response = await fetch(`${API_BASE}/confirm-cart`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as ConfirmCartResponse
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to confirm cart (${response.status})`)
+  }
+  return data
+}
+
+export async function payPiketplaceWallet(
+  token: string | undefined,
+  uid: string | undefined,
+  payload: PiketplaceWalletPaymentPayload,
+): Promise<PiketplaceWalletPaymentResponse> {
+  const response = await fetch(`${API_BASE}/payment-piketplace-wallet`, {
+    method: 'POST',
+    headers: { ...authHeaders(token, uid), 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as PiketplaceWalletPaymentResponse
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to pay with Piketplace wallet (${response.status})`)
+  }
+  return data
+}
+
+export async function searchDeliveryCompanies(
+  payload: SearchDeliveryCompaniesPayload,
+): Promise<SearchDeliveryCompaniesResponse> {
+  const response = await fetch(`${API_BASE}/search-for-delivery-companies`, {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as SearchDeliveryCompaniesResponse
+  if (!response.ok) {
+    throw new Error(`Failed to search delivery companies (${response.status})`)
   }
   return data
 }
