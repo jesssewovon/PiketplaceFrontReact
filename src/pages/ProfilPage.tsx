@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { Check, ChevronDown, Loader2, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { isEmail, sendEmailValidation, updateProfil } from '../lib/api'
+import { sendEmailValidation, updateProfil } from '../lib/api'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { updateUser } from '../store/authSlice'
 import LoginPanel from '../components/LoginPanel'
@@ -360,7 +360,7 @@ export default function ProfilPage() {
             </em>
             <button
               type="button"
-              disabled={notificationEmail === (user?.email ?? '') || !isEmail(notificationEmail)}
+              disabled={notificationEmail === (user?.email ?? '')}
               onClick={() => void updateEmail()}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3 text-xs font-black uppercase text-white shadow-soft transition hover:shadow-hover disabled:opacity-60"
             >

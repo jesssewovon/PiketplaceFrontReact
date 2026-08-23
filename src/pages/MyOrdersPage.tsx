@@ -349,6 +349,13 @@ export default function MyOrdersPage() {
           text: t('cancelled_successfully', { defaultValue: 'Cancelled successfully' }),
           confirmButtonColor: '#ec11b5',
         })
+      } else if (res.message) {
+        void Swal.fire({
+          icon: 'error',
+          title: t('info', { defaultValue: 'Info' }),
+          text: t(String(res.message), { defaultValue: String(res.message) }),
+          confirmButtonColor: '#ec11b5',
+        })
       }
     } catch {
       void Swal.fire({
@@ -373,6 +380,13 @@ export default function MyOrdersPage() {
           icon: 'success',
           title: t('info', { defaultValue: 'Info' }),
           text: t('cancelled_successfully', { defaultValue: 'Cancelled successfully' }),
+          confirmButtonColor: '#ec11b5',
+        })
+      } else if (res.message) {
+        void Swal.fire({
+          icon: 'error',
+          title: t('info', { defaultValue: 'Info' }),
+          text: t(String(res.message), { defaultValue: String(res.message) }),
           confirmButtonColor: '#ec11b5',
         })
       }

@@ -27,7 +27,7 @@ export default function CancellationReasonsModal({
       if (prev.some((item) => item.code === reason.code)) {
         return prev.filter((item) => item.code !== reason.code)
       }
-      return [...prev, reason]
+      return [reason]
     })
   }
 

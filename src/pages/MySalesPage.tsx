@@ -337,7 +337,14 @@ export default function MySalesPage() {
         void Swal.fire({
           icon: 'success',
           title: t('info', { defaultValue: 'Info' }),
-          text: t('cancelled_successfully', { defaultValue: 'Cancelled successfully' }),
+          text: t('saved', { defaultValue: 'Saved' }),
+          confirmButtonColor: '#ec11b5',
+        })
+      } else {
+        void Swal.fire({
+          icon: 'error',
+          title: t('info', { defaultValue: 'Info' }),
+          text: t('an_error_occured', { defaultValue: 'An error occurred' }),
           confirmButtonColor: '#ec11b5',
         })
       }
@@ -380,7 +387,14 @@ export default function MySalesPage() {
         void Swal.fire({
           icon: 'success',
           title: t('info', { defaultValue: 'Info' }),
-          text: t('cancelled_successfully', { defaultValue: 'Cancelled successfully' }),
+          text: t('saved', { defaultValue: 'Saved' }),
+          confirmButtonColor: '#ec11b5',
+        })
+      } else {
+        void Swal.fire({
+          icon: 'error',
+          title: t('info', { defaultValue: 'Info' }),
+          text: t('an_error_occured', { defaultValue: 'An error occurred' }),
           confirmButtonColor: '#ec11b5',
         })
       }
