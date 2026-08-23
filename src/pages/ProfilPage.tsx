@@ -59,6 +59,18 @@ export default function ProfilPage() {
   const user = useAppSelector((state) => state.auth.user)
   const storedCountries = useAppSelector((state) => state.attributes.countries)
   const countries = useMemo(() => buildCountryOptions(storedCountries), [storedCountries])
+  const phoneCodeOptions = useMemo(() => {
+    const seen = new Set<string>()
+    const list: CountryOption[] = []
+    for (const c of [...countriesJson].sort((a, b) => Number(a.phone_code) - Number(b.phone_code))) {
+      if (!c.iso2 || !c.phone_code) continue
+      const code = c.phone_code.startsWith('+') ? c.phone_code : `+${c.phone_code}`
+      if (seen.has(code)) continue
+      seen.add(code)
+      list.push([code, `${code} (${c.iso2})`])
+    }
+    return list
+  }, [])
 
   const [firstname, setFirstname] = useState('')
   const [lastname, setLastname] = useState('')
@@ -106,14 +118,6 @@ export default function ProfilPage() {
     const option = countries.find(([c]) => c === code)
     if (!option) return
     setUserCountry({ iso2: code, name: option[1] })
-  }
-
-  const selectPhoneCodeCountry = (code: string) => {
-    const jsonCountry = countriesJson.find((c) => c.iso2 === code)
-    if (!jsonCountry?.phone_code) return
-    setPhoneCode(
-      jsonCountry.phone_code.startsWith('+') ? jsonCountry.phone_code : `+${jsonCountry.phone_code}`,
-    )
   }
 
   const sanitizePhone = (raw: string): string => {
@@ -287,13 +291,13 @@ export default function ProfilPage() {
                 <div className="relative w-[30%]">
                   <select
                     value=""
-                    onChange={(e) => selectPhoneCodeCountry(e.target.value)}
+                    onChange={(e) => setPhoneCode(e.target.value)}
                     className={`${inputClass} appearance-none pr-9`}
                   >
                     <option value="">{phoneCode || 'Code'}</option>
-                    {countries.map(([code]) => (
+                    {phoneCodeOptions.map(([code, label]) => (
                       <option key={code} value={code}>
-                        {code}
+                        {label}
                       </option>
                     ))}
                   </select>
