@@ -1,3 +1,5 @@
+import type { CancellationReason } from '../types'
+
 export function formatAmount(value: number | string | undefined | null, currency?: string): string {
   const num = Number(value)
   if (!Number.isFinite(num)) return '0'
@@ -14,4 +16,22 @@ export function formatDate(value?: string | null): string {
     month: 'short',
     year: 'numeric',
   })
+}
+
+export function normalizeCancellationReasons(
+  raw:
+    | CancellationReason[]
+    | Record<string, CancellationReason[]>
+    | null
+    | undefined,
+  locale: string,
+): CancellationReason[] {
+  if (Array.isArray(raw)) return raw
+  if (raw && typeof raw === 'object') {
+    const byLocale = raw as Record<string, CancellationReason[] | undefined>
+    const lang = locale.split('-')[0]
+    const list = byLocale[lang] ?? byLocale.en ?? Object.values(byLocale).find((v) => Array.isArray(v))
+    return Array.isArray(list) ? list : []
+  }
+  return []
 }

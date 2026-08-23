@@ -5,7 +5,7 @@ import { Loader2, MapPin, MessageSquare, Search, Truck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { CancellationReason, LineOrder } from '../types'
 import { fetchSales, updateLineOrder } from '../lib/api'
-import { formatAmount, formatDate } from '../lib/format'
+import { formatAmount, formatDate, normalizeCancellationReasons } from '../lib/format'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
 import CancellationReasonsModal from '../components/CancellationReasonsModal'
@@ -212,7 +212,7 @@ function SaleCard({
 }
 
 export default function MySalesPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const token = useAppSelector((state) => state.auth.token)
   const user = useAppSelector((state) => state.auth.user)
@@ -260,7 +260,9 @@ export default function MySalesPage() {
         }
         setCurrentPage(page)
         setLastPage(pagination.last_page ?? page)
-        setCancellationReasons(res.seller_order_cancellation_reasons ?? [])
+        setCancellationReasons(
+          normalizeCancellationReasons(res.seller_order_cancellation_reasons, i18n.language),
+        )
         setError(null)
       } catch (err) {
         setError(err instanceof Error ? err.message : t('an_error_occured', { defaultValue: 'An error occurred' }))
@@ -270,7 +272,7 @@ export default function MySalesPage() {
         setIsLoadingMore(false)
       }
     },
-    [token, user?.id, shipped, t],
+    [token, user?.id, shipped, i18n.language, t],
   )
 
   useEffect(() => {

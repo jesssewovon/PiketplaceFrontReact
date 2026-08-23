@@ -74,7 +74,7 @@ export default function CancellationReasonsModal({
         </div>
 
         <div className="max-h-[50vh] space-y-1 overflow-y-auto">
-          {reasons.map((reason) => {
+          {(Array.isArray(reasons) ? reasons : []).map((reason) => {
             const checked = selected.some((item) => item.code === reason.code)
             return (
               <label

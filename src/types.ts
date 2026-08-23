@@ -209,12 +209,12 @@ export interface PaginatedLineOrders {
 
 export interface SalesResponse {
   sales_line_orders: PaginatedLineOrders
-  seller_order_cancellation_reasons?: CancellationReason[]
+  seller_order_cancellation_reasons?: CancellationReason[] | Record<string, CancellationReason[]>
 }
 
 export interface OrdersResponse {
   line_orders: PaginatedLineOrders
-  buyer_order_cancellation_reasons?: CancellationReason[]
+  buyer_order_cancellation_reasons?: CancellationReason[] | Record<string, CancellationReason[]>
 }
 
 export interface PaginatedMyProducts {
