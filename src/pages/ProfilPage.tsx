@@ -156,8 +156,8 @@ export default function ProfilPage() {
       setIsSaving(false)
       if (res.status === true) {
         const resAvatar =
-          typeof res.avatar === 'string'
-            ? res.avatar
+          typeof (res.current_user_for_automatic_update as any).avatar === 'string'
+            ? (res.current_user_for_automatic_update as any).avatar
             : typeof (res.user as { avatar?: unknown } | undefined)?.avatar === 'string'
               ? ((res.user as { avatar: string }).avatar)
               : null
