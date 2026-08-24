@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
@@ -19,6 +20,15 @@ export default function CancellationReasonsModal({
 }: CancellationReasonsModalProps) {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<CancellationReason[]>([])
+
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open])
 
   if (!open) return null
 
@@ -46,7 +56,7 @@ export default function CancellationReasonsModal({
     onClose()
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
       onClick={() => {
@@ -101,6 +111,7 @@ export default function CancellationReasonsModal({
           {t('continue', { defaultValue: 'Continue' })}
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
