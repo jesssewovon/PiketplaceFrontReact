@@ -77,13 +77,6 @@ const groups: AccountGroup[] = [
     ],
   },
   {
-    titleKey: 'side_menu.administration',
-    titleFallback: 'Administration',
-    items: [
-      { to: '/administration', labelKey: 'admin.administration', labelFallback: 'Administration', icon: Settings },
-    ],
-  },
-  {
     titleKey: 'side_menu.others',
     titleFallback: 'Others',
     items: [
@@ -144,8 +137,7 @@ export default function MyAccountPage() {
   )
   const visibleGroups = groups.filter(
     (group) =>
-      (group.titleKey !== 'side_menu.country_representative' || isPartner) &&
-      (group.titleKey !== 'side_menu.administration' || isAdmin),
+      group.titleKey !== 'side_menu.country_representative' || isPartner,
   )
 
   const currentLang = i18n.language.split('-')[0]
@@ -187,6 +179,20 @@ export default function MyAccountPage() {
   return (
     <div className="relative animate-fade-in">
       <section className="px-4 py-6">
+        {isAdmin && (
+          <Link
+            to="/administration"
+            className="mb-5 flex items-center justify-center rounded-2xl border border-black/5 bg-white p-[2px] shadow-soft transition-all duration-300 hover:shadow-hover"
+          >
+            <span className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-white px-4 py-3 text-sm font-bold">
+              <Settings size={18} strokeWidth={2.2} className="text-primary" />
+              <span className="text-ink">
+                {t('admin.administration', { defaultValue: 'Administration' })}
+              </span>
+            </span>
+          </Link>
+        )}
+
         {walletUrl && (
           <a
             href={walletUrl}

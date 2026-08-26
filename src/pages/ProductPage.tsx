@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import {
@@ -1348,13 +1349,13 @@ export default function ProductPage() {
 
       {isLoggingIn && <FullScreenLoader />}
 
-      {commentOpen && (
+      {commentOpen && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
           onClick={() => setCommentOpen(false)}
         >
           <div
-            className="fixed left-1/2 top-1/2 w-full max-w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-5 pb-8"
+            className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">
@@ -1395,7 +1396,8 @@ export default function ProductPage() {
               {t('send', { defaultValue: 'Send' })}
             </button>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
 
       {walletOpen && (

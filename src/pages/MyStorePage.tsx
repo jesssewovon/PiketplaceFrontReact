@@ -669,10 +669,16 @@ export default function MyStorePage() {
 
   const renderProducts = (): ReactNode => (
     <div className="mt-4">
-      {error && products.length === 0 && (
+      {isLoading && products.length === 0 ? (
+        <div className="flex flex-col items-center gap-2 py-12">
+          <Loader2 size={26} className="animate-spin text-primary" />
+          <span className="text-xs font-medium text-ink-soft">
+            {t('loading', { defaultValue: 'loading' })}
+          </span>
+        </div>
+      ) : error && products.length === 0 ? (
         <p className="rounded-xl bg-red-50 p-3 text-center text-xs font-medium text-red-600">{error}</p>
-      )}
-      {products.length > 0 ? (
+      ) : products.length > 0 ? (
         <div className="columns-2 gap-3 [column-fill:_balance]">
           {products.map((product) => (
             <div key={product.id} className="mb-3 break-inside-avoid">
