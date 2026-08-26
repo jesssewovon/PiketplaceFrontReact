@@ -17,6 +17,7 @@ import PublishPage from './pages/PublishPage'
 import MyAccountPage from './pages/MyAccountPage'
 import MiningPage from './pages/MiningPage'
 import MyStorePage from './pages/MyStorePage'
+import StorePage from './pages/StorePage'
 import MySalesPage from './pages/MySalesPage'
 import MyOrdersPage from './pages/MyOrdersPage'
 import MessageContactsPage from './pages/MessageContactsPage'
@@ -62,6 +63,7 @@ function App() {
         <Route path="publish" element={<PublishPage />} />
         <Route path="account" element={<MyAccountPage />} />
         <Route path="my-store" element={<MyStorePage />} />
+        <Route path="store/:shopUserId" element={<StorePage />} />
         <Route path="my-sales" element={<MySalesPage />} />
         <Route path="my-orders" element={<MyOrdersPage />} />
         <Route path="message-contacts" element={<MessageContactsPage />} />

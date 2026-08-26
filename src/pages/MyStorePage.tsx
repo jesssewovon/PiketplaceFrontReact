@@ -264,7 +264,7 @@ export default function MyStorePage() {
   const [approbationActive, setApprobationActive] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [noMoreData, setNoMoreData] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -670,11 +670,9 @@ export default function MyStorePage() {
   const renderProducts = (): ReactNode => (
     <div className="mt-4">
       {isLoading && products.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 py-12">
-          <Loader2 size={26} className="animate-spin text-primary" />
-          <span className="text-xs font-medium text-ink-soft">
-            {t('loading', { defaultValue: 'loading' })}
-          </span>
+        <div className="flex flex-col items-center gap-2 py-12 text-xs text-ink-soft">
+          <img src="/site_images/index_loader.gif" alt="" className="w-[70px] rounded-sm" />
+          {t('loading', { defaultValue: 'loading' })}
         </div>
       ) : error && products.length === 0 ? (
         <p className="rounded-xl bg-red-50 p-3 text-center text-xs font-medium text-red-600">{error}</p>

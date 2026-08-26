@@ -45,6 +45,7 @@ import type {
   PreOrdersResponse,
   AdminWithdrawalsResponse,
   WalletBalanceDetailsData,
+  UserShopResponse,
 } from '../types'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
@@ -133,7 +134,36 @@ export async function fetchProducts(page = 1): Promise<PaginatedResponse> {
   return data
 }
 
-export async function createProduct(payload: NewProductPayload): Promise<unknown> {
+export async function getUserShop(
+  shopUserId: number,
+  token?: string,
+): Promise<UserShopResponse> {
+  const response = await fetch(`${API_BASE}/get-user-shop/${shopUserId}`, {
+    headers: { Accept: 'application/json', ...authHeaders(token) },
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load shop (${response.status})`)
+  }
+  const json = (await response.json()) as { data: UserShopResponse }
+  return json.data
+}
+
+export async function fetchShopProducts(
+  page: number,
+  shopUserId: number,
+): Promise<PaginatedResponse> {
+  const response = await fetch(
+    `${API_BASE}/index-loading?page=${page}&status=validated&shop_user_id=${shopUserId}`,
+    { headers: { Accept: 'application/json' } },
+  )
+  if (!response.ok) {
+    throw new Error(`Failed to load products (${response.status})`)
+  }
+  const data = (await response.json()) as PaginatedResponse
+  syncSettingsFromPayload(data)
+  syncAttributesFromPayload(data)
+  return data
+}(payload: NewProductPayload): Promise<unknown> {
   const formData = new FormData()
   formData.append('category_selected_id', payload.category_selected_id)
   formData.append('libelle', payload.libelle)

@@ -89,6 +89,22 @@ export interface StoreCategory {
   products: Product[]
 }
 
+export interface UserShop {
+  id: number
+  username: string
+  firstname?: string
+  avatar?: string
+  hasShop: boolean
+  shop_name?: string
+  shop_name_show?: string
+  products?: Product[]
+}
+
+export interface UserShopResponse {
+  userShop: UserShop
+  categories: StoreCategory[]
+}
+
 export interface StoreData {
   categories: StoreCategory[]
   products: Product[]
