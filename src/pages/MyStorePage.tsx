@@ -1,19 +1,23 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import { Eye, EyeOff, Loader2, PackagePlus, Plus, X, ImageOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2, PackagePlus, Plus, Trash2, X, ImageOff, ShieldCheck, ShieldAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import type { MyProduct, Product, StoreCategory } from '../types'
+import type { CancellationReason, MyProduct, Product, StoreCategory } from '../types'
 import {
   fetchMyStoreData,
   fetchMyProducts,
   updateProductVisibility,
   addStock,
   submitForReview,
+  deleteProduct,
+  validateProduct,
 } from '../lib/api'
 import { formatAmount } from '../lib/format'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
 import LazyImage from '../components/LazyImage'
+import CancellationReasonsModal from '../components/CancellationReasonsModal'
 
 interface StoreTab {
   key: 'home' | 'products'
@@ -30,7 +34,7 @@ function ProductThumb({ product, round }: { product: Product; round?: boolean })
   const { t } = useTranslation()
   const image = product.imageFirst ?? product.images?.[0]?.lien
   return (
-    <div className="w-[104px] shrink-0">
+    <Link to={`/product/${product.id}`} className="w-[104px] shrink-0">
       <div
         className={`flex h-[104px] w-[104px] items-center justify-center overflow-hidden bg-slate-100 ${
           round ? 'rounded-full border border-gray-200' : 'rounded-xl'
@@ -57,24 +61,30 @@ function ProductThumb({ product, round }: { product: Product; round?: boolean })
         </p>
       )}
       <span className="sr-only">{t('products', { defaultValue: 'Products' })}</span>
-    </div>
+    </Link>
   )
 }
 
 interface OwnerCardProps {
   product: MyProduct
   approbationActive: boolean
+  canValidate: boolean
   onToggleVisibility: (product: MyProduct) => void
   onAddStock: (product: MyProduct) => void
   onSubmitForReview: (product: MyProduct) => void
+  onDeleteProduct: (product: MyProduct) => void
+  onValidateProduct: (product: MyProduct, status: 'validated' | 'rejected') => void
 }
 
 function OwnerProductCard({
   product,
   approbationActive,
+  canValidate,
   onToggleVisibility,
   onAddStock,
   onSubmitForReview,
+  onDeleteProduct,
+  onValidateProduct,
 }: OwnerCardProps) {
   const { t } = useTranslation()
   const image = product.imageFirst ?? product.images?.[0]?.lien
@@ -85,52 +95,56 @@ function OwnerProductCard({
 
   return (
     <div className="break-inside-avoid overflow-hidden rounded-2xl border border-black/5 bg-white shadow-soft">
-      <div className="relative">
-        <div className="h-40">
-          {image ? (
-            <LazyImage
-              src={image}
-              alt={product.libelle}
-              variant="fill"
-              className="h-full w-full"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center bg-slate-100">
-              <ImageOff size={26} className="text-slate-300" />
-            </div>
-          )}
-        </div>
-        {product.isBoosted && (
-          <span className="absolute right-0 top-2 rounded-l bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
-            {t('boost', { defaultValue: 'Boost' })}
-          </span>
-        )}
-        {!product.isBoosted && product.isNew && (
-          <span className="absolute right-0 top-2 rounded-l bg-yellow-300 px-2 py-0.5 text-[10px] font-bold text-black">
-            {t('new', { defaultValue: 'New' })}
-          </span>
-        )}
-      </div>
-
-      <div className="p-2.5">
-        <p className="break-libelle-product text-sm font-semibold text-gray">
-          {product.libelle}
-        </p>
-        <div className="mt-1.5 flex items-center gap-1.5">
-          <span className="text-sm font-semibold text-primary">
-            {formatAmount(product.price, product.currency)}
-          </span>
-          {product.is_digital ? (
-            <span className="rounded bg-red-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
-              {t('digital', { defaultValue: 'Digital' })}
+      <Link to={`/product/${product.id}`} className="block">
+        <div className="relative">
+          <div className="h-40">
+            {image ? (
+              <LazyImage
+                src={image}
+                alt={product.libelle}
+                variant="fill"
+                className="h-full w-full"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center bg-slate-100">
+                <ImageOff size={26} className="text-slate-300" />
+              </div>
+            )}
+          </div>
+          {product.isBoosted && (
+            <span className="absolute right-0 top-2 rounded-l bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+              {t('boost', { defaultValue: 'Boost' })}
             </span>
-          ) : (
-            <span className="rounded bg-red-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
-              {t('instock', { quantity: product.quantity ?? 0, defaultValue: '{quantity} in stock' })}
+          )}
+          {!product.isBoosted && product.isNew && (
+            <span className="absolute right-0 top-2 rounded-l bg-yellow-300 px-2 py-0.5 text-[10px] font-bold text-black">
+              {t('new', { defaultValue: 'New' })}
             </span>
           )}
         </div>
 
+        <div className="p-2.5">
+          <p className="break-libelle-product text-sm font-semibold text-gray">
+            {product.libelle}
+          </p>
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <span className="text-sm font-semibold text-primary">
+              {formatAmount(product.price, product.currency)}
+            </span>
+            {product.is_digital ? (
+              <span className="rounded bg-red-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                {t('digital', { defaultValue: 'Digital' })}
+              </span>
+            ) : (
+              <span className="rounded bg-red-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                {t('instock', { quantity: product.quantity ?? 0, defaultValue: '{quantity} in stock' })}
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+
+      <div className="px-2.5 pb-2.5">
         {outOfStock && (
           <button
             type="button"
@@ -172,7 +186,7 @@ function OwnerProductCard({
           </div>
         )}
 
-        <div className="mt-2 flex justify-center gap-4 border-t border-black/5 pt-2">
+        <div className="mt-2 flex items-center justify-center gap-3 border-t border-black/5 pt-2">
           <button
             type="button"
             onClick={() => onToggleVisibility(product)}
@@ -181,6 +195,34 @@ function OwnerProductCard({
           >
             {product.visible ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
+          <button
+            type="button"
+            onClick={() => onDeleteProduct(product)}
+            className="flex items-center gap-1 text-xs font-semibold text-red-500 transition hover:text-red-700"
+            aria-label={t('delete', { defaultValue: 'Delete' })}
+          >
+            <Trash2 size={16} />
+          </button>
+          {canValidate && approbationActive && product.status !== 'validated' && (
+            <button
+              type="button"
+              onClick={() => onValidateProduct(product, 'validated')}
+              className="flex items-center gap-1 text-xs font-semibold text-green-600 transition hover:text-green-800"
+              aria-label={t('validate', { defaultValue: 'Validate' })}
+            >
+              <ShieldCheck size={16} />
+            </button>
+          )}
+          {canValidate && approbationActive && product.status !== 'rejected' && (
+            <button
+              type="button"
+              onClick={() => onValidateProduct(product, 'rejected')}
+              className="flex items-center gap-1 text-xs font-semibold text-red-600 transition hover:text-red-800"
+              aria-label={t('reject', { defaultValue: 'Reject' })}
+            >
+              <ShieldAlert size={16} />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -188,10 +230,21 @@ function OwnerProductCard({
 }
 
 export default function MyStorePage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const token = useAppSelector((state) => state.auth.token)
   const user = useAppSelector((state) => state.auth.user)
+  const permissions = useAppSelector((state) => state.auth.permissions)
+  const canValidate = Array.isArray(permissions) && permissions.includes('validate_products')
+  const reasonsAttr = useAppSelector((state) => state.attributes.reasons)
+
+  const locale = i18n.language.split('-')[0]
+  const reasons: CancellationReason[] = useMemo(() => {
+    if (!reasonsAttr || typeof reasonsAttr !== 'object') return []
+    const byLocale = reasonsAttr as Record<string, CancellationReason[] | undefined>
+    const list = byLocale[locale] ?? byLocale.en ?? []
+    return Array.isArray(list) ? list : []
+  }, [reasonsAttr, locale])
 
   const [activeTab, setActiveTab] = useState<'home' | 'products'>('home')
   const [categories, setCategories] = useState<StoreCategory[]>([])
@@ -207,6 +260,8 @@ export default function MyStorePage() {
   const [stockOpen, setStockOpen] = useState(false)
   const [stockQuantity, setStockQuantity] = useState('')
   const [stockSaving, setStockSaving] = useState(false)
+  const [reasonsOpen, setReasonsOpen] = useState(false)
+  const pendingValidationRef = useRef<{ product: MyProduct; status: 'validated' | 'rejected' } | null>(null)
   const stockProductRef = useRef<MyProduct | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
@@ -452,6 +507,91 @@ export default function MyStorePage() {
     }
   }
 
+  const handleDeleteProduct = async (product: MyProduct) => {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: t('confirmation.you_sure', { defaultValue: 'Are you sure?' }),
+      text: t('you_going_delete_product', { defaultValue: 'You are going to delete this product' }),
+      showCancelButton: true,
+      confirmButtonText: t('yes', { defaultValue: 'Yes' }),
+      cancelButtonText: t('no', { defaultValue: 'No' }),
+      confirmButtonColor: '#ec11b5',
+    })
+    if (!result.isConfirmed) return
+    try {
+      const res = await deleteProduct(token ?? undefined, product.id)
+      if (res.status === true) {
+        setProducts((prev) => prev.filter((p) => p.id !== product.id))
+        void Swal.fire({
+          icon: 'success',
+          title: t('info', { defaultValue: 'Info' }),
+          text: t('product_deleted', { defaultValue: 'Product deleted' }),
+          confirmButtonColor: '#ec11b5',
+        })
+      } else {
+        void Swal.fire({
+          icon: 'error',
+          title: t('info', { defaultValue: 'Info' }),
+          text: res.message ?? t('an_error_occured', { defaultValue: 'An error occurred' }),
+          confirmButtonColor: '#ec11b5',
+        })
+      }
+    } catch {
+      void Swal.fire({
+        icon: 'error',
+        title: t('info', { defaultValue: 'Info' }),
+        text: t('an_error_occured', { defaultValue: 'An error occurred' }),
+        confirmButtonColor: '#ec11b5',
+      })
+    }
+  }
+
+  const handleValidateProduct = (product: MyProduct, status: 'validated' | 'rejected') => {
+    if (status === 'validated') {
+      void performValidation(product.id, status, [])
+    } else {
+      pendingValidationRef.current = { product, status }
+      setReasonsOpen(true)
+    }
+  }
+
+  const performValidation = async (productId: number, status: string, reasons: string[]) => {
+    try {
+      const res = await validateProduct(token ?? undefined, productId, status, reasons)
+      if (res.status === true) {
+        setProducts((prev) => prev.filter((p) => p.id !== productId))
+        void Swal.fire({
+          icon: 'success',
+          title: t('info', { defaultValue: 'Info' }),
+          text: t('saved', { defaultValue: 'Saved' }),
+          confirmButtonColor: '#ec11b5',
+        })
+      } else {
+        void Swal.fire({
+          icon: 'error',
+          title: t('info', { defaultValue: 'Info' }),
+          text: res.message ?? t('an_error_occured', { defaultValue: 'An error occurred' }),
+          confirmButtonColor: '#ec11b5',
+        })
+      }
+    } catch {
+      void Swal.fire({
+        icon: 'error',
+        title: t('info', { defaultValue: 'Info' }),
+        text: t('an_error_occured', { defaultValue: 'An error occurred' }),
+        confirmButtonColor: '#ec11b5',
+      })
+    }
+  }
+
+  const submitValidationReasons = (reasons: CancellationReason[]) => {
+    if (!pendingValidationRef.current) return
+    const selected = reasons.filter((r) => r.selected).map((r) => r.code)
+    if (selected.length === 0) return
+    void performValidation(pendingValidationRef.current.product.id, pendingValidationRef.current.status, selected)
+    pendingValidationRef.current = null
+  }
+
   const renderHome = (): ReactNode => (
     <div className="mt-4 space-y-5">
       {lastProducts.length > 0 && (
@@ -510,9 +650,12 @@ export default function MyStorePage() {
               <OwnerProductCard
                 product={product}
                 approbationActive={approbationActive}
+                canValidate={canValidate}
                 onToggleVisibility={(p) => void toggleVisibility(p)}
                 onAddStock={openAddStock}
                 onSubmitForReview={(p) => void handleSubmitForReview(p)}
+                onDeleteProduct={(p) => void handleDeleteProduct(p)}
+                onValidateProduct={handleValidateProduct}
               />
             </div>
           ))}
@@ -636,6 +779,16 @@ export default function MyStorePage() {
           </div>
         </div>
       )}
+
+      <CancellationReasonsModal
+        open={reasonsOpen}
+        reasons={reasons}
+        onClose={() => {
+          setReasonsOpen(false)
+          pendingValidationRef.current = null
+        }}
+        onSubmit={submitValidationReasons}
+      />
     </div>
   )
 }
