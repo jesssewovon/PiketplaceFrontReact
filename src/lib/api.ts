@@ -163,7 +163,9 @@ export async function fetchShopProducts(
   syncSettingsFromPayload(data)
   syncAttributesFromPayload(data)
   return data
-}(payload: NewProductPayload): Promise<unknown> {
+}
+
+export async function createProduct(payload: NewProductPayload): Promise<unknown> {
   const formData = new FormData()
   formData.append('category_selected_id', payload.category_selected_id)
   formData.append('libelle', payload.libelle)
