@@ -225,7 +225,7 @@ export async function updateProductVisibility(
   const response = await authFetch(`${API_BASE}/update-product-visibility`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
-    body: JSON.stringify({ product_id: productId, force_hide: forceHide }),
+    body: JSON.stringify({ products_id: productId, force_hide: forceHide }),
   })
   const data = (await response.json().catch(() => ({}))) as {
     status?: boolean

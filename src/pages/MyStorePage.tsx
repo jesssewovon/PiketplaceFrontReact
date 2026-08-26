@@ -294,6 +294,7 @@ export default function MyStorePage() {
       if (append) setIsLoadingMore(true)
       try {
         const data = await fetchMyProducts(token ?? undefined, page)
+        console.log('loadMyProducts: data:', data)
         setApprobationActive(Boolean(data.approbation_active))
         if (append) {
           setProducts((prev) => {
@@ -586,7 +587,8 @@ export default function MyStorePage() {
 
   const submitValidationReasons = (reasons: CancellationReason[]) => {
     if (!pendingValidationRef.current) return
-    const selected = reasons.filter((r) => r.selected).map((r) => r.code)
+    const selected = reasons.map((r) => r.code)
+    console.log("Before", selected, reasons)
     if (selected.length === 0) return
     void performValidation(pendingValidationRef.current.product.id, pendingValidationRef.current.status, selected)
     pendingValidationRef.current = null

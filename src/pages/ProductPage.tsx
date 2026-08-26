@@ -1097,6 +1097,7 @@ export default function ProductPage() {
 
         <div className="-mt-4 w-full rounded-2xl border border-black/5 bg-white p-5 shadow-soft">
           <div className="flex items-center justify-between gap-2">
+            <h1 className="mt-2 text-xl font-semibold leading-6 text-ink">{product.libelle}</h1>
             <Link
               to={`/store/${product.user?.id ?? ''}`}
               className="flex min-w-0 items-center gap-1.5 text-xs font-medium text-ink"
@@ -1112,7 +1113,6 @@ export default function ProductPage() {
               {product.country_code && <span>{flagEmoji(product.country_code)}</span>}
             </Link>
           </div>
-          <h1 className="mt-2 text-xl font-semibold leading-6 text-ink">{product.libelle}</h1>
           <p className="mt-2 text-sm opacity-70">{product.description}</p>
 
           <div className="mt-4 flex items-center justify-between">
