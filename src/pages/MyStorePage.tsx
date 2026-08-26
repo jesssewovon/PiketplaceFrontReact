@@ -69,6 +69,7 @@ interface OwnerCardProps {
   product: MyProduct
   approbationActive: boolean
   canValidate: boolean
+  actingIds: Set<number>
   onToggleVisibility: (product: MyProduct) => void
   onAddStock: (product: MyProduct) => void
   onSubmitForReview: (product: MyProduct) => void
@@ -80,6 +81,7 @@ function OwnerProductCard({
   product,
   approbationActive,
   canValidate,
+  actingIds,
   onToggleVisibility,
   onAddStock,
   onSubmitForReview,
@@ -92,6 +94,7 @@ function OwnerProductCard({
   const rejected =
     product.last_validation?.status === 'rejected' &&
     (product.last_validation.reasons?.length ?? 0) > 0
+  const isActing = actingIds.has(product.id)
 
   return (
     <div className="break-inside-avoid overflow-hidden rounded-2xl border border-black/5 bg-white shadow-soft">
@@ -149,9 +152,10 @@ function OwnerProductCard({
           <button
             type="button"
             onClick={() => onAddStock(product)}
-            className="mt-2 flex w-full items-center justify-center gap-1 rounded-lg bg-black px-2 py-1 text-[11px] font-bold text-white transition hover:opacity-90"
+            disabled={isActing}
+            className="mt-2 flex w-full items-center justify-center gap-1 rounded-lg bg-black px-2 py-1 text-[11px] font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <Plus size={12} />
+            {isActing ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
             {t('add_stock', { defaultValue: 'Add stock' })}
           </button>
         )}
@@ -178,8 +182,10 @@ function OwnerProductCard({
               <button
                 type="button"
                 onClick={() => onSubmitForReview(product)}
-                className="mt-2 w-full rounded-lg bg-primary px-2 py-1 text-[11px] font-bold text-white transition hover:bg-primary-dark"
+                disabled={isActing}
+                className="mt-2 flex w-full items-center justify-center gap-1 rounded-lg bg-primary px-2 py-1 text-[11px] font-bold text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
               >
+                {isActing && <Loader2 size={11} className="animate-spin" />}
                 {t('submit_for_review', { defaultValue: 'Submit for review' })}
               </button>
             )}
@@ -190,15 +196,17 @@ function OwnerProductCard({
           <button
             type="button"
             onClick={() => onToggleVisibility(product)}
-            className="flex items-center gap-1 text-xs font-semibold text-ink transition hover:text-primary"
+            disabled={isActing}
+            className="flex items-center gap-1 text-xs font-semibold text-ink transition hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t('display', { defaultValue: 'Display' })}
           >
-            {product.visible ? <Eye size={16} /> : <EyeOff size={16} />}
+            {isActing ? <Loader2 size={16} className="animate-spin" /> : product.visible ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
           <button
             type="button"
             onClick={() => onDeleteProduct(product)}
-            className="flex items-center gap-1 text-xs font-semibold text-red-500 transition hover:text-red-700"
+            disabled={isActing}
+            className="flex items-center gap-1 text-xs font-semibold text-red-500 transition hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t('delete', { defaultValue: 'Delete' })}
           >
             <Trash2 size={16} />
@@ -207,7 +215,8 @@ function OwnerProductCard({
             <button
               type="button"
               onClick={() => onValidateProduct(product, 'validated')}
-              className="flex items-center gap-1 text-xs font-semibold text-green-600 transition hover:text-green-800"
+              disabled={isActing}
+              className="flex items-center gap-1 text-xs font-semibold text-green-600 transition hover:text-green-800 disabled:cursor-not-allowed disabled:opacity-40"
               aria-label={t('validate', { defaultValue: 'Validate' })}
             >
               <ShieldCheck size={16} />
@@ -217,7 +226,8 @@ function OwnerProductCard({
             <button
               type="button"
               onClick={() => onValidateProduct(product, 'rejected')}
-              className="flex items-center gap-1 text-xs font-semibold text-red-600 transition hover:text-red-800"
+              disabled={isActing}
+              className="flex items-center gap-1 text-xs font-semibold text-red-600 transition hover:text-red-800 disabled:cursor-not-allowed disabled:opacity-40"
               aria-label={t('reject', { defaultValue: 'Reject' })}
             >
               <ShieldAlert size={16} />
@@ -261,10 +271,14 @@ export default function MyStorePage() {
   const [stockQuantity, setStockQuantity] = useState('')
   const [stockSaving, setStockSaving] = useState(false)
   const [reasonsOpen, setReasonsOpen] = useState(false)
+  const [actingIds, setActingIds] = useState<Set<number>>(new Set())
   const pendingValidationRef = useRef<{ product: MyProduct; status: 'validated' | 'rejected' } | null>(null)
   const stockProductRef = useRef<MyProduct | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
+
+  const startActing = (id: number) => setActingIds((prev) => new Set(prev).add(id))
+  const stopActing = (id: number) => setActingIds((prev) => { const next = new Set(prev); next.delete(id); return next })
 
   const hasShop = Boolean(user?.hasShop)
 
@@ -381,6 +395,7 @@ export default function MyStorePage() {
     })
     if (!result.isConfirmed) return
 
+    startActing(product.id)
     try {
       const res = await updateProductVisibility(token ?? undefined, product.id)
       if (res.status === true) {
@@ -429,6 +444,8 @@ export default function MyStorePage() {
         text: t('an_error_occured', { defaultValue: 'An error occurred' }),
         confirmButtonColor: '#ec11b5',
       })
+    } finally {
+      stopActing(product.id)
     }
   }
 
@@ -488,6 +505,7 @@ export default function MyStorePage() {
       confirmButtonColor: '#ec11b5',
     })
     if (!result.isConfirmed) return
+    startActing(product.id)
     try {
       const res = await submitForReview(token ?? undefined, product.id)
       void Swal.fire({
@@ -505,6 +523,8 @@ export default function MyStorePage() {
         text: t('an_error_occured', { defaultValue: 'An error occurred' }),
         confirmButtonColor: '#ec11b5',
       })
+    } finally {
+      stopActing(product.id)
     }
   }
 
@@ -519,6 +539,7 @@ export default function MyStorePage() {
       confirmButtonColor: '#ec11b5',
     })
     if (!result.isConfirmed) return
+    startActing(product.id)
     try {
       const res = await deleteProduct(token ?? undefined, product.id)
       if (res.status === true) {
@@ -544,6 +565,8 @@ export default function MyStorePage() {
         text: t('an_error_occured', { defaultValue: 'An error occurred' }),
         confirmButtonColor: '#ec11b5',
       })
+    } finally {
+      stopActing(product.id)
     }
   }
 
@@ -557,6 +580,7 @@ export default function MyStorePage() {
   }
 
   const performValidation = async (productId: number, status: string, reasons: string[]) => {
+    startActing(productId)
     try {
       const res = await validateProduct(token ?? undefined, productId, status, reasons)
       if (res.status === true) {
@@ -582,6 +606,8 @@ export default function MyStorePage() {
         text: t('an_error_occured', { defaultValue: 'An error occurred' }),
         confirmButtonColor: '#ec11b5',
       })
+    } finally {
+      stopActing(productId)
     }
   }
 
@@ -653,6 +679,7 @@ export default function MyStorePage() {
                 product={product}
                 approbationActive={approbationActive}
                 canValidate={canValidate}
+                actingIds={actingIds}
                 onToggleVisibility={(p) => void toggleVisibility(p)}
                 onAddStock={openAddStock}
                 onSubmitForReview={(p) => void handleSubmitForReview(p)}
