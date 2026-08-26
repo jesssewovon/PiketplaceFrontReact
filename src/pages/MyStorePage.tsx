@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { Eye, EyeOff, Loader2, PackagePlus, Plus, Trash2, X, ImageOff, ShieldCheck, ShieldAlert } from 'lucide-react'
@@ -754,13 +755,13 @@ export default function MyStorePage() {
 
       {!isLoggedIn && <LoginPanel />}
 
-      {stockOpen && (
+      {stockOpen && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
           onClick={() => setStockOpen(false)}
         >
           <div
-            className="w-full max-w-[430px] rounded-3xl bg-white p-5 pb-8"
+            className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">
@@ -806,7 +807,8 @@ export default function MyStorePage() {
               )}
             </button>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
 
       <CancellationReasonsModal
