@@ -318,6 +318,7 @@ export interface RewardAdsResponse {
 export interface PartnerAccountInfo {
   id?: number
   country_code?: string
+  pi_username?: string
   balance?: number
   wallet_address?: string | null
   [key: string]: unknown
@@ -335,6 +336,24 @@ export interface PartnerAccountResponse {
 
 export interface PartnerOrdersResponse {
   orders?: PaginatedLineOrders
+}
+
+export interface PartnerPaymentItem {
+  partnerAccount?: PartnerAccountInfo | null
+  last_month_amount?: number
+  [key: string]: unknown
+}
+
+export interface PartnersPaymentResponse {
+  data?: PartnerPaymentItem[]
+  status?: boolean
+  message?: string
+}
+
+export interface PartnerWalletAddressResponse {
+  status?: boolean
+  partnerAccount?: PartnerAccountInfo | null
+  message?: string
 }
 
 export interface DonationResponse {

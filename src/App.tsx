@@ -25,8 +25,10 @@ import FaqPage from './pages/FaqPage'
 import PartnershipsPage from './pages/PartnershipsPage'
 import UnlockBoostPage from './pages/UnlockBoostPage'
 import PiAdBoostHistoriesPage from './pages/PiAdBoostHistoriesPage'
-import PartnerAccountPage from './pages/PartnerAccountPage'
-import PartnerOrdersPage from './pages/PartnerOrdersPage'
+import PartnerAccountPage from './pages/Representative/PartnerAccountPage'
+import PartnerOrdersPage from './pages/Representative/PartnerOrdersPage'
+import PartnersPaymentPage from './pages/Representative/PartnersPaymentPage'
+import PartnerWalletAddressPage from './pages/Representative/PartnerWalletAddressPage'
 import DonationPage from './pages/DonationPage'
 import MyAddressesPage from './pages/MyAddressesPage'
 import ComingSoonPage from './pages/ComingSoonPage'
@@ -70,6 +72,8 @@ function App() {
         <Route path="pi-ad-boost-histories" element={<PiAdBoostHistoriesPage />} />
         <Route path="partner-account" element={<PartnerAccountPage />} />
         <Route path="partner-orders" element={<PartnerOrdersPage />} />
+        <Route path="partners-payment" element={<PartnersPaymentPage />} />
+        <Route path="partner-wallet-address" element={<PartnerWalletAddressPage />} />
         <Route path="donation" element={<DonationPage />} />
         <Route path="my-addresses" element={<MyAddressesPage />} />
         <Route path="mining" element={<MiningPage />} />

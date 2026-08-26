@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Loader2, ShoppingBag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import type { PartnerAccountInfo, PartnerAccountResponse } from '../types'
-import { fetchPartnerAccount } from '../lib/api'
-import { flagEmoji } from '../lib/geo'
-import countries from '../locales/countries.json'
-import { useAppSelector } from '../store/hooks'
-import LoginPanel from '../components/LoginPanel'
+import type { PartnerAccountInfo, PartnerAccountResponse } from '../../types'
+import { fetchPartnerAccount } from '../../lib/api'
+import { flagEmoji } from '../../lib/geo'
+import countries from '../../locales/countries.json'
+import { useAppSelector } from '../../store/hooks'
+import LoginPanel from '../../components/LoginPanel'
 
 function splitAmount(value: number | undefined): { whole: string; fraction: string } {
   const [whole, fraction] = (value ?? 0).toString().split('.')

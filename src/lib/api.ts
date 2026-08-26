@@ -13,6 +13,8 @@ import type {
   RewardAdsResponse,
   PartnerAccountResponse,
   PartnerOrdersResponse,
+  PartnersPaymentResponse,
+  PartnerWalletAddressResponse,
   DonationResponse,
   PaymentVerifierResponse,
   AddressesResponse,
@@ -697,6 +699,58 @@ export async function fetchPartnerOrders(
   syncSettingsFromPayload(data)
   syncAttributesFromPayload(data)
   return data
+}
+
+export async function fetchPartnersPayment(
+  token: string | undefined,
+): Promise<PartnersPaymentResponse> {
+  const response = await authFetch(`${API_BASE}/partner/get-partners-payments-amount`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load partners payment (${response.status})`)
+  }
+  return (await response.json()) as PartnersPaymentResponse
+}
+
+export async function proceedPartnersPayment(
+  token: string | undefined,
+): Promise<PartnersPaymentResponse> {
+  const response = await authFetch(`${API_BASE}/partner/get-partners-payments-amount`, {
+    method: 'POST',
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to proceed partners payment (${response.status})`)
+  }
+  return (await response.json()) as PartnersPaymentResponse
+}
+
+export async function fetchPartnerWalletAddress(
+  token: string | undefined,
+): Promise<PartnerWalletAddressResponse> {
+  const response = await authFetch(`${API_BASE}/partner/set-partner-wallet-address`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load partner wallet address (${response.status})`)
+  }
+  return (await response.json()) as PartnerWalletAddressResponse
+}
+
+export async function savePartnerWalletAddress(
+  token: string | undefined,
+  walletAddress: string,
+): Promise<PartnerWalletAddressResponse> {
+  const response = await authFetch(`${API_BASE}/partner/set-partner-wallet-address`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ wallet_address: walletAddress }),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to save partner wallet address (${response.status})`)
+  }
+  return (await response.json()) as PartnerWalletAddressResponse
 }
 
 export async function donateToPiketplaceWallet(

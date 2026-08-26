@@ -73,6 +73,7 @@ const groups: AccountGroup[] = [
     items: [
       { to: '/partner-account', labelKey: 'side_menu.representative_account', labelFallback: "Representative's account", icon: UserCheck },
       { to: '/partner-orders', labelKey: 'side_menu.orders_verification', labelFallback: 'Verification of orders', icon: Globe },
+      { to: '/partner-wallet-address', labelKey: 'side_menu.partner_wallet_address', labelFallback: 'Wallet address', icon: Wallet },
     ],
   },
   {
