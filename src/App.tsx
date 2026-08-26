@@ -30,6 +30,7 @@ import PartnerOrdersPage from './pages/PartnerOrdersPage'
 import DonationPage from './pages/DonationPage'
 import MyAddressesPage from './pages/MyAddressesPage'
 import ComingSoonPage from './pages/ComingSoonPage'
+import AdministrationPage from './pages/AdministrationPage'
 
 function App() {
   const dispatch = useAppDispatch()
@@ -68,6 +69,7 @@ function App() {
         <Route path="donation" element={<DonationPage />} />
         <Route path="my-addresses" element={<MyAddressesPage />} />
         <Route path="mining" element={<MiningPage />} />
+        <Route path="administration" element={<AdministrationPage />} />
         <Route path="*" element={<ComingSoonPage />} />
       </Route>
     </Routes>

@@ -21,6 +21,7 @@ import {
   LogOut,
   X,
   Check,
+  Settings,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED_LANGUAGES } from '../i18n'

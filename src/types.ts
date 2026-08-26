@@ -657,3 +657,31 @@ export interface NotificationsResponse {
   notifications?: PaginatedNotifications
   [key: string]: unknown
 }
+
+export interface AdministrationData {
+  total_token_amount?: number
+  nb_rewarded_ads?: number
+  nb_settings?: number
+  nb_daily_active_users?: number
+  nb_users?: number
+  nb_products_pending?: number
+  nb_products?: number
+  nb_orders_shipped?: number
+  nb_orders?: number
+  nb_failed_payments?: number
+  nb_contacts?: number
+  nb_withdrawal?: number
+  [key: string]: unknown
+}
+
+export interface AdminSettingItem {
+  name?: string
+  value?: unknown
+  [key: string]: unknown
+}
+
+export interface AdministrationResponse {
+  data?: AdministrationData
+  settings?: AdminSettingItem[]
+  [key: string]: unknown
+}

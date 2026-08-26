@@ -37,6 +37,7 @@ import type {
   ProfilResponse,
   DeliveryPenalitiesDataResponse,
   NotificationsResponse,
+  AdministrationResponse,
 } from '../types'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
@@ -902,6 +903,19 @@ export async function fetchNotifications(
     throw new Error(`Failed to load notifications (${response.status})`)
   }
   return data
+}
+
+export async function fetchAdministration(
+  token: string | undefined,
+  uid: string,
+): Promise<AdministrationResponse> {
+  const response = await authFetch(`${API_BASE}/piketplace?uid=${encodeURIComponent(uid)}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load administration data (${response.status})`)
+  }
+  return (await response.json()) as AdministrationResponse
 }
 
 export async function getSettingsUser(token: string | undefined): Promise<SettingsUserResponse> {
