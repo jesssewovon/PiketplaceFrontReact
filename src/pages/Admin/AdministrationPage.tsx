@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Loader2, RefreshCw, Settings, Users, Package, ShoppingBag, CreditCard, PhoneCall, Wallet, Store, DollarSign } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { fetchAdministration } from '../lib/api'
-import type { AdministrationData, AdminSettingItem } from '../types'
-import { useAppSelector } from '../store/hooks'
-import LoginPanel from '../components/LoginPanel'
+import { fetchAdministration } from '../../lib/api'
+import type { AdministrationData, AdminSettingItem } from '../../types'
+import { useAppSelector } from '../../store/hooks'
+import LoginPanel from '../../components/LoginPanel'
 
 function AdminLink({ to, icon: Icon, label, count }: { to: string; icon: typeof Settings; label: string; count?: string | number }) {
   return (

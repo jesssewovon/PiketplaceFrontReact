@@ -76,6 +76,13 @@ const groups: AccountGroup[] = [
     ],
   },
   {
+    titleKey: 'side_menu.administration',
+    titleFallback: 'Administration',
+    items: [
+      { to: '/administration', labelKey: 'admin.administration', labelFallback: 'Administration', icon: Settings },
+    ],
+  },
+  {
     titleKey: 'side_menu.others',
     titleFallback: 'Others',
     items: [
@@ -127,13 +134,17 @@ export default function MyAccountPage() {
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const token = useAppSelector((state) => state.auth.token)
   const isPartner = useAppSelector((state) => state.auth.user?.is_partner === true)
+  const permissions = useAppSelector((state) => state.auth.permissions)
+  const isAdmin = Array.isArray(permissions) && permissions.includes('browse_settings')
   const walletUrl = useAppSelector((state) =>
     typeof state.settings.settings?.piket_wallet_frontend_url === 'string'
       ? (state.settings.settings.piket_wallet_frontend_url as string)
       : null
   )
   const visibleGroups = groups.filter(
-    (group) => group.titleKey !== 'side_menu.country_representative' || isPartner
+    (group) =>
+      (group.titleKey !== 'side_menu.country_representative' || isPartner) &&
+      (group.titleKey !== 'side_menu.administration' || isAdmin),
   )
 
   const currentLang = i18n.language.split('-')[0]

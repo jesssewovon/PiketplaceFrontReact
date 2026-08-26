@@ -685,3 +685,110 @@ export interface AdministrationResponse {
   settings?: AdminSettingItem[]
   [key: string]: unknown
 }
+
+export interface WithdrawalRequest {
+  id: number
+  real_amount?: number
+  public_key?: string
+  created_at?: string
+  confirmed_at?: string | null
+  wallet?: {
+    user?: {
+      username?: string
+      [key: string]: unknown
+    }
+    [key: string]: unknown
+  }
+  [key: string]: unknown
+}
+
+export interface AdminWithdrawalsResponse {
+  withdrawal_requests?: PaginatedWithdrawals
+  withdrawal_reasons?: CancellationReason[] | Record<string, CancellationReason[]>
+  [key: string]: unknown
+}
+
+export interface PaginatedWithdrawals {
+  current_page: number
+  data: WithdrawalRequest[]
+  last_page?: number
+  next_page_url?: string | null
+  total?: number
+}
+
+export interface WalletBalanceDetailsData {
+  pending_withdraw?: number
+  pending_withdraw_fee?: number
+  user_wallet?: {
+    balance?: number
+    [key: string]: unknown
+  }
+  pi_wallet?: {
+    realBalance?: number
+    [key: string]: unknown
+  }
+  total_credit?: number
+  total_debit?: number
+  equilibre?: number
+  transactions?: WalletTransaction[]
+  [key: string]: unknown
+}
+
+export interface WalletTransaction {
+  type_transaction?: string
+  real_amount?: number
+  created_at?: string
+  details?: Record<string, unknown>
+  wallet?: {
+    user?: {
+      username?: string
+      [key: string]: unknown
+    }
+    [key: string]: unknown
+  }
+  [key: string]: unknown
+}
+
+export interface AdminProductsResponse {
+  products?: PaginatedMyProducts
+  approbation_active?: boolean
+  reasons?: CancellationReason[] | Record<string, CancellationReason[]>
+  [key: string]: unknown
+}
+
+export interface AdminOrdersResponse {
+  line_orders?: PaginatedLineOrders
+  [key: string]: unknown
+}
+
+export interface PreOrderItem {
+  id: number
+  quantity?: number
+  total?: number
+  fee?: number
+  totalFee?: number
+  canPayOnPreorder?: boolean
+  created_at?: string
+  pre_order_address?: ShippingAddress
+  applications_count?: number
+  product?: {
+    id?: number
+    libelle?: string
+    price_str?: string
+    imageFirst?: string
+    user?: LineOrderUser
+    [key: string]: unknown
+  }
+  [key: string]: unknown
+}
+
+export interface PreOrdersResponse {
+  pre_orders?: {
+    current_page: number
+    data: PreOrderItem[]
+    last_page?: number
+    next_page_url?: string | null
+    total?: number
+  }
+  [key: string]: unknown
+}

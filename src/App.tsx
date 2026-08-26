@@ -30,7 +30,11 @@ import PartnerOrdersPage from './pages/PartnerOrdersPage'
 import DonationPage from './pages/DonationPage'
 import MyAddressesPage from './pages/MyAddressesPage'
 import ComingSoonPage from './pages/ComingSoonPage'
-import AdministrationPage from './pages/AdministrationPage'
+import AdministrationPage from './pages/Admin/AdministrationPage'
+import AdminProductsPage from './pages/Admin/AdminProductsPage'
+import AdminOrdersPage from './pages/Admin/AdminOrdersPage'
+import AdminWithdrawalsPage from './pages/Admin/AdminWithdrawalsPage'
+import WalletBalanceDetailsPage from './pages/Admin/WalletBalanceDetailsPage'
 
 function App() {
   const dispatch = useAppDispatch()
@@ -70,6 +74,10 @@ function App() {
         <Route path="my-addresses" element={<MyAddressesPage />} />
         <Route path="mining" element={<MiningPage />} />
         <Route path="administration" element={<AdministrationPage />} />
+        <Route path="admin-products" element={<AdminProductsPage />} />
+        <Route path="admin-orders" element={<AdminOrdersPage />} />
+        <Route path="admin-withdrawals" element={<AdminWithdrawalsPage />} />
+        <Route path="wallet-balance-details/:username" element={<WalletBalanceDetailsPage />} />
         <Route path="*" element={<ComingSoonPage />} />
       </Route>
     </Routes>

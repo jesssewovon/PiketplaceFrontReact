@@ -38,6 +38,11 @@ import type {
   DeliveryPenalitiesDataResponse,
   NotificationsResponse,
   AdministrationResponse,
+  AdminProductsResponse,
+  AdminOrdersResponse,
+  PreOrdersResponse,
+  AdminWithdrawalsResponse,
+  WalletBalanceDetailsData,
 } from '../types'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
@@ -916,6 +921,156 @@ export async function fetchAdministration(
     throw new Error(`Failed to load administration data (${response.status})`)
   }
   return (await response.json()) as AdministrationResponse
+}
+
+export interface AdminProductsQuery {
+  page?: number
+  search?: string
+  connected_user_id?: number
+  status?: string
+}
+
+export async function fetchAdminProducts(
+  token: string | undefined,
+  params: AdminProductsQuery,
+): Promise<AdminProductsResponse> {
+  const search = new URLSearchParams()
+  search.set('request_from', 'admin')
+  if (params.page) search.set('page', String(params.page))
+  if (params.search) search.set('search', params.search)
+  if (params.connected_user_id) search.set('connected_user_id', String(params.connected_user_id))
+  if (params.status) search.set('status', params.status)
+  const response = await authFetch(`${API_BASE}/product-reloading?${search.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load admin products (${response.status})`)
+  }
+  return (await response.json()) as AdminProductsResponse
+}
+
+export async function fetchAdminOrders(
+  token: string | undefined,
+  page = 1,
+): Promise<AdminOrdersResponse> {
+  const response = await authFetch(`${API_BASE}/admin-orders?page=${page}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load admin orders (${response.status})`)
+  }
+  return (await response.json()) as AdminOrdersResponse
+}
+
+export async function fetchAdminShippedOrders(
+  token: string | undefined,
+  page = 1,
+): Promise<AdminOrdersResponse> {
+  const response = await authFetch(`${API_BASE}/admin-shipped-line-orders?page=${page}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load admin shipped orders (${response.status})`)
+  }
+  return (await response.json()) as AdminOrdersResponse
+}
+
+export async function fetchPreOrders(
+  token: string | undefined,
+  page = 1,
+): Promise<PreOrdersResponse> {
+  const response = await authFetch(`${API_BASE}/pre-orders?page=${page}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load pre orders (${response.status})`)
+  }
+  return (await response.json()) as PreOrdersResponse
+}
+
+export interface AdminWithdrawalsQuery {
+  page?: number
+  search?: string
+  status?: string
+}
+
+export async function fetchAdminWithdrawals(
+  token: string | undefined,
+  params: AdminWithdrawalsQuery,
+): Promise<AdminWithdrawalsResponse> {
+  const search = new URLSearchParams()
+  if (params.page) search.set('page', String(params.page))
+  if (params.search) search.set('search', params.search)
+  if (params.status) search.set('status', params.status)
+  const response = await authFetch(`${API_BASE}/get-admin-withdrawals?${search.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load admin withdrawals (${response.status})`)
+  }
+  return (await response.json()) as AdminWithdrawalsResponse
+}
+
+export async function confirmWithdrawal(
+  token: string | undefined,
+  withdrawId: number,
+): Promise<{ status?: boolean; message?: string }> {
+  const response = await authFetch(`${API_BASE}/withdrawal-validation`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'confirmation', withdraw_id: withdrawId }),
+  })
+  const data = (await response.json().catch(() => ({}))) as { status?: boolean; message?: string }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to confirm withdrawal (${response.status})`)
+  }
+  return data
+}
+
+export async function cancelWithdrawalConfirmation(
+  token: string | undefined,
+  withdrawId: number,
+): Promise<{ status?: boolean; message?: string }> {
+  const response = await authFetch(`${API_BASE}/withdrawal-validation`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'confirmation_cancel', withdraw_id: withdrawId }),
+  })
+  const data = (await response.json().catch(() => ({}))) as { status?: boolean; message?: string }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to cancel withdrawal confirmation (${response.status})`)
+  }
+  return data
+}
+
+export async function rejectWithdrawal(
+  token: string | undefined,
+  withdrawId: number,
+  reasons: string[],
+): Promise<{ status?: boolean; message?: string }> {
+  const response = await authFetch(`${API_BASE}/withdrawal-validation`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'cancellation', reasons, withdraw_id: withdrawId }),
+  })
+  const data = (await response.json().catch(() => ({}))) as { status?: boolean; message?: string }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to reject withdrawal (${response.status})`)
+  }
+  return data
+}
+
+export async function fetchWalletBalanceDetails(
+  token: string | undefined,
+  username: string,
+): Promise<WalletBalanceDetailsData> {
+  const response = await authFetch(`${API_BASE}/get-admin-wallet-details?username=${encodeURIComponent(username)}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load wallet details (${response.status})`)
+  }
+  return (await response.json()) as WalletBalanceDetailsData
 }
 
 export async function getSettingsUser(token: string | undefined): Promise<SettingsUserResponse> {
