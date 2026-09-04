@@ -74,9 +74,28 @@ export interface PaginatedProducts {
   total?: number
 }
 
+export interface DataLink {
+  show?: boolean
+  text?: string
+  link?: string
+}
+
 export interface PaginatedResponse {
   products: PaginatedProducts
   settings_user?: unknown
+  data_link?: DataLink
+}
+
+export interface DataLink {
+  show?: boolean
+  text?: string
+  link?: string
+}
+
+export interface DataLink {
+  show?: boolean
+  text?: string
+  link?: string
 }
 
 export interface ProductValidation {

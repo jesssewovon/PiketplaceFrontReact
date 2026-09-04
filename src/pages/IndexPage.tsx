@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PackageX, Loader2, SearchX, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import type { Product } from '../types'
+import type { DataLink, Product } from '../types'
 import { fetchProducts } from '../lib/api'
 import { productsCache, saveProductsScroll } from '../lib/productsStore'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
@@ -80,6 +80,7 @@ let detectionInFlight = false
 export default function IndexPage() {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState<Product[]>(productsCache.products)
   const [page, setPage] = useState(productsCache.page)
@@ -96,7 +97,9 @@ export default function IndexPage() {
   const prevSearchRef = useRef(rawSearch)
   const query = useMemo(() => rawSearch.trim().toLowerCase(), [rawSearch])
   const currentUser = useAppSelector((state) => state.auth.user)
+  const settings = useAppSelector((state) => state.settings.settings)
   const locale = i18n.language.split('-')[0]
+  const dataLink = (settings?.data_link as DataLink | undefined) ?? null
 
   const filterOpen = useAppSelector((state) => state.ui.filterOpen)
   const [filter, setFilter] = useState<FilterState>(() => filterFromParams(searchParams))
@@ -319,6 +322,34 @@ export default function IndexPage() {
       </section> */}
 
       <section className="px-1.5 pt-5">
+        <div className="mb-3 space-y-2">
+          <button
+            type="button"
+            onClick={() => navigate('/unlock-boost')}
+            className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-soft transition hover:bg-primary-dark"
+          >
+            {t('boost_your_account', { defaultValue: 'Boost your account' })}
+          </button>
+
+          {dataLink?.show && dataLink.text && (
+            <button
+              type="button"
+              onClick={() => {
+                if (dataLink.link) {
+                  if (dataLink.link.startsWith('/')) {
+                    navigate(dataLink.link)
+                  } else {
+                    window.location.href = dataLink.link
+                  }
+                }
+              }}
+              className="w-full rounded-xl border-2 border-primary px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5"
+            >
+              {dataLink.text}
+            </button>
+          )}
+        </div>
+
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-bold text-primary-dark">
             {query ? (

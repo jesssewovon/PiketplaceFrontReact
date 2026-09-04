@@ -38,6 +38,7 @@ interface AccountLink {
   labelFallback: string
   icon: typeof Store
   onClick?: () => void
+  blink?: boolean
 }
 
 interface AccountGroup {
@@ -65,7 +66,7 @@ const groups: AccountGroup[] = [
       { to: '/terms', labelKey: 'side_menu.terms_and_conditions', labelFallback: 'Terms & conditions', icon: FileText },
       { to: '/faq', labelKey: 'faq', labelFallback: 'Q&A', icon: HelpCircle },
       { to: '/partnerships', labelKey: 'partnerships', labelFallback: 'Partnerships', icon: HeartHandshake },
-      { to: '/unlock-boost', labelKey: 'unlock_boost', labelFallback: 'Unlock boost', icon: Rocket },
+      { to: '/unlock-boost', labelKey: 'unlock_boost', labelFallback: 'Unlock boost', icon: Rocket, blink: true },
     ],
   },
   {
@@ -95,7 +96,7 @@ function ActionGrid({ items, onLanguages }: { items: AccountLink[]; onLanguages:
   const { t } = useTranslation()
   return (
     <div className="grid grid-cols-4 gap-3">
-      {items.map(({ to, labelKey, labelFallback, icon: Icon, onClick }) => {
+      {items.map(({ to, labelKey, labelFallback, icon: Icon, onClick, blink }) => {
         const content = (
           <>
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#abd6e34d] text-primary">
@@ -106,7 +107,7 @@ function ActionGrid({ items, onLanguages }: { items: AccountLink[]; onLanguages:
             </span>
           </>
         )
-        const className = 'flex w-full flex-col items-center gap-2 rounded-2xl bg-white p-3.5'
+        const className = `flex w-full flex-col items-center gap-2 rounded-2xl bg-white p-3.5${blink ? ' animate-blink' : ''}`
         return to ? (
           <Link key={labelKey} to={to} className={className}>
             {content}
