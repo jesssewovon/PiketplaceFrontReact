@@ -100,14 +100,25 @@ function parseCities(data: unknown): string[] {
     }
     return null
   }
+  const keepUnique = (list: (string | null)[]): string[] => {
+    const seen = new Set<string>()
+    const result: string[] = []
+    for (const city of list) {
+      if (typeof city === 'string' && city.length > 0 && !seen.has(city)) {
+        seen.add(city)
+        result.push(city)
+      }
+    }
+    return result
+  }
   if (Array.isArray(data)) {
-    return data.map(pick).filter((city): city is string => typeof city === 'string' && city.length > 0)
+    return keepUnique(data.map(pick))
   }
   if (data && typeof data === 'object') {
     const record = data as Record<string, unknown>
     for (const key of ['cities', 'data', 'results'] as const) {
       if (Array.isArray(record[key])) {
-        const list = record[key].map(pick).filter((city): city is string => typeof city === 'string' && city.length > 0)
+        const list = keepUnique(record[key].map(pick))
         if (list.length > 0) return list
       }
     }
@@ -212,9 +223,13 @@ export async function createProduct(payload: NewProductPayload, token?: string):
   formData.append('city', payload.city)
   formData.append('email', payload.email)
   formData.append('is_digital', payload.is_digital ? '1' : '0')
-  payload.shipping_zone.forEach((zone) => formData.append('shipping_zone[]', JSON.stringify(zone)))
+  payload.shipping_zone.forEach((zone, index) => {
+    Object.entries(zone).forEach(([key, value]) => formData.append(`shipping_zone[${index}][${key}]`, String(value ?? '')))
+  })
   formData.append('free_shipping', payload.free_shipping ? '1' : '0')
-  payload.free_shipping_zone.forEach((zone) => formData.append('free_shipping_zone[]', JSON.stringify(zone)))
+  payload.free_shipping_zone.forEach((zone, index) => {
+    Object.entries(zone).forEach(([key, value]) => formData.append(`free_shipping_zone[${index}][${key}]`, String(value ?? '')))
+  })
   formData.append('promotion_fees_activated', payload.promotion_fees_activated ? '1' : '0')
   formData.append('promotion_fees_percentage', payload.promotion_fees_percentage)
   formData.append('product_available', payload.product_available ? '1' : '0')
@@ -260,9 +275,13 @@ export async function updateProduct(
   formData.append('city', payload.city)
   formData.append('email', payload.email)
   formData.append('is_digital', payload.is_digital ? '1' : '0')
-  payload.shipping_zone.forEach((zone) => formData.append('shipping_zone[]', JSON.stringify(zone)))
+  payload.shipping_zone.forEach((zone, index) => {
+    Object.entries(zone).forEach(([key, value]) => formData.append(`shipping_zone[${index}][${key}]`, String(value ?? '')))
+  })
   formData.append('free_shipping', payload.free_shipping ? '1' : '0')
-  payload.free_shipping_zone.forEach((zone) => formData.append('free_shipping_zone[]', JSON.stringify(zone)))
+  payload.free_shipping_zone.forEach((zone, index) => {
+    Object.entries(zone).forEach(([key, value]) => formData.append(`free_shipping_zone[${index}][${key}]`, String(value ?? '')))
+  })
   formData.append('promotion_fees_activated', payload.promotion_fees_activated ? '1' : '0')
   formData.append('promotion_fees_percentage', payload.promotion_fees_percentage)
   payload.photos.forEach((photo) => formData.append('photos[]', photo))

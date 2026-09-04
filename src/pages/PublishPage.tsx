@@ -180,7 +180,6 @@ export default function PublishPage() {
     let cancelled = false
     setCitiesLoading(true)
     setCitiesError(null)
-    setForm((prev) => ({ ...prev, city: '' }))
     fetchCitiesByCountry(form.country_code)
       .then((list) => {
         if (!cancelled) setCities(list)
@@ -734,6 +733,11 @@ export default function PublishPage() {
                       <option value="" disabled>
                         {t('select_city', { defaultValue: 'Select a city…' })}
                       </option>
+                      {form.city && !cities.includes(form.city) && (
+                        <option key="existing-city" value={form.city}>
+                          {form.city}
+                        </option>
+                      )}
                       {cities.map((item, index) => (
                         <option key={`${item}-${index}`} value={item}>
                           {item}
