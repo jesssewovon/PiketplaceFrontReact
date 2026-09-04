@@ -149,7 +149,10 @@ export default function UnlockBoostPage() {
         )
       } else if (result !== 'ADS_NOT_SUPPORTED' && result !== 'AD_CLOSED') {
         showAlert(t('info', { defaultValue: 'Info' }), t('an_error_occured', { defaultValue: 'An error occurred' }), 'error')
+      }else{
+        showAlert(t('info', { defaultValue: 'Info' }), JSON.stringify(showAdResponse), 'error')
       }
+      setSaving(false)
     } catch {
       showAlert(t('info', { defaultValue: 'Info' }), t('an_error_occured', { defaultValue: 'An error occurred' }), 'error')
     } finally {
