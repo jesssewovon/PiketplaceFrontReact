@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Swal from 'sweetalert2'
 import { HandCoins, Loader2, Wallet, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -6,6 +6,7 @@ import { donateToPiketplaceWallet, postPiPayment } from '../lib/api'
 import { createPiPayment, initPi, waitForPi } from '../lib/pi'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
+import PiPaymentLoader from '../components/PiPaymentLoader'
 
 function sanitizeAmount(raw: string): string {
   let value = raw.replace(/[^\d.]/g, '')
@@ -42,6 +43,8 @@ export default function DonationPage() {
   const [amount, setAmount] = useState('')
   const [walletOpen, setWalletOpen] = useState(false)
   const [isPaying, setIsPaying] = useState(false)
+  const [piLoaderOpen, setPiLoaderOpen] = useState(false)
+  const uniqueIdRef = useRef<string>('')
 
   const payWith = () => {
     if (amount === '' || !isDecimalNotZero(amount)) {
@@ -123,6 +126,8 @@ export default function DonationPage() {
   const payPiNetworkWallet = async () => {
     setWalletOpen(false)
     const uniqueId = crypto.randomUUID()
+    uniqueIdRef.current = uniqueId
+    console.log('Generated uniqueId for Pi payment:', uniqueIdRef.current, uniqueId)
     const memo = t('memo donation of amount to name', {
       defaultValue: 'Donation of {amount} to {name}',
       amount: `${amount} π`,
@@ -161,6 +166,7 @@ export default function DonationPage() {
         },
         callbacks,
       )
+      setPiLoaderOpen(true)
     } catch {
       void Swal.fire({
         icon: 'error',
@@ -259,6 +265,21 @@ export default function DonationPage() {
           <Loader2 size={32} className="animate-spin text-white" />
         </div>
       )}
+
+      <PiPaymentLoader
+        open={piLoaderOpen}
+        token={token}
+        uniqueId={uniqueIdRef.current}
+        userId={user?.id}
+        onClose={() => {
+          setPiLoaderOpen(false)
+          uniqueIdRef.current = ''
+        }}
+        onVerified={() => {
+          setPiLoaderOpen(false)
+          uniqueIdRef.current = ''
+        }}
+      />
     </div>
   )
 }

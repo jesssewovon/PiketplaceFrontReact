@@ -1,3 +1,5 @@
+import type { ShippingZone } from "./components/ShippingZoneForm"
+
 export interface ProductImage {
   dossier: string
   name: string
@@ -50,6 +52,12 @@ export interface Product {
   phone_number?: string
   quantity_selling?: number
   city?: string
+  email?: string
+  category?: {
+    id?: number
+    code?: string
+    libelle?: string
+  }
 }
 
 export interface PaginatedProducts {
@@ -118,9 +126,10 @@ export interface CancellationReason {
 }
 
 export interface PurchaseData {
-  shipping_fee?: number
-  handling_fee?: number
-  total?: number
+  item_total?: number | string
+  shipping_fee?: number | string
+  handling_fee?: number | string
+  total?: number | string
   [key: string]: unknown
 }
 
@@ -168,6 +177,7 @@ export interface LineOrder {
   shipped?: boolean
   shipped_at?: string | null
   cancelled_at?: string | null
+  created_at?: string | null
   cancellableDirectly?: boolean
   line_order_cancellation?: unknown | null
   statusPercentDisplay?: number
@@ -275,6 +285,67 @@ export interface MessageContactsResponse {
   contacts: PaginatedMessageContacts
 }
 
+export interface ChatMessage {
+  id?: number
+  sender_id?: number
+  admin_support_id?: number | null
+  message?: string
+  isImage?: boolean
+  imageName?: string
+  created_at?: string
+  sender?: {
+    id?: number
+    fullnameOrUsername?: string
+    avatar?: string
+  } | null
+  line_order?: {
+    deliver?: { id?: number } | null
+    product?: {
+      pi_users_id?: number
+      user?: { id?: number }
+      country?: { name?: string }
+      city?: string
+      address?: string
+    } | null
+    order?: {
+      user?: { id?: number; avatar?: string }
+      shipping?: {
+        name?: string
+        country_name?: string
+        city?: string
+        address?: string
+        phone_number?: string
+      }
+    } | null
+  } | null
+}
+
+export interface MessagesFetchResponse {
+  messages?: ChatMessage[]
+  line_order?: LineOrder | null
+  corresponding_user?: {
+    id?: number
+    avatar?: string
+    shopNameShow?: string
+    fullnameOrUsername?: string
+  } | null
+}
+
+export interface NewMessagesFetchResponse {
+  newMessages?: ChatMessage[]
+}
+
+export interface OldMessagesFetchResponse {
+  oldMessages?: ChatMessage[]
+  start_message_id?: number
+}
+
+export interface SendMessageResponse {
+  status?: boolean
+  message?: string
+  newMessages?: ChatMessage[]
+}
+
 export interface Partnership {
   id?: number
   name?: string
@@ -334,7 +405,7 @@ export interface RewardAdsResponse {
 export interface PartnerAccountInfo {
   id?: number
   country_code?: string
-  pi_username?: string
+  username?: string
   balance?: number
   wallet_address?: string | null
   [key: string]: unknown
@@ -389,7 +460,7 @@ export interface AddressesResponse {
 }
 
 export type NewProductPayload = {
-  category_selected_id: string
+  categories_id: string
   libelle: string
   description: string
   price: string
@@ -399,13 +470,33 @@ export type NewProductPayload = {
   city: string
   email: string
   is_digital: boolean
-  shipping_zone: string
+  shipping_zone: ShippingZone[]
   free_shipping: boolean
-  free_shipping_zone: string
+  free_shipping_zone: ShippingZone[]
   promotion_fees_activated: boolean
   promotion_fees_percentage: string
   product_available: boolean
   saling_terms_agreements: boolean
+  images: File[]
+}
+
+export type UpdateProductPayload = {
+  categories_id: string
+  libelle: string
+  description: string
+  price: string
+  quantity: string
+  address: string
+  country_code: string
+  city: string
+  email: string
+  is_digital: boolean
+  shipping_zone: ShippingZone[]
+  free_shipping: boolean
+  free_shipping_zone: ShippingZone[]
+  promotion_fees_activated: boolean
+  promotion_fees_percentage: string
+  photos: string[]
   images: File[]
 }
 
@@ -615,6 +706,28 @@ export interface SettingsUserResponse {
   [key: string]: unknown
 }
 
+export interface AdminUser {
+  id: number
+  username?: string
+  fullname?: string
+  avatar?: string
+  locale?: string
+  number_ads_views?: number
+  user_country?: { iso2?: string } | null
+}
+
+export interface PaginatedAdminUsers {
+  current_page: number
+  data: AdminUser[]
+  last_page?: number
+  total?: number
+}
+
+export interface AdminUsersResponse {
+  users?: PaginatedAdminUsers
+  [key: string]: unknown
+}
+
 export interface LineOrderResponse {
   line_order?: LineOrder
   [key: string]: unknown
@@ -676,7 +789,7 @@ export interface AppNotification {
   is_new?: number
   message: string
   datas?: Record<string, unknown> | null
-  url?: { name?: string; params?: Record<string, unknown>; [key: string]: unknown } | null
+  url?: string | null
   created_at?: string
   type?: number
 }
@@ -796,31 +909,10 @@ export interface AdminOrdersResponse {
   [key: string]: unknown
 }
 
-export interface PreOrderItem {
-  id: number
-  quantity?: number
-  total?: number
-  fee?: number
-  totalFee?: number
-  canPayOnPreorder?: boolean
-  created_at?: string
-  pre_order_address?: ShippingAddress
-  applications_count?: number
-  product?: {
-    id?: number
-    libelle?: string
-    price_str?: string
-    imageFirst?: string
-    user?: LineOrderUser
-    [key: string]: unknown
-  }
-  [key: string]: unknown
-}
-
 export interface PreOrdersResponse {
   pre_orders?: {
     current_page: number
-    data: PreOrderItem[]
+    data: LineOrder[]
     last_page?: number
     next_page_url?: string | null
     total?: number

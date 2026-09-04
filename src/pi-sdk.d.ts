@@ -31,6 +31,7 @@ declare global {
       [key: string]: unknown
     } | null
     remainingTimeEmailVerification?: number
+    nbNotification?: number
   }
 
   interface PiAuthResult {

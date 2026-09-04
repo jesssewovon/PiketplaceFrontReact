@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import { Eye, EyeOff, Loader2, PackagePlus, Plus, Trash2, X, ImageOff, ShieldCheck, ShieldAlert } from 'lucide-react'
+import { Eye, EyeOff, Loader2, PackagePlus, Pencil, Plus, Trash2, X, ImageOff, ShieldCheck, ShieldAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { CancellationReason, MyProduct, Product, StoreCategory } from '../types'
 import {
@@ -17,7 +17,7 @@ import {
 import { formatAmount } from '../lib/format'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
-import LazyImage from '../components/LazyImage'
+import ProductCard from '../components/ProductCard'
 import CancellationReasonsModal from '../components/CancellationReasonsModal'
 
 interface StoreTab {
@@ -42,12 +42,12 @@ function ProductThumb({ product, round }: { product: Product; round?: boolean })
         }`}
       >
         {image ? (
-          <LazyImage
+          <img
             src={image}
             alt={product.libelle}
-            variant="fill"
-            imgClassName={round ? 'object-cover' : ''}
-            className={round ? 'h-full w-full' : 'h-full w-full'}
+            loading="lazy"
+            decoding="async"
+            className={`h-full w-full ${round ? 'rounded-full object-cover' : 'rounded-xl object-cover'}`}
           />
         ) : (
           <ImageOff size={22} className="text-slate-300" />
@@ -57,7 +57,7 @@ function ProductThumb({ product, round }: { product: Product; round?: boolean })
         {product.libelle}
       </p>
       {round && (
-        <p className="mt-0.5 text-center text-[10px] font-semibold text-primary">
+        <p className="mt-0.5 text-center text-[10px] font-semibold text-black">
           {formatAmount(product.price, product.currency)}
         </p>
       )}
@@ -90,7 +90,6 @@ function OwnerProductCard({
   onValidateProduct,
 }: OwnerCardProps) {
   const { t } = useTranslation()
-  const image = product.imageFirst ?? product.images?.[0]?.lien
   const outOfStock = !product.is_digital && (product.quantity === 0 || product.quantity == null)
   const rejected =
     product.last_validation?.status === 'rejected' &&
@@ -99,54 +98,7 @@ function OwnerProductCard({
 
   return (
     <div className="break-inside-avoid overflow-hidden rounded-2xl border border-black/5 bg-white shadow-soft">
-      <Link to={`/product/${product.id}`} className="block">
-        <div className="relative">
-          <div className="h-40">
-            {image ? (
-              <LazyImage
-                src={image}
-                alt={product.libelle}
-                variant="fill"
-                className="h-full w-full"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center bg-slate-100">
-                <ImageOff size={26} className="text-slate-300" />
-              </div>
-            )}
-          </div>
-          {product.isBoosted && (
-            <span className="absolute right-0 top-2 rounded-l bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
-              {t('boost', { defaultValue: 'Boost' })}
-            </span>
-          )}
-          {!product.isBoosted && product.isNew && (
-            <span className="absolute right-0 top-2 rounded-l bg-yellow-300 px-2 py-0.5 text-[10px] font-bold text-black">
-              {t('new', { defaultValue: 'New' })}
-            </span>
-          )}
-        </div>
-
-        <div className="p-2.5">
-          <p className="break-libelle-product text-sm font-semibold text-gray">
-            {product.libelle}
-          </p>
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <span className="text-sm font-semibold text-primary">
-              {formatAmount(product.price, product.currency)}
-            </span>
-            {product.is_digital ? (
-              <span className="rounded bg-red-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
-                {t('digital', { defaultValue: 'Digital' })}
-              </span>
-            ) : (
-              <span className="rounded bg-red-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
-                {t('instock', { quantity: product.quantity ?? 0, defaultValue: '{quantity} in stock' })}
-              </span>
-            )}
-          </div>
-        </div>
-      </Link>
+      <ProductCard product={product} />
 
       <div className="px-2.5 pb-2.5">
         {outOfStock && (
@@ -203,6 +155,13 @@ function OwnerProductCard({
           >
             {isActing ? <Loader2 size={16} className="animate-spin" /> : product.visible ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
+          <Link
+            to={`/publish/${product.id}`}
+            className="flex items-center gap-1 text-xs font-semibold text-green-600 transition hover:text-green-800"
+            aria-label={t('update_product', { defaultValue: 'Update product' })}
+          >
+            <Pencil size={16} />
+          </Link>
           <button
             type="button"
             onClick={() => onDeleteProduct(product)}
@@ -264,7 +223,8 @@ export default function MyStorePage() {
   const [approbationActive, setApprobationActive] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingHome, setIsLoadingHome] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [noMoreData, setNoMoreData] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -276,7 +236,6 @@ export default function MyStorePage() {
   const pendingValidationRef = useRef<{ product: MyProduct; status: 'validated' | 'rejected' } | null>(null)
   const stockProductRef = useRef<MyProduct | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
-  const lockRef = useRef(false)
 
   const startActing = (id: number) => setActingIds((prev) => new Set(prev).add(id))
   const stopActing = (id: number) => setActingIds((prev) => { const next = new Set(prev); next.delete(id); return next })
@@ -290,26 +249,30 @@ export default function MyStorePage() {
   }
 
   const loadStoreData = useCallback(async () => {
+    setIsLoadingHome(true)
     try {
       const data = await fetchMyStoreData(token ?? undefined)
       setCategories(data.categories ?? [])
       setLastProducts(data.products ?? [])
     } catch {
       // keep current data when the request fails
+    } finally {
+      setIsLoadingHome(false)
     }
   }, [token])
 
   const loadMyProducts = useCallback(
     async (page: number, append: boolean) => {
-      if (lockRef.current) {
-        setIsLoading(false)
-        return
-      }
-      lockRef.current = true
-      if (append) setIsLoadingMore(true)
+      setIsLoadingMore(true)
+      //if (append) setIsLoadingMore(true)
       try {
+        if (page === 1) {
+          if (isLoading) return
+          //alert("hhhh "+page)
+          setIsLoading(true)
+          setIsLoadingMore(false)
+        }
         const data = await fetchMyProducts(token ?? undefined, page)
-        console.log('loadMyProducts: data:', data)
         setApprobationActive(Boolean(data.approbation_active))
         if (append) {
           setProducts((prev) => {
@@ -326,7 +289,6 @@ export default function MyStorePage() {
       } catch (err) {
         setError(err instanceof Error ? err.message : t('an_error_occured', { defaultValue: 'An error occurred' }))
       } finally {
-        lockRef.current = false
         setIsLoading(false)
         setIsLoadingMore(false)
       }
@@ -338,10 +300,10 @@ export default function MyStorePage() {
     if (!isLoggedIn) return
     setActiveTab(hasShop ? 'home' : 'products')
     reinitPagination()
+    //setIsLoading(true)
     if (hasShop) {
       void loadStoreData()
     }
-    setIsLoading(true)
     void loadMyProducts(1, false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn])
@@ -350,7 +312,7 @@ export default function MyStorePage() {
     setActiveTab('products')
     setProducts([])
     reinitPagination()
-    setIsLoading(true)
+    //setIsLoading(true)
     void loadMyProducts(1, false)
   }
 
@@ -623,47 +585,56 @@ export default function MyStorePage() {
 
   const renderHome = (): ReactNode => (
     <div className="mt-4 space-y-5">
-      {lastProducts.length > 0 && (
-        <div>
-          <h3 className="mb-2 text-sm font-bold text-primary-dark">
-            {t('new_products', { defaultValue: 'New products' })}
-          </h3>
-          <div className="app-scroll flex gap-3 overflow-x-auto pb-2">
-            {lastProducts
-              .filter((p) => p && p.imageFirst)
-              .map((product) => (
-                <ProductThumb key={product.id} product={product} round />
-              ))}
-          </div>
+      {isLoadingHome && lastProducts.length === 0 && categories.length === 0 ? (
+        <div className="flex flex-col items-center gap-2 py-12 text-xs text-ink-soft">
+          <img src="/site_images/index_loader.gif" alt="" className="w-[70px] rounded-sm" />
+          {t('loading', { defaultValue: 'loading' })}
         </div>
-      )}
-
-      {categories.map((category) => (
-        <div key={category.id}>
-          <div className="mb-2 flex items-center gap-2">
-            {category.img && (
-              <img
-                src={`${import.meta.env.VITE_APP_BACKEND_URL ?? ''}/images/${category.img}`}
-                alt=""
-                className="h-6 w-6 object-contain"
-                onError={(e) => {
-                  ;(e.currentTarget as HTMLImageElement).style.display = 'none'
-                }}
-              />
-            )}
-            <h3 className="text-sm font-bold text-primary-dark">
-              {t(`categories.${category.code}`, { defaultValue: category.code })}
-            </h3>
-          </div>
-          {category.products.length > 0 && (
-            <div className="app-scroll flex gap-3 overflow-x-auto pb-2">
-              {category.products.slice(0, 5).map((product) => (
-                <ProductThumb key={product.id} product={product} />
-              ))}
+      ) : (
+        <>
+          {lastProducts.length > 0 && (
+            <div>
+              <h3 className="mb-2 text-sm font-bold text-primary-dark">
+                {t('new_products', { defaultValue: 'New products' })}
+              </h3>
+              <div className="app-scroll flex gap-3 overflow-x-auto pb-2">
+                {lastProducts
+                  .filter((p) => p && p.imageFirst)
+                  .map((product) => (
+                    <ProductThumb key={product.id} product={product} round />
+                  ))}
+              </div>
             </div>
           )}
-        </div>
-      ))}
+
+          {categories.map((category) => (
+            <div key={category.id}>
+              <div className="mb-2 flex items-center gap-2">
+                {category.img && (
+                  <img
+                    src={`${import.meta.env.VITE_APP_BACKEND_URL ?? ''}/images/${category.img}`}
+                    alt=""
+                    className="h-6 w-6 object-contain"
+                    onError={(e) => {
+                      ;(e.currentTarget as HTMLImageElement).style.display = 'none'
+                    }}
+                  />
+                )}
+                <h3 className="text-sm font-bold text-primary-dark">
+                  {t(`categories.${category.code}`, { defaultValue: category.code })}
+                </h3>
+              </div>
+              {category.products.length > 0 && (
+                <div className="app-scroll flex gap-3 overflow-x-auto pb-2">
+                  {category.products.slice(0, 5).map((product) => (
+                    <ProductThumb key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </>
+      )}
     </div>
   )
 
@@ -703,7 +674,7 @@ export default function MyStorePage() {
       )}
 
       <div ref={sentinelRef} className="flex justify-center py-6">
-        {isLoading || isLoadingMore ? (
+        {isLoadingMore ? (
           <Loader2 size={20} className="animate-spin text-primary" />
         ) : noMoreData && products.length > 0 ? (
           <span className="text-[11px] font-medium text-ink-soft">
@@ -716,7 +687,7 @@ export default function MyStorePage() {
 
   return (
     <div className="relative animate-fade-in">
-      <section className="px-4 py-6">
+      <section className="px-2 py-6">
         <div className="overflow-hidden rounded-2xl bg-white shadow-soft">
           <div
             className="h-24 w-full bg-cover bg-center"
@@ -751,7 +722,7 @@ export default function MyStorePage() {
             </div>
           </div>
 
-          <div className="border-t border-black/5 px-4 pb-4">
+          <div className="border-t border-black/5 px-2 pb-4">
             {activeTab === 'home' ? renderHome() : renderProducts()}
           </div>
         </div>

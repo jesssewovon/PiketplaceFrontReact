@@ -140,7 +140,6 @@ function PreOrderCard({ line }: { line: LineOrder }) {
   const quantity = line.quantity ?? 0
   const price = product?.price ?? 0
   const total = line.total ?? 0
-  const fee = line.fee ?? 0
 
   return (
     <div className="mb-3 rounded-2xl border border-black/5 bg-white p-3 shadow-soft">
@@ -206,7 +205,7 @@ export default function AdminOrdersPage() {
       if (append) setIsLoadingMore(true)
       try {
         const res = await fetchAdminOrders(token ?? undefined, page)
-        const pagination = res.line_orders
+        const pagination = res.line_orders ?? { current_page: page, data: [] }
         if (append) {
           setLineOrders((prev) => {
             const seen = new Set(prev.map((l) => l.id))
@@ -236,7 +235,7 @@ export default function AdminOrdersPage() {
       if (append) setIsLoadingMore(true)
       try {
         const res = await fetchAdminShippedOrders(token ?? undefined, page)
-        const pagination = res.line_orders
+        const pagination = res.line_orders ?? { current_page: page, data: [] }
         if (append) {
           setLineOrders((prev) => {
             const seen = new Set(prev.map((l) => l.id))
@@ -266,7 +265,7 @@ export default function AdminOrdersPage() {
       if (append) setIsLoadingMore(true)
       try {
         const res = await fetchPreOrders(token ?? undefined, page)
-        const pagination = res.pre_orders
+        const pagination = res.pre_orders ?? { current_page: page, data: [] }
         if (append) {
           setPreOrders((prev) => {
             const seen = new Set(prev.map((l) => l.id))

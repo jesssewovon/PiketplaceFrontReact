@@ -1,19 +1,20 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Bell, Search, User, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { flagEmoji, getCountryCode } from '../lib/geo'
-import { useAppSelector } from '../store/hooks'
+import { flagEmoji } from '../lib/geo'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { setFilterOpen } from '../store/uiSlice'
 
 const PAGE_TITLES: Record<string, { key: string; fallback: string }> = {
-  '/publish': { key: 'page_title_publish', fallback: 'Publish' },
+  '/publish': { key: 'publish', fallback: 'Publish' },
   '/account': { key: 'side_menu.my_account', fallback: 'My Account' },
   '/account/sales': { key: 'side_menu.my_sales', fallback: 'My Sales' },
   '/account/orders': { key: 'side_menu.my_orders', fallback: 'My Orders' },
   '/account/products': { key: 'page_title_my_products', fallback: 'My Products' },
-  '/my-store': { key: 'my_store', fallback: 'My Store' },
-  '/my-sales': { key: 'my_sales', fallback: 'My Sales' },
-  '/my-orders': { key: 'my_orders', fallback: 'My Orders' },
+  '/my-store': { key: 'side_menu.my_store', fallback: 'My Store' },
+  '/my-sales': { key: 'side_menu.my_sales', fallback: 'My Sales' },
+  '/my-orders': { key: 'side_menu.my_orders', fallback: 'My Orders' },
   '/message-contacts': { key: 'messages', fallback: 'Messages' },
   '/terms': { key: 'side_menu.terms_and_conditions', fallback: 'Terms & Conditions' },
   '/faq': { key: 'faq', fallback: 'FAQ' },
@@ -46,19 +47,27 @@ const iconButton =
 
 export default function Header() {
   const { t } = useTranslation()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const [query, setQuery] = useState(searchParams.get('q') ?? '')
+  const queryParam = searchParams.get('q') ?? ''
+  const [query, setQuery] = useState(queryParam)
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const user = useAppSelector((state) => state.auth.user)
   const isHome = location.pathname === '/'
-  const country = getCountryCode()
+  const appliedFilter = useAppSelector((state) => state.ui.appliedFilter)
+  const filterCountry = isHome ? appliedFilter.iso2 : searchParams.get('country')
+  const showFilterCountryFlag = Boolean(filterCountry && filterCountry !== 'all' && filterCountry.length === 2)
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     navigate(query.trim() ? `/?q=${encodeURIComponent(query.trim())}` : '/')
   }
+
+  useEffect(() => {
+    setQuery(queryParam)
+  }, [queryParam])
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1)
@@ -118,12 +127,27 @@ export default function Header() {
             </button>
           </form>
 
-          <span
+          <button
+            type="button"
+            onClick={() => dispatch(setFilterOpen(true))}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border-0 border-black/10 text-base"
-            title={t('header_country_title', { country, defaultValue: 'Country: {country}' })}
+            title={t('header_country_title', {
+              country: showFilterCountryFlag
+                ? (filterCountry as string)
+                : t('all', { defaultValue: 'All' }),
+              defaultValue: 'Country: {country}',
+            })}
           >
-            {flagEmoji(country)}
-          </span>
+            {showFilterCountryFlag ? (
+              flagEmoji(filterCountry as string)
+            ) : (
+              <img
+                src="/site_images/svg/globe.svg"
+                alt=""
+                className="h-4 w-4"
+              />
+            )}
+          </button>
 
           <Link
             to="/notifications"
@@ -131,7 +155,9 @@ export default function Header() {
             aria-label={t('header_notifications', { defaultValue: 'Notifications' })}
           >
             <Bell size={16} />
-            <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
+            {(user?.nbNotification ?? 0) > 0 && (
+              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
+            )}
           </Link>
 
           <Link to="/account" className={iconButton} aria-label={t('side_menu.my_account', { defaultValue: 'My account' })}>
@@ -150,7 +176,13 @@ export default function Header() {
         ? { key: 'shipping_confirmation', fallback: 'Shipping confirmation' }
         : location.pathname.startsWith('/add-update-shipping-images/')
           ? { key: 'add_shipping_images', fallback: 'Add shipping images' }
-          : undefined)
+          : location.pathname.startsWith('/cart-buy-now/')
+            ? { key: 'product.buy_now', fallback: 'Buy now' }
+            : location.pathname.startsWith('/store/')
+              ? { key: 'shop', fallback: 'Shop' }
+              : location.pathname.startsWith('/messages/')
+                ? { key: 'messages', fallback: 'Messages' }
+                : undefined)
   const title = t(pageTitle?.key ?? 'app_name', { defaultValue: pageTitle?.fallback ?? 'Piketplace' })
   const isAccountPage = location.pathname === '/account'
   const showConnectedUser = isAccountPage && isLoggedIn && user
@@ -201,7 +233,9 @@ export default function Header() {
             aria-label={t('header_notifications', { defaultValue: 'Notifications' })}
           >
             <Bell size={16} />
-            <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
+            {(user?.nbNotification ?? 0) > 0 && (
+              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
+            )}
           </Link>
           <Link to="/account" className={iconButton} aria-label={t('side_menu.my_account', { defaultValue: 'My account' })}>
             <User size={16} />

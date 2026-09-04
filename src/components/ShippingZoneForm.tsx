@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AlertCircle, Loader2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { fetchCitiesByCountry } from '../lib/api'
@@ -107,7 +108,7 @@ export default function ShippingZoneForm({
 
   const showCityInput = !citiesLoading && !citiesError && cities.length === 0
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
       onClick={onCancel}
@@ -118,9 +119,7 @@ export default function ShippingZoneForm({
       >
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-sm font-bold text-primary-dark">
-            {feeEnabled
-              ? t('shipping_zone_title', { defaultValue: 'Add a shipping zone' })
-              : t('shipping_zone_title_free', { defaultValue: 'Add a free shipping zone' })}
+            {t('shipping_zone_title', { defaultValue: 'Add a shipping zone' })}
           </h3>
           <button
             type="button"
@@ -134,7 +133,7 @@ export default function ShippingZoneForm({
         <div className="max-h-[70vh] space-y-3 overflow-y-auto">
           <div>
             <label className={labelClass}>
-              {t('shipping_zone_country', { defaultValue: 'Country' })}
+              {t('address.country', { defaultValue: 'Country' })}
             </label>
             <select
               value={country}
@@ -142,7 +141,7 @@ export default function ShippingZoneForm({
               className={inputClass}
             >
               <option value="" disabled>
-                {t('shipping_zone_select_country', { defaultValue: 'Select a country…' })}
+                {t('select_country', { defaultValue: 'Select a country…' })}
               </option>
               {countries.map(([code, name]) => (
                 <option key={code} value={code}>
@@ -156,12 +155,12 @@ export default function ShippingZoneForm({
 
           <div>
             <label className={labelClass}>
-              {t('shipping_zone_city', { defaultValue: 'City' })}
+              {t('address.city', { defaultValue: 'City' })}
             </label>
             {citiesLoading ? (
               <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-2.5 text-xs font-semibold text-ink-soft">
                 <Loader2 size={14} className="animate-spin text-primary" />
-                {t('shipping_zone_cities_loading', { defaultValue: 'Loading cities…' })}
+                {t('loading', { defaultValue: 'Loading cities…' })}
               </div>
             ) : cities.length > 0 ? (
               <select
@@ -170,7 +169,7 @@ export default function ShippingZoneForm({
                 className={inputClass}
               >
                 <option value="" disabled>
-                  {t('shipping_zone_select_city', { defaultValue: 'Select a city…' })}
+                  {t('select_city', { defaultValue: 'Select a city…' })}
                 </option>
                 {cities.map((item) => (
                   <option key={item} value={item}>
@@ -182,7 +181,7 @@ export default function ShippingZoneForm({
               <input
                 type="text"
                 maxLength={120}
-                placeholder={t('shipping_zone_type_city', { defaultValue: 'Type a city' })}
+                placeholder={t('select_city', { defaultValue: 'Type a city' })}
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 className={inputClass}
@@ -233,18 +232,19 @@ export default function ShippingZoneForm({
               onClick={handleSave}
               className="flex-1 rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-2.5 text-xs font-bold text-white shadow-soft transition hover:shadow-hover"
             >
-              {t('shipping_zone_save', { defaultValue: 'Save' })}
+              {t('profilForm.save', { defaultValue: 'Save' })}
             </button>
             <button
               type="button"
               onClick={onCancel}
               className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-ink-soft transition hover:bg-slate-50"
             >
-              {t('shipping_zone_cancel', { defaultValue: 'Cancel' })}
+              {t('cancel', { defaultValue: 'Cancel' })}
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

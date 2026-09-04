@@ -5,7 +5,7 @@ import { Loader2, MapPin, MessageSquare, Search, Truck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { CancellationReason, LineOrder } from '../types'
 import { fetchSales, updateLineOrder } from '../lib/api'
-import { formatAmount, formatDate, normalizeCancellationReasons } from '../lib/format'
+import { formatAmount, formatDateTime, normalizeCancellationReasons } from '../lib/format'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
 import CancellationReasonsModal from '../components/CancellationReasonsModal'
@@ -44,10 +44,12 @@ function SaleCard({
   line,
   onCancel,
   onAcceptCancellation,
+  cancelling,
 }: {
   line: LineOrder
   onCancel: (line: LineOrder) => void
   onAcceptCancellation: (line: LineOrder) => void
+  cancelling: boolean
 }) {
   const { t } = useTranslation()
   const product = line.product
@@ -68,7 +70,7 @@ function SaleCard({
             ? t('shipped', { defaultValue: 'Shipped' })
             : t('ordered', { defaultValue: 'Ordered' })}
         </span>
-        {date && <em className="text-[11px] text-ink-soft">{formatDate(date)}</em>}
+        {date && <em className="text-[11px] text-ink-soft">{formatDateTime(date)}</em>}
       </div>
 
       <div className="my-2 h-px bg-black/5" />
@@ -157,7 +159,7 @@ function SaleCard({
 
       {!line.shipped_at && (
         <Link
-          to={`/message-contacts?corresponding_id=${buyer?.id ?? ''}&line_order_id=${line.id}`}
+          to={`/messages/${buyer?.id ?? ''}/${line.id}`}
           className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-primary"
         >
           <MessageSquare size={14} />
@@ -189,8 +191,10 @@ function SaleCard({
               <button
                 type="button"
                 onClick={() => onAcceptCancellation(line)}
-                className="w-full rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5"
+                disabled={cancelling}
+                className="flex w-full items-center justify-center gap-1 rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
               >
+                {cancelling ? <Loader2 size={12} className="animate-spin" /> : null}
                 {t('accept buyer cancel order request', {
                   defaultValue: 'Accept buyer cancel order request',
                 })}
@@ -199,8 +203,10 @@ function SaleCard({
               <button
                 type="button"
                 onClick={() => onCancel(line)}
-                className="w-full rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5"
+                disabled={cancelling}
+                className="flex w-full items-center justify-center gap-1 rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
               >
+                {cancelling && <Loader2 size={12} className="animate-spin" />}
                 {t('cancel', { defaultValue: 'Cancel' })}
               </button>
             )}
@@ -229,6 +235,7 @@ export default function MySalesPage() {
   const [cancellationReasons, setCancellationReasons] = useState<CancellationReason[]>([])
   const [reasonsOpen, setReasonsOpen] = useState(false)
   const [pendingCancelLine, setPendingCancelLine] = useState<LineOrder | null>(null)
+  const [cancellingIds, setCancellingIds] = useState<Record<number, boolean>>({})
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
   const referenceRef = useRef(reference)
@@ -324,18 +331,15 @@ export default function MySalesPage() {
     if (!pendingCancelLine) return
     const index = sales.findIndex((line) => line.id === pendingCancelLine.id)
     if (index < 0) return
+    const id = pendingCancelLine.id
+    setCancellingIds((prev) => ({ ...prev, [id]: true }))
     try {
       const res = await updateLineOrder(token ?? undefined, pendingCancelLine.id, {
         type: 'cancelled_at',
         reasons,
       })
       if (res.status === true) {
-        setSales((prev) => {
-          if (res.line_order === null) {
-            return prev.filter((line) => line.id !== pendingCancelLine.id)
-          }
-          return prev.map((line) => (line.id === pendingCancelLine.id ? (res.line_order as LineOrder) : line))
-        })
+        setSales((prev) => prev.filter((line) => line.id !== pendingCancelLine.id))
         void Swal.fire({
           icon: 'success',
           title: t('info', { defaultValue: 'Info' }),
@@ -358,6 +362,7 @@ export default function MySalesPage() {
         confirmButtonColor: '#ec11b5',
       })
     } finally {
+      setCancellingIds((prev) => ({ ...prev, [id]: false }))
       setPendingCancelLine(null)
     }
   }
@@ -375,17 +380,13 @@ export default function MySalesPage() {
       confirmButtonColor: '#ec11b5',
     })
     if (!result.isConfirmed) return
+    setCancellingIds((prev) => ({ ...prev, [line.id]: true }))
     try {
       const res = await updateLineOrder(token ?? undefined, line.id, {
         type: 'cancellation_confirmation_by_seller',
       })
       if (res.status === true) {
-        setSales((prev) => {
-          if (res.line_order === null) {
-            return prev.filter((item) => item.id !== line.id)
-          }
-          return prev.map((item) => (item.id === line.id ? (res.line_order as LineOrder) : item))
-        })
+        setSales((prev) => prev.filter((item) => item.id !== line.id))
         void Swal.fire({
           icon: 'success',
           title: t('info', { defaultValue: 'Info' }),
@@ -407,6 +408,8 @@ export default function MySalesPage() {
         text: t('an_error_occured', { defaultValue: 'An error occurred' }),
         confirmButtonColor: '#ec11b5',
       })
+    } finally {
+      setCancellingIds((prev) => ({ ...prev, [line.id]: false }))
     }
   }
 
@@ -476,6 +479,7 @@ export default function MySalesPage() {
               <SaleCard
                 key={line.id}
                 line={line}
+                cancelling={!!cancellingIds[line.id]}
                 onCancel={initCancellation}
                 onAcceptCancellation={(l) => void acceptCancellationRequest(l)}
               />

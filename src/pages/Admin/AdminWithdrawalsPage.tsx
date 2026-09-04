@@ -38,7 +38,7 @@ export default function AdminWithdrawalsPage() {
       if (append) setIsLoadingMore(true)
       try {
         const res = await fetchAdminWithdrawals(token ?? undefined, { page, search, status })
-        const pagination = res.withdrawal_requests
+        const pagination = res.withdrawal_requests ?? { current_page: page, data: [] }
         if (append) {
           setWithdrawals((prev) => {
             const seen = new Set(prev.map((w) => w.id))

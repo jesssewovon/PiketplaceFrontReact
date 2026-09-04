@@ -25,6 +25,7 @@ export default function PartnersPaymentPage() {
       .then((res) => setData(res.data ?? []))
       .catch(() => setData([]))
       .finally(() => setIsLoading(false))
+    console.log('Fetched partners payment data:', data)
   }, [isLoggedIn, token])
 
   const handleProceed = async () => {
@@ -78,7 +79,7 @@ export default function PartnersPaymentPage() {
                     {flagEmoji(item.partnerAccount?.country_code ?? '')}
                   </span>
                   <span className="text-sm font-semibold text-ink">
-                    @{item.partnerAccount?.pi_username ?? ''}
+                    @{item.partnerAccount?.username ?? ''}
                   </span>
                 </div>
                 <span className="text-sm font-bold text-primary">

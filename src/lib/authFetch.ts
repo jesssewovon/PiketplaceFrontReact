@@ -1,4 +1,5 @@
 import { logout } from '../store/authSlice'
+import { syncUserFromPayload } from '../store/userSync'
 import type { AppDispatch } from '../store/index'
 
 let dispatch: AppDispatch | null = null
@@ -26,6 +27,14 @@ export async function authFetch(
     setTimeout(() => {
       handling401 = false
     }, 1000)
+  }
+
+  try {
+    const clone = response.clone()
+    const payload = (await clone.json().catch(() => null)) as unknown
+    syncUserFromPayload(payload)
+  } catch {
+    // ignore responses that are not JSON or cannot be cloned
   }
 
   return response

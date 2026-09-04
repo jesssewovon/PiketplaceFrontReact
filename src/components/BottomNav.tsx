@@ -15,9 +15,9 @@ interface Tab {
 }
 
 const tabs: Tab[] = [
-  { to: '/', labelKey: 'nav_home', labelFallback: 'Home', icon: 'home' },
-  { to: '/publish', labelKey: 'nav_publish', labelFallback: 'Publish', icon: 'publish' },
-  { to: '/account', labelKey: 'nav_account', labelFallback: 'My Account', icon: 'account' },
+  { to: '/', labelKey: 'home', labelFallback: 'Home', icon: 'home' },
+  { to: '/publish', labelKey: 'publish', labelFallback: 'Publish', icon: 'publish' },
+  { to: '/account', labelKey: 'side_menu.my_account', labelFallback: 'My Account', icon: 'account' },
 ]
 
 const icons: Record<IconKind, (color: string) => ReactElement> = {

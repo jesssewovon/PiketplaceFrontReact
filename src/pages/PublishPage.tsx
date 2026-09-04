@@ -1,5 +1,6 @@
-import { useMemo, useState, useEffect, type ChangeEvent, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useMemo, useRef, useState, useEffect, type ChangeEvent, type FormEvent } from 'react'
+import { createPortal } from 'react-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   ChevronDown,
   ImagePlus,
@@ -11,7 +12,15 @@ import {
   Plus,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { createProduct, fetchCategories, fetchCitiesByCountry, type ProductCategory } from '../lib/api'
+import {
+  createProduct,
+  updateProduct,
+  fetchCategories,
+  fetchCitiesByCountry,
+  fetchProduct,
+  type ProductCategory,
+} from '../lib/api'
+import type { Product, ProductShippingZone } from '../types'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import ShippingZoneForm, { type ShippingZone, type CountryOption } from '../components/ShippingZoneForm'
@@ -118,20 +127,31 @@ const initialState: FormState = {
   free_shipping: false,
   free_shipping_zone: [],
   promotion_fees_activated: false,
-  promotion_fees_percentage: '',
+  promotion_fees_percentage: "0.05",
   product_available: true,
   saling_terms_agreements: false,
+}
+
+interface PhotoItem {
+  preview: string
+  file?: File
+  ref?: string
 }
 
 export default function PublishPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { productId } = useParams<{ productId: string }>()
+  const productIdNum = productId ? Number(productId) : null
+  const isEdit = productIdNum != null && Number.isFinite(productIdNum) && productIdNum > 0
+
   const [form, setForm] = useState<FormState>(initialState)
-  const [images, setImages] = useState<File[]>([])
-  const [previews, setPreviews] = useState<string[]>([])
+  const [photoItems, setPhotoItems] = useState<PhotoItem[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [loadingProduct, setLoadingProduct] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const [categories, setCategories] = useState<ProductCategory[]>([])
   const [categoriesLoading, setCategoriesLoading] = useState(false)
@@ -144,12 +164,18 @@ export default function PublishPage() {
   const [cities, setCities] = useState<string[]>([])
   const [citiesLoading, setCitiesLoading] = useState(false)
   const [citiesError, setCitiesError] = useState<string | null>(null)
+  const skipCityReset = useRef(isEdit)
 
   useEffect(() => {
     if (!form.country_code || form.country_code === 'Other') {
       setCities([])
       setCitiesError(null)
       return
+    }
+    if (skipCityReset.current) {
+      skipCityReset.current = false
+    } else {
+      setForm((prev) => ({ ...prev, city: '' }))
     }
     let cancelled = false
     setCitiesLoading(true)
@@ -174,7 +200,88 @@ export default function PublishPage() {
     }
   }, [form.country_code, t])
 
-  const maxFiles = 4
+  const authToken = useAppSelector((state) => state.auth.token)
+  const user = useAppSelector((state) => state.auth.user)
+
+  const maxFiles = useAppSelector((state) => {
+    const value = state.settings.settings?.nb_files_product
+    const nb = typeof value === 'number' ? value : Number(value)
+    return Number.isFinite(nb) && nb > 0 ? nb : 4
+  })
+
+  const mapZone = (zone: ProductShippingZone): ShippingZone => ({
+    country_code: String(zone.country_code ?? ''),
+    country_name: String(zone.country_name ?? ''),
+    city: String(zone.city ?? ''),
+    fee:
+      zone.fee != null || zone.fee_amount != null
+        ? String(zone.fee ?? zone.fee_amount)
+        : undefined,
+  })
+
+  const prefillProduct = (product: Product) => {
+    setForm({
+      category_selected_id: product.category?.id != null ? String(product.category.id) : '',
+      libelle: product.libelle ?? '',
+      is_digital: Boolean(product.is_digital),
+      price: String(product.price_str ?? product.price ?? ''),
+      quantity: String(product.quantity ?? 1),
+      description: product.description ?? '',
+      country_code: product.country_code ?? '',
+      city: product.city ?? '',
+      address: product.address ?? '',
+      email: product.email ?? '',
+      shipping_zone: (product.shipping_zone ?? []).map(mapZone),
+      free_shipping: Boolean(product.free_shipping),
+      free_shipping_zone: (product.free_shipping_zone ?? []).map(mapZone),
+      promotion_fees_activated: Boolean(product.promotion_fees_activated),
+      promotion_fees_percentage:
+        product.promotion_fees_percentage != null ? String(product.promotion_fees_percentage) : '',
+      product_available: Boolean(product.visible ?? true),
+      saling_terms_agreements: true,
+    })
+    setPhotoItems((product.images ?? []).map((img) => ({ preview: img.lien, ref: img.lien })))
+    fetchCategories()
+      .then((list) => {
+        if (list.length > 0) setCategories(list)
+      })
+      .catch(() => {
+        // categories can be loaded later from the category picker
+      })
+  }
+
+  useEffect(() => {
+    if (!isEdit || !productIdNum) return
+    let cancelled = false
+    setLoadingProduct(true)
+    setLoadError(null)
+    fetchProduct(productIdNum, authToken ?? undefined)
+      .then((data) => {
+        if (cancelled) return
+        if (!data.product) {
+          setLoadError(t('product_not_found', { defaultValue: 'Product not found' }))
+          return
+        }
+        prefillProduct(data.product)
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setLoadError(err instanceof Error ? err.message : t('publish_error', { defaultValue: "Couldn't load product" }))
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingProduct(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isEdit, productIdNum, authToken, t])
+
+  useEffect(() => {
+    if (!isEdit && user?.email && form.email === '') {
+      setForm((prev) => ({ ...prev, email: user!.email! }))
+    }
+  }, [isEdit, user?.email, form.email])
 
   const piRate = useAppSelector((state) => {
     const value = state.settings.settings?.piUSDTValue
@@ -225,19 +332,17 @@ export default function PublishPage() {
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? [])
     if (files.length === 0) return
-    setImages((prev) => [...prev, ...files].slice(0, maxFiles))
-    setPreviews((prev) =>
+    setPhotoItems((prev) =>
       [
         ...prev,
-        ...files.map((file) => URL.createObjectURL(file)),
+        ...files.map((file) => ({ preview: URL.createObjectURL(file), file })),
       ].slice(0, maxFiles),
     )
     event.target.value = ''
   }
 
   const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index))
-    setPreviews((prev) => prev.filter((_, i) => i !== index))
+    setPhotoItems((prev) => prev.filter((_, i) => i !== index))
   }
 
   const saveZone = (zone: ShippingZone) => {
@@ -293,8 +398,8 @@ export default function PublishPage() {
 
     setSubmitting(true)
     try {
-      await createProduct({
-        category_selected_id: form.category_selected_id,
+      const basePayload = {
+        categories_id: form.category_selected_id,
         libelle: form.libelle.trim(),
         description: form.description.trim(),
         price: form.price,
@@ -304,23 +409,75 @@ export default function PublishPage() {
         city: form.city.trim(),
         email: form.email.trim(),
         is_digital: form.is_digital,
-        shipping_zone: JSON.stringify(form.shipping_zone),
+        shipping_zone: form.shipping_zone,
         free_shipping: form.free_shipping,
-        free_shipping_zone: JSON.stringify(form.free_shipping_zone),
+        free_shipping_zone: form.free_shipping_zone,
         promotion_fees_activated: form.promotion_fees_activated,
         promotion_fees_percentage: form.promotion_fees_percentage,
-        product_available: form.product_available,
-        saling_terms_agreements: form.saling_terms_agreements,
-        images,
-      })
-      setSuccess(true)
-      showAlert(
-        t('publish_success_title', { defaultValue: 'Product published!' }),
-        t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' }),
-        'success',
-        1400,
+      }
+
+      if (isEdit && productIdNum) {
+        const photos: string[] = []
+        const newFiles: File[] = []
+        for (const item of photoItems) {
+          if (item.ref) {
+            photos.push(item.ref)
+          } else if (item.file) {
+            newFiles.push(item.file)
+          }
+        }
+        console.log('Updating product with payload:', { ...basePayload, photos, images: newFiles })
+        const res = await updateProduct(
+          productIdNum,
+          { ...basePayload, photos, images: newFiles },
+          authToken ?? undefined,
+        )
+        console.log('Update product response:', res)
+        setSubmitting(false)
+        if ((res as any).status) {
+          setSuccess(true)
+          showAlert(
+            t('publish_update_success_title', { defaultValue: 'Product updated!' }),
+            '',
+            'success',
+            1400,
+          )
+          setTimeout(() => navigate(`/product/${productIdNum}`), 1400)
+          return
+        }
+        if ((res as any).message) {
+          setError((res as any).message)
+        } else {
+          setError(t('message.an_error_occured', { defaultValue: 'Failed to update product' }))
+        }
+        return
+      }
+
+      const res = await createProduct(
+        {
+          ...basePayload,
+          product_available: form.product_available,
+          saling_terms_agreements: form.saling_terms_agreements,
+          images: photoItems.filter((item) => item.file).map((item) => item.file as File),
+        },
+        authToken ?? undefined,
       )
-      setTimeout(() => navigate('/'), 1400)
+      setSubmitting(false)
+      if ((res as any).status) {
+        setSuccess(true)
+        showAlert(
+          t('publish_success_title', { defaultValue: 'Product published!' }),
+          t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' }),
+          'success',
+          1400,
+        )
+        setTimeout(() => navigate('/my-store'), 1400)
+        return
+      }else if((res as any).message) {
+        setError((res as any).message)
+      } else {
+        setError(t('message.an_error_occured', { defaultValue: 'Failed to publish product 2' }))
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('publish_error', { defaultValue: 'Failed to publish product' }))
       showAlert(
@@ -340,8 +497,33 @@ export default function PublishPage() {
             <span className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-deep text-white shadow-soft">
               <CheckCircle2 size={32} />
             </span>
-            <h2 className="text-lg font-bold text-primary-dark">{t('publish_success_title', { defaultValue: 'Product published!' })}</h2>
-            <p className="text-xs text-ink-soft">{t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' })}</p>
+            <h2 className="text-lg font-bold text-primary-dark">
+              {isEdit
+                ? t('publish_update_success_title', { defaultValue: 'Product updated!' })
+                : t('publish_success_title', { defaultValue: 'Product published!' })}
+            </h2>
+            <p className="text-xs text-ink-soft">
+              {isEdit
+                ? t('publish_success_subtitle', { defaultValue: 'Redirecting to the product…' })
+                : t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' })}
+            </p>
+          </div>
+        ) : loadingProduct ? (
+          <div className="flex flex-col items-center gap-2 py-16 text-xs text-ink-soft">
+            <img src="/site_images/index_loader.gif" alt="" className="w-[70px] rounded-sm" />
+            {t('loading', { defaultValue: 'Loading…' })}
+          </div>
+        ) : loadError ? (
+          <div className="flex flex-col items-center gap-3 py-16 text-center">
+            <AlertCircle size={28} className="text-red-500" />
+            <p className="text-sm font-semibold text-ink">{loadError}</p>
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="mt-2 rounded-full bg-primary px-5 py-2 text-xs font-semibold text-white transition hover:bg-primary-dark"
+            >
+              {t('home', { defaultValue: 'Home' })}
+            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -375,6 +557,21 @@ export default function PublishPage() {
                 value={form.libelle}
                 onChange={(e) => updateField('libelle', e.target.value)}
                 className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="description" className={labelClass}>
+                {t('description', { defaultValue: 'Description *' })}
+              </label>
+              <textarea
+                id="description"
+                rows={4}
+                maxLength={2000}
+                placeholder={t('please enter a description', { defaultValue: 'Describe your product or service…' })}
+                value={form.description}
+                onChange={(e) => updateField('description', e.target.value)}
+                className={`${inputClass} resize-none`}
               />
             </div>
 
@@ -432,6 +629,48 @@ export default function PublishPage() {
                 </p>
               )}
             </div>
+
+            <div>
+              <label htmlFor="email" className={labelClass}>
+                {t('profilForm.email_for_notifications', { defaultValue: 'Email for notifications *' })}
+              </label>
+              <input
+                id="email"
+                type="email"
+                maxLength={160}
+                placeholder={t('publish_email_placeholder', { defaultValue: 'you@example.com' })}
+                value={form.email}
+                onChange={(e) => updateField('email', e.target.value)}
+                className={inputClass}
+              />
+            </div>
+
+            {form.is_digital && (//Ask only for country when product is digital
+              <div>
+                <label htmlFor="country_code" className={labelClass}>
+                  {t('select_country', { defaultValue: 'Country *' })}
+                </label>
+                <select
+                  id="country_code"
+                  value={selectedCountryExists ? form.country_code : ''}
+                  onChange={(e) => updateField('country_code', e.target.value)}
+                  className={inputClass}
+                >
+                  {!selectedCountryExists && (
+                    <option value="" disabled>
+                      {t('select_country', { defaultValue: 'Select a country…' })}
+                    </option>
+                  )}
+                  {countries.map(([code, name]) => (
+                    <option key={code} value={code}>
+                      {code === 'Other'
+                        ? t('publish_other', { defaultValue: 'Other' })
+                        : name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {!form.is_digital && (
               <>
@@ -495,8 +734,8 @@ export default function PublishPage() {
                       <option value="" disabled>
                         {t('select_city', { defaultValue: 'Select a city…' })}
                       </option>
-                      {cities.map((item) => (
-                        <option key={item} value={item}>
+                      {cities.map((item, index) => (
+                        <option key={`${item}-${index}`} value={item}>
                           {item}
                         </option>
                       ))}
@@ -533,38 +772,8 @@ export default function PublishPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="description" className={labelClass}>
-                    {t('description', { defaultValue: 'Description *' })}
-                  </label>
-                  <textarea
-                    id="description"
-                    rows={4}
-                    maxLength={2000}
-                    placeholder={t('please enter a description', { defaultValue: 'Describe your product or service…' })}
-                    value={form.description}
-                    onChange={(e) => updateField('description', e.target.value)}
-                    className={`${inputClass} resize-none`}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className={labelClass}>
-                    {t('publish_email_label', { defaultValue: 'Email for notifications *' })}
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    maxLength={160}
-                    placeholder={t('publish_email_placeholder', { defaultValue: 'you@example.com' })}
-                    value={form.email}
-                    onChange={(e) => updateField('email', e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-
-                <div>
                   <span className={labelClass}>
-                    {t('publish_shipping_zones', { defaultValue: 'Zones and shipping fees' })}
+                    {t('shipping_zones_and_fees', { defaultValue: 'Zones and shipping fees' })}
                   </span>
                   {form.shipping_zone.length > 0 && (
                     <div className="space-y-2">
@@ -590,7 +799,7 @@ export default function PublishPage() {
                                 </span>
                               ) : (
                                 <span className="text-xs font-bold text-emerald-500">
-                                  {t('publish_free', { defaultValue: 'Free' })}
+                                  {t('free', { defaultValue: 'Free' })}
                                 </span>
                               )}
                               <button
@@ -615,7 +824,7 @@ export default function PublishPage() {
                       className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/30 bg-mist/40 py-3 text-xs font-semibold text-primary transition hover:border-primary hover:bg-mist"
                     >
                       <Plus size={16} />
-                      {t('publish_add_zone', { defaultValue: 'Add' })}
+                      {t('add', { defaultValue: 'Add' })}
                     </button>
                   ) : null}
                 </div>
@@ -625,7 +834,7 @@ export default function PublishPage() {
                   className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-3"
                 >
                   <span className="text-xs font-semibold text-ink-soft">
-                    {t('publish_free_shipping', { defaultValue: 'Free shipping' })}
+                    {t('free_shipping', { defaultValue: 'Free shipping' })}
                     <span className="block text-[10px] font-normal text-slate-400">
                       {t('publish_free_shipping_hint', {
                         defaultValue: 'Offer free delivery to the buyer',
@@ -645,7 +854,7 @@ export default function PublishPage() {
                 {form.free_shipping && (
                   <div>
                     <span className={labelClass}>
-                      {t('publish_free_shipping_zones', { defaultValue: 'Zone & free shippings' })}
+                      {t('free_shipping_zones', { defaultValue: 'Zone & free shippings' })}
                     </span>
                     {form.free_shipping_zone.length > 0 && (
                       <div className="space-y-2">
@@ -660,7 +869,7 @@ export default function PublishPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-bold text-emerald-500">
-                                {t('publish_free', { defaultValue: 'Free' })}
+                                {t('free', { defaultValue: 'Free' })}
                               </span>
                               <button
                                 type="button"
@@ -682,7 +891,7 @@ export default function PublishPage() {
                         className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/30 bg-mist/40 py-3 text-xs font-semibold text-primary transition hover:border-primary hover:bg-mist"
                       >
                         <Plus size={16} />
-                        {t('publish_add_zone', { defaultValue: 'Add' })}
+                        {t('add', { defaultValue: 'Add' })}
                       </button>
                     ) : null}
                   </div>
@@ -691,14 +900,14 @@ export default function PublishPage() {
             )}
 
             <div>
-              <span className={labelClass}>{t('publish_photos', { defaultValue: `Photos (up to ${maxFiles})` })}</span>
+              <span className={labelClass}>{t('upload.image_label', { nb: maxFiles, defaultValue: `Images (max = ${maxFiles})` })}</span>
               <div className="grid grid-cols-3 gap-2">
-                {previews.map((src, index) => (
+                {photoItems.map((item, index) => (
                   <div
-                    key={src}
+                    key={`${item.preview}-${index}`}
                     className="relative aspect-square overflow-hidden rounded-xl border border-slate-200"
                   >
-                    <img src={src} alt="" className="h-full w-full object-cover" />
+                    <img src={item.preview} alt="" className="h-full w-full object-cover" />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
@@ -709,7 +918,7 @@ export default function PublishPage() {
                     </button>
                   </div>
                 ))}
-                {images.length < maxFiles && (
+                {photoItems.length < maxFiles && (
                   <label
                     htmlFor="images"
                     className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-primary/30 bg-mist/40 text-primary transition hover:border-primary hover:bg-mist"
@@ -730,6 +939,12 @@ export default function PublishPage() {
             </div>
 
             <div className="space-y-3">
+              <div className="rounded-xl border border-primary/20 bg-primary/5 px-3.5 py-3 text-xs font-medium text-ink-soft">
+                {t('promotion_text_explanation', {
+                  defaultValue: 'Activating a promotion allows you to offer a percentage discount to users to make your item more attractive and increase your chances of selling.',
+                })}
+              </div>
+
               <label
                 htmlFor="promotion_fees_activated"
                 className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-3"
@@ -754,7 +969,7 @@ export default function PublishPage() {
               {form.promotion_fees_activated && (
                 <div>
                   <label htmlFor="promotion_fees_percentage" className={labelClass}>
-                    {t('publish_promotion_fees_percentage', { defaultValue: 'Promotion fees (%)' })}
+                    {t('promotion fees percentage', { defaultValue: 'Promotion fees (%)' })}
                   </label>
                   <input
                     id="promotion_fees_percentage"
@@ -797,9 +1012,9 @@ export default function PublishPage() {
                 className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-3"
               >
                 <span className="text-xs font-semibold text-ink-soft">
-                  {t('publish_saling_terms_agreements', { defaultValue: 'Selling terms' })}
+                  {t('selling_terms', { defaultValue: 'Selling terms' })}
                   <span className="block text-[10px] font-normal text-slate-400">
-                    {t('publish_saling_terms_agreements_hint', {
+                    {t('agree_to_platform_selling_terms', {
                       defaultValue: 'I agree to the platform selling terms',
                     })}
                   </span>
@@ -830,15 +1045,19 @@ export default function PublishPage() {
               {submitting ? (
                 <>
                   <Loader2 size={16} className="animate-spin" />
-                  {t('saving', { defaultValue: 'Publishing…' })}
+                  {isEdit
+                    ? t('saving', { defaultValue: 'Updating…' })
+                    : t('saving', { defaultValue: 'Publishing…' })}
                 </>
+              ) : isEdit ? (
+                t('update_product', { defaultValue: 'Update product' })
               ) : (
                 t('publish', { defaultValue: 'Publish product' })
               )}
             </button>
 
             <p className="text-center text-[10px] leading-relaxed text-slate-400">
-              {t('publish_agreement', {
+              {t('publish_policies_notice', {
                 defaultValue: "By publishing, you agree to Piketplace's selling policies.",
               })}
             </p>
@@ -863,62 +1082,64 @@ export default function PublishPage() {
         onCancel={() => setFreeZoneOpen(false)}
       />
 
-      {categoryOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
-          onClick={() => setCategoryOpen(false)}
-        >
+      {categoryOpen &&
+        createPortal(
           <div
-            className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
-            onClick={(event) => event.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
+            onClick={() => setCategoryOpen(false)}
           >
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-primary-dark">
-                {t('choose_category', { defaultValue: 'Choose a category' })}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setCategoryOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-slate-100"
-              >
-                <X size={18} />
-              </button>
+            <div
+              className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-primary-dark">
+                  {t('choose_category', { defaultValue: 'Choose a category' })}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setCategoryOpen(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-slate-100"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="max-h-[60vh] overflow-y-auto">
+                {categoriesLoading && (
+                  <div className="flex items-center justify-center gap-2 py-8 text-xs font-semibold text-ink-soft">
+                    <Loader2 size={16} className="animate-spin text-primary" />
+                    {t('publish_categories_loading', { defaultValue: 'Loading categories…' })}
+                  </div>
+                )}
+                {categoriesError && (
+                  <div className="flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 p-3 text-xs font-medium text-red-600">
+                    <AlertCircle size={15} className="shrink-0" />
+                    <span>{categoriesError}</span>
+                  </div>
+                )}
+                {!categoriesLoading && !categoriesError && (
+                  <div className="space-y-1">
+                    {categories.map((category) => {
+                      const isSelected = String(category.id) === form.category_selected_id
+                      return (
+                        <button
+                          key={category.id}
+                          type="button"
+                          onClick={() => selectCategory(category.id)}
+                          className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-sm font-semibold text-ink transition hover:bg-pink-50"
+                        >
+                          <span>{t(`categories.${category.code}`)}</span>
+                          {isSelected && <Check size={18} className="text-primary" />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="max-h-[60vh] overflow-y-auto">
-              {categoriesLoading && (
-                <div className="flex items-center justify-center gap-2 py-8 text-xs font-semibold text-ink-soft">
-                  <Loader2 size={16} className="animate-spin text-primary" />
-                  {t('publish_categories_loading', { defaultValue: 'Loading categories…' })}
-                </div>
-              )}
-              {categoriesError && (
-                <div className="flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 p-3 text-xs font-medium text-red-600">
-                  <AlertCircle size={15} className="shrink-0" />
-                  <span>{categoriesError}</span>
-                </div>
-              )}
-              {!categoriesLoading && !categoriesError && (
-                <div className="space-y-1">
-                  {categories.map((category) => {
-                    const isSelected = String(category.id) === form.category_selected_id
-                    return (
-                      <button
-                        key={category.id}
-                        type="button"
-                        onClick={() => selectCategory(category.id)}
-                        className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-sm font-semibold text-ink transition hover:bg-pink-50"
-                      >
-                        <span>{t(`categories.${category.code}`)}</span>
-                        {isSelected && <Check size={18} className="text-primary" />}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

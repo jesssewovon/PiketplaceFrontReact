@@ -1,0 +1,76 @@
+name: Deploy Piketplace to cPanel
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy_mainnet:
+    runs-on: ubuntu-latest
+
+    env:
+      VITE_APP_BASE_URL: https://mainnet-backend.piketplace.com
+      VITE_APP_BACKEND_URL: https://mainnet-backend.piketplace.com/api/v1
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout Code 🚚
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies 📦
+        run: npm install
+
+      - name: Build React App / Vue App (depending on user app) 🏗️
+        run: npm run build
+
+      - name: Upload to cPanel 📂
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.MAINNET_FTP_SERVER }}
+          username: ${{ secrets.SHOP_FTP_USERNAME }}
+          password: ${{ secrets.MAINNET_FTP_PASSWORD }}
+          server-dir: / 
+          exclude: |
+            **/.git**
+            **/.git*/**
+            **/node_modules/**
+            **/.**
+            
+  deploy_testnet:
+    runs-on: ubuntu-latest
+
+    env:
+      VITE_APP_BASE_URL: https://testnet-backend.piketplace.com
+      VITE_APP_BACKEND_URL: https://testnet-backend.piketplace.com/api/v1
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout Code 🚚
+        uses: actions/checkout@v3
+
+      
+      - name: Install Dependencies 📦
+        run: npm install
+
+      - name: Build React App / Vue App (depending on user app) 🏗️
+        run: npm run build
+
+      - name: Upload to cPanel 📂
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.TESTNET_FTP_SERVER }}
+          username: ${{ secrets.TESTNET_FTP_USERNAME }}
+          password: ${{ secrets.TESTNET_FTP_PASSWORD }}
+          server-dir: / 
+          exclude: |
+            **/.git**
+            **/.git*/**
+            **/node_modules/**
+            **/.**

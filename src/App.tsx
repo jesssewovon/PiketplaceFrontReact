@@ -7,6 +7,7 @@ import IndexPage from './pages/IndexPage'
 import ProductPage from './pages/ProductPage'
 import CartBuyNowPage from './pages/CartBuyNowPage'
 import ProfilPage from './pages/ProfilPage'
+import EmailVerificationCodePage from './pages/EmailVerificationCodePage'
 import ReferralsPage from './pages/ReferralsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import ShippingManagementPage from './pages/ShippingManagementPage'
@@ -21,6 +22,7 @@ import StorePage from './pages/StorePage'
 import MySalesPage from './pages/MySalesPage'
 import MyOrdersPage from './pages/MyOrdersPage'
 import MessageContactsPage from './pages/MessageContactsPage'
+import MessageThreadPage from './pages/MessageThreadPage'
 import TermsPage from './pages/TermsPage'
 import FaqPage from './pages/FaqPage'
 import PartnershipsPage from './pages/PartnershipsPage'
@@ -37,6 +39,8 @@ import AdministrationPage from './pages/Admin/AdministrationPage'
 import AdminProductsPage from './pages/Admin/AdminProductsPage'
 import AdminOrdersPage from './pages/Admin/AdminOrdersPage'
 import AdminWithdrawalsPage from './pages/Admin/AdminWithdrawalsPage'
+import AdminUsersPage from './pages/Admin/AdminUsers'
+import AdminSettingsPage from './pages/Admin/AdminSettings'
 import WalletBalanceDetailsPage from './pages/Admin/WalletBalanceDetailsPage'
 
 function App() {
@@ -54,19 +58,21 @@ function App() {
         <Route path="product/:id" element={<ProductPage />} />
         <Route path="cart-buy-now/:id/:inFreeShippingZone?" element={<CartBuyNowPage />} />
         <Route path="profil" element={<ProfilPage />} />
+        <Route path="email-verification-code/:email" element={<EmailVerificationCodePage />} />
         <Route path="referrals" element={<ReferralsPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="shipping-management/line-order/:id" element={<ShippingManagementPage />} />
         <Route path="add-update-shipping-images/:type" element={<AddShippingImagesPage />} />
         <Route path="pay-delivery-penalities" element={<PayDeliveryPenaltiesPage />} />
         <Route path="maintenance" element={<MaintenancePage />} />
-        <Route path="publish" element={<PublishPage />} />
+        <Route path="publish/:productId?" element={<PublishPage />} />
         <Route path="account" element={<MyAccountPage />} />
         <Route path="my-store" element={<MyStorePage />} />
         <Route path="store/:shopUserId" element={<StorePage />} />
         <Route path="my-sales" element={<MySalesPage />} />
         <Route path="my-orders" element={<MyOrdersPage />} />
         <Route path="message-contacts" element={<MessageContactsPage />} />
+        <Route path="messages/:correspondingId/:lineOrderId" element={<MessageThreadPage />} />
         <Route path="terms" element={<TermsPage />} />
         <Route path="faq" element={<FaqPage />} />
         <Route path="partnerships" element={<PartnershipsPage />} />
@@ -83,6 +89,8 @@ function App() {
         <Route path="admin-products" element={<AdminProductsPage />} />
         <Route path="admin-orders" element={<AdminOrdersPage />} />
         <Route path="admin-withdrawals" element={<AdminWithdrawalsPage />} />
+        <Route path="users" element={<AdminUsersPage />} />
+        <Route path="admin/settings" element={<AdminSettingsPage />} />
         <Route path="wallet-balance-details/:username" element={<WalletBalanceDetailsPage />} />
         <Route path="*" element={<ComingSoonPage />} />
       </Route>

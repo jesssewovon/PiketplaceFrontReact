@@ -17,7 +17,7 @@ import {
   Wallet,
   X,
 } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import type { BoostPeriod, CancellationReason, Product, ProductDetailResponse } from '../types'
 import {
   addStock,
@@ -106,6 +106,7 @@ export default function ProductPage() {
   const productId = Number(id)
   const locale = i18n.language.split('-')[0]
   const canValidate = Array.isArray(permissions) && permissions.includes('validate_products')
+  const isAdmin = Array.isArray(permissions) && permissions.includes('browse_settings')
   const purchaseActivation = settings?.purchase_activation !== false
   const purchaseFromCart =
     typeof settings?.purchase_from_cart_activate === 'boolean'
@@ -164,6 +165,7 @@ export default function ProductPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
 
   const isOwner = Boolean(isLoggedIn && user && product && user.id === product.pi_users_id)
 
@@ -687,11 +689,12 @@ export default function ProductPage() {
 
   const sendValidation = async (status: string, codes?: string[]) => {
     if (!product) return
-    setIsSaving(true)
+    setIsValidating(true)
     try {
       const res = await validateProduct(token ?? undefined, product.id, status, codes)
-      setIsSaving(false)
+      setIsValidating(false)
       if (res.status) {
+        setProduct((prev) => (prev ? { ...prev, status } : prev))
         if (res.message === 'already_validated') {
           showSuccess(t('already_validated', { defaultValue: 'Already validated' }))
         } else if (res.message === 'already_rejected') {
@@ -703,7 +706,7 @@ export default function ProductPage() {
         showError(t('an_error_occured', { defaultValue: 'An error occurred' }))
       }
     } catch {
-      setIsSaving(false)
+      setIsValidating(false)
       showError(t('an_error_occured', { defaultValue: 'An error occurred' }))
     }
   }
@@ -794,7 +797,7 @@ export default function ProductPage() {
               {t(product.visible ? 'hide' : 'display', { defaultValue: product.visible ? 'Hide' : 'Display' })}
             </button>
             {updateActive && (
-              <Link to="/publish" className="text-green-600">
+              <Link to={`/publish/${product.id}`} className="text-green-600">
                 <Pencil size={14} className="mr-1 inline" />
                 {t('update_product', { defaultValue: 'Update product' })}
               </Link>
@@ -1142,11 +1145,23 @@ export default function ProductPage() {
 
           {product.promotion_fees_activated && (
             <div className="my-3 rounded-xl bg-[#f9e4ed] p-3 text-center text-sm leading-relaxed text-ink">
-              {t('share and get percentage after sale with your link', {
-                defaultValue: 'Share {icon} and get {percentage}% of commission after sale with your link',
-                icon: <Share2 size={14} className="inline text-primary" />,
-                percentage: String(product.promotion_fees_percentage ?? ''),
-              })}
+              <Trans
+                i18nKey="share and get percentage after sale with your link"
+                defaults="Share <shared/> and get {percentage}% of commission after sale with your link"
+                values={{ percentage: String(product.promotion_fees_percentage ?? '') }}
+                components={{
+                  shared: (
+                    <button
+                      type="button"
+                      onClick={shareProduct}
+                      className="inline align-middle"
+                      aria-label={t('share', { defaultValue: 'Share' })}
+                    >
+                      <Share2 size={14} className="inline text-primary" />
+                    </button>
+                  ),
+                }}
+              />
             </div>
           )}
 
@@ -1250,8 +1265,18 @@ export default function ProductPage() {
             </div>
           </div>
 
-          {isOwner && approbationActive && product.status && (
-            <p className="mt-3 text-right text-xs font-semibold text-primary">
+          {(isOwner || isAdmin) && approbationActive && product.status && (
+            <p
+              className={`mt-3 inline-flex items-center gap-1 self-end rounded-full px-3 py-1 text-xs font-bold text-white shadow-sm ${
+                product.status === 'validated'
+                  ? 'bg-green-600'
+                  : product.status === 'rejected'
+                    ? 'bg-red-600'
+                    : product.status === 'pending'
+                      ? 'bg-amber-500'
+                      : 'bg-primary'
+              }`}
+            >
               {t(`product_${product.status}`, { defaultValue: product.status })}
             </p>
           )}
@@ -1342,6 +1367,12 @@ export default function ProductPage() {
       </section>
 
       {isDeleting && (
+        <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-black/30">
+          <Loader2 size={32} className="animate-spin text-white" />
+        </div>
+      )}
+
+      {isValidating && (
         <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-black/30">
           <Loader2 size={32} className="animate-spin text-white" />
         </div>
@@ -1496,7 +1527,7 @@ export default function ProductPage() {
         document.body,
       )}
 
-      {reasonsOpen && (
+      {reasonsOpen && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6"
           onClick={() => setReasonsOpen(false)}
@@ -1545,7 +1576,8 @@ export default function ProductPage() {
               {t('continue', { defaultValue: 'Continue' })}
             </button>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   )

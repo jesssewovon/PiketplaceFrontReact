@@ -405,7 +405,7 @@ export default function CartBuyNowPage() {
 
   useEffect(() => {
     setCanPay(false)
-    setPreOrder(true)
+    setPreOrder(false)
     if (confirmInXendloZone === true) {
       setCanPay(true)
       setPreOrder(false)
@@ -538,6 +538,7 @@ export default function CartBuyNowPage() {
     }
     setIsPaying(true)
     try {
+      console.log('Paying with Piketplace Wallet, payload:', payload)
       const res = await payPiketplaceWallet(token ?? undefined, user?.uid, payload)
       setIsPaying(false)
       if (res.status === true) {

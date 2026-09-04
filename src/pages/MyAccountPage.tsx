@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import {
   Store,
@@ -24,6 +24,7 @@ import {
   Settings,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { flagEmoji } from '../lib/geo'
 import i18n, { SUPPORTED_LANGUAGES } from '../i18n'
 import LoginPanel from '../components/LoginPanel'
 import { signOut } from '../lib/api'
@@ -125,6 +126,10 @@ export default function MyAccountPage() {
   const dispatch = useAppDispatch()
   const [signingOut, setSigningOut] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const token = useAppSelector((state) => state.auth.token)
   const isPartner = useAppSelector((state) => state.auth.user?.is_partner === true)
@@ -244,12 +249,12 @@ export default function MyAccountPage() {
           onClick={() => setLangOpen(false)}
         >
           <div
-            className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
+            className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 py-2"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-bold text-primary-dark">
-                {t('account_choose_language', { defaultValue: 'Choose language' })}
+                {t('side_menu.language', { defaultValue: 'Choose language' })}
               </h3>
               <button
                 type="button"
@@ -259,16 +264,19 @@ export default function MyAccountPage() {
                 <X size={18} />
               </button>
             </div>
-            <div className="max-h-[60vh] overflow-y-auto">
+            <div className="grid max-h-[67vh] grid-cols-2 gap-2 overflow-y-auto">
               {languages.map((item) => (
                 <button
                   key={item.code}
                   type="button"
                   onClick={() => selectLanguage(item.code)}
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-sm font-semibold text-ink transition hover:bg-pink-50"
+                  className="flex w-full items-center justify-between rounded-xl bg-slate-50 px-3 py-3 text-sm font-semibold text-ink transition hover:bg-pink-50"
                 >
-                  <span>{item.name}</span>
-                  {item.code === currentLang && <Check size={18} className="text-primary" />}
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="text-base leading-none">{flagEmoji(item.country_code)}</span>
+                    <span className="truncate">{item.name}</span>
+                  </span>
+                  {item.code === currentLang && <Check size={18} className="shrink-0 text-primary" />}
                 </button>
               ))}
             </div>

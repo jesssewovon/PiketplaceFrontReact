@@ -5,7 +5,7 @@ import { Loader2, MapPin, MessageSquare, Search, Truck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { CancellationReason, LineOrder } from '../types'
 import { fetchOrders, fetchShippedOrders, updateLineOrder } from '../lib/api'
-import { formatAmount, formatDate, normalizeCancellationReasons } from '../lib/format'
+import { formatAmount, formatDateTime, normalizeCancellationReasons } from '../lib/format'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
 import CancellationReasonsModal from '../components/CancellationReasonsModal'
@@ -35,18 +35,18 @@ function OrderCard({
   line,
   onCancel,
   onCancelRequest,
+  cancelling,
 }: {
   line: LineOrder
   onCancel: (line: LineOrder) => void
   onCancelRequest: (line: LineOrder) => void
+  cancelling: boolean
 }) {
   const { t } = useTranslation()
   const product = line.product
   const seller = line.product?.user
   const date = line.shipped_at ? line.shipped_at : line.order?.ordered_at
   const quantity = line.quantity ?? 0
-  const price = line.price_converted ?? line.product?.price ?? 0
-  const currency = line.currency_conversion ?? ''
   const purchaseTotal = line.purchaseData?.total ?? (line.total ?? 0) + (line.fee ?? 0)
   const cancellable = !line.shipped_at && !line.cancelled_at
 
@@ -58,7 +58,7 @@ function OrderCard({
             ? t('shipped', { defaultValue: 'Shipped' })
             : t('ordered', { defaultValue: 'Ordered' })}
         </span>
-        {date && <em className="text-[11px] text-ink-soft">{formatDate(date)}</em>}
+        {date && <em className="text-[11px] text-ink-soft">{formatDateTime(date)}</em>}
       </div>
 
       <div className="my-2 h-px bg-black/5" />
@@ -111,7 +111,8 @@ function OrderCard({
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium leading-snug text-ink">{product?.libelle ?? ''}</p>
           <p className="mt-1 text-xs font-semibold text-primary">
-            {formatAmount(price, currency)}
+            {/* {formatAmount(price, currency)} */}
+            {<span dangerouslySetInnerHTML={{ __html: line.purchaseData?.item_total?? '' }} />}
             <span className="ml-2 text-[11px] font-medium text-ink-soft">
               {quantity}x {t('item', { defaultValue: 'Item' })}
             </span>
@@ -129,10 +130,10 @@ function OrderCard({
             </p>
           ) : line.purchaseData?.handling_fee ? (
             <p className="mt-1 text-[11px] text-ink-soft">
-              {t('handling_fee_percentage', {
-                defaultValue: 'Handling fee: {amount}',
-                amount: formatAmount(line.purchaseData.handling_fee),
-              })}
+              {<div dangerouslySetInnerHTML={{ __html: t('handling_fee_percentage', {
+                defaultValue: 'Total : {amount}',
+                amount: line.purchaseData?.handling_fee,
+              }) }} />}
             </p>
           ) : line.noshipping ? (
             <p className="mt-1 text-[11px] text-ink-soft">
@@ -140,17 +141,17 @@ function OrderCard({
             </p>
           ) : null}
           <p className="mt-1 text-right text-xs font-semibold text-primary">
-            {t('total_display', {
+            {<div dangerouslySetInnerHTML={{ __html: t('total_display', {
               defaultValue: 'Total : {amount}',
-              amount: formatAmount(purchaseTotal),
-            })}
+              amount: purchaseTotal,
+            }) }} />}
           </p>
         </div>
       </div>
 
       {!line.shipped_at && (
         <Link
-          to={`/message-contacts?corresponding_id=${seller?.id ?? ''}&line_order_id=${line.id}`}
+          to={`/messages/${seller?.id ?? ''}/${line.id}`}
           className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-primary"
         >
           <MessageSquare size={14} />
@@ -182,27 +183,42 @@ function OrderCard({
               <button
                 type="button"
                 onClick={() => onCancel(line)}
-                className="w-full rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5"
+                disabled={cancelling}
+                className="flex w-full items-center justify-center gap-1 rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <span className="mr-1">×</span>
+                {cancelling ? (
+                  <Loader2 size={12} className="animate-spin" />
+                ) : (
+                  <span className="mr-1">×</span>
+                )}
                 {t('cancel', { defaultValue: 'Cancel' })}
               </button>
             ) : line.line_order_cancellation === null ? (
               <button
                 type="button"
                 onClick={() => onCancel(line)}
-                className="w-full rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5"
+                disabled={cancelling}
+                className="flex w-full items-center justify-center gap-1 rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <span className="mr-1">×</span>
+                {cancelling ? (
+                  <Loader2 size={12} className="animate-spin" />
+                ) : (
+                  <span className="mr-1">×</span>
+                )}
                 {t('request order cancellation', { defaultValue: 'Request order cancellation' })}
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => onCancelRequest(line)}
-                className="w-full rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5"
+                disabled={cancelling}
+                className="flex w-full items-center justify-center gap-1 rounded-lg border border-black/20 px-2 py-1.5 text-[11px] font-bold text-ink transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <span className="mr-1">×</span>
+                {cancelling ? (
+                  <Loader2 size={12} className="animate-spin" />
+                ) : (
+                  <span className="mr-1">×</span>
+                )}
                 {t('cancel request for order cancellation', {
                   defaultValue: 'Cancel request for order cancellation',
                 })}
@@ -233,6 +249,7 @@ export default function MyOrdersPage() {
   const [cancellationReasons, setCancellationReasons] = useState<CancellationReason[]>([])
   const [reasonsOpen, setReasonsOpen] = useState(false)
   const [pendingCancelLine, setPendingCancelLine] = useState<LineOrder | null>(null)
+  const [cancellingIds, setCancellingIds] = useState<Record<number, boolean>>({})
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
   const referenceRef = useRef(reference)
@@ -256,6 +273,7 @@ export default function MyOrdersPage() {
               reference: referenceRef.current || undefined,
             })
         const pagination = res.line_orders
+        console.log('Fetched orders:', res)
         if (append) {
           setOrders((prev) => {
             const seen = new Set(prev.map((line) => line.id))
@@ -338,13 +356,15 @@ export default function MyOrdersPage() {
 
   const cancelOrder = async (reasons: CancellationReason[]) => {
     if (!pendingCancelLine) return
+    const id = pendingCancelLine.id
+    setCancellingIds((prev) => ({ ...prev, [id]: true }))
     try {
       const res = await updateLineOrder(token ?? undefined, pendingCancelLine.id, {
         type: 'cancelled_at',
         reasons,
       })
       if (res.status === true) {
-        applyResult(pendingCancelLine.id, (res.line_order as LineOrder | null) ?? null)
+        setOrders((prev) => prev.filter((line) => line.id !== pendingCancelLine.id))
         void Swal.fire({
           icon: 'success',
           title: t('info', { defaultValue: 'Info' }),
@@ -367,11 +387,13 @@ export default function MyOrdersPage() {
         confirmButtonColor: '#ec11b5',
       })
     } finally {
+      setCancellingIds((prev) => ({ ...prev, [id]: false }))
       setPendingCancelLine(null)
     }
   }
 
   const cancelRequestForCancellation = async (line: LineOrder) => {
+    setCancellingIds((prev) => ({ ...prev, [line.id]: true }))
     try {
       const res = await updateLineOrder(token ?? undefined, line.id, {
         type: 'cancel_request_for_order_cancellation',
@@ -399,6 +421,8 @@ export default function MyOrdersPage() {
         text: t('an_error_occured', { defaultValue: 'An error occurred' }),
         confirmButtonColor: '#ec11b5',
       })
+    } finally {
+      setCancellingIds((prev) => ({ ...prev, [line.id]: false }))
     }
   }
 
@@ -462,6 +486,7 @@ export default function MyOrdersPage() {
               <OrderCard
                 key={line.id}
                 line={line}
+                cancelling={!!cancellingIds[line.id]}
                 onCancel={initCancellation}
                 onCancelRequest={(l) => void cancelRequestForCancellation(l)}
               />

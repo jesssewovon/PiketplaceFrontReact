@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { PackageX, Loader2, SearchX } from 'lucide-react'
+import { PackageX, Loader2, SearchX, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Product } from '../types'
 import { fetchProducts } from '../lib/api'
 import { productsCache, saveProductsScroll } from '../lib/productsStore'
-import { useAppDispatch } from '../store/hooks'
-import { setProductsLoaded } from '../store/uiSlice'
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { setFilterOpen, setProductsLoaded, setAppliedFilter } from '../store/uiSlice'
 import ProductCard from '../components/ProductCard'
+import FilterModal from '../components/FilterModal'
+import { defaultFilter, getStoredFilter, storeFilter, type FilterState } from '../lib/filterState'
+import { clearCountryCode, detectCountryByGeolocation, getStoredCountryCode, storeCountryCode } from '../lib/geo'
+import i18n from '../i18n'
 
 const SKELETON_HEIGHTS = [200, 280, 240, 320, 180, 300, 220, 260]
 
@@ -38,6 +42,41 @@ function matchesQuery(product: Product, query: string): boolean {
   return haystack.includes(query)
 }
 
+function filterFromParams(params: URLSearchParams): FilterState {
+  const iso2 = params.get('country')
+  const valid = iso2 && iso2 !== 'all' && iso2.length === 2 ? iso2.toUpperCase() : 'all'
+  const stored = getStoredFilter()
+  const countryFromStored = stored && stored.iso2 !== 'all' ? stored.iso2 : 'all'
+  const storedCode = getStoredCountryCode()
+  const chosen =
+    valid !== 'all'
+      ? valid
+      : countryFromStored !== 'all'
+        ? countryFromStored
+        : !stored && storedCode && storedCode !== 'all'
+          ? storedCode
+          : 'all'
+  return {
+    ...defaultFilter,
+    ...stored,
+    search: params.get('q') ?? stored?.search ?? '',
+    iso2: chosen,
+    iso3: chosen === 'all' ? 'all' : chosen,
+  }
+}
+
+function filterIsActive(f: FilterState): boolean {
+  return (
+    !!f.search ||
+    f.iso2 !== 'all' ||
+    f.productType !== 'all' ||
+    f.sortBy !== 'newest' ||
+    f.category != null
+  )
+}
+
+let detectionInFlight = false
+
 export default function IndexPage() {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -50,52 +89,167 @@ export default function IndexPage() {
   const [error, setError] = useState<string | null>(productsCache.error)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
+  const genRef = useRef(0)
+  const mountedRef = useRef(true)
 
-  const query = useMemo(
-    () => (searchParams.get('q') ?? '').trim().toLowerCase(),
-    [searchParams],
-  )
+  const rawSearch = searchParams.get('q') ?? ''
+  const prevSearchRef = useRef(rawSearch)
+  const query = useMemo(() => rawSearch.trim().toLowerCase(), [rawSearch])
+  const currentUser = useAppSelector((state) => state.auth.user)
+  const locale = i18n.language.split('-')[0]
+
+  const filterOpen = useAppSelector((state) => state.ui.filterOpen)
+  const [filter, setFilter] = useState<FilterState>(() => filterFromParams(searchParams))
+  const [activeFilter, setActiveFilter] = useState<FilterState | null>(() => {
+    const parsed = filterFromParams(searchParams)
+    return filterIsActive(parsed) ? parsed : null
+  })
+  const filterRef = useRef<FilterState>(filter)
+
+  useEffect(() => {
+    filterRef.current = filter
+  }, [filter])
+
+  useEffect(() => {
+    mountedRef.current = true
+    const initialFilter = filterFromParams(searchParams)
+    dispatch(setAppliedFilter(initialFilter))
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   const filtered = useMemo(
     () => (query ? products.filter((p) => matchesQuery(p, query)) : products),
     [products, query],
   )
 
-  const loadPage = useCallback(async (targetPage: number) => {
-    if (lockRef.current) return
-    lockRef.current = true
-    setLoadingMore(true)
-    try {
-      const data = await fetchProducts(targetPage)
-      setProducts((prev) => {
-        const seen = new Set(prev.map((p) => p.id))
-        const fresh = data.products.data.filter((p) => !seen.has(p.id))
-        const next = [...prev, ...fresh]
-        productsCache.products = next
-        return next
-      })
-      setPage(targetPage)
-      productsCache.page = targetPage
-      setHasMore(
-        data.products.next_page_url != null &&
-          (data.products.last_page == null || targetPage < data.products.last_page),
-      )
-      productsCache.hasMore =
-        data.products.next_page_url != null &&
-        (data.products.last_page == null || targetPage < data.products.last_page)
-      setError(null)
-      productsCache.error = null
+  const refreshProducts = useCallback(
+    async (targetPage: number, activeFilter?: FilterState | null) => {
+      if (lockRef.current) return
+      const generation = ++genRef.current
+      lockRef.current = true
+      setLoadingMore(true)
+      try {
+        const data = await fetchProducts(targetPage, {
+          filter: activeFilter ?? undefined,
+          locale,
+          connected_user_id: currentUser?.id,
+        })
+        if (generation !== genRef.current) return
+        setProducts((prev) => {
+          const seen = new Set(prev.map((p) => p.id))
+          const fresh = data.products.data.filter((p) => !seen.has(p.id))
+          const next = [...prev, ...fresh]
+          productsCache.products = next
+          return next
+        })
+        setPage(targetPage)
+        productsCache.page = targetPage
+        setHasMore(
+          data.products.next_page_url != null &&
+            (data.products.last_page == null || targetPage < data.products.last_page),
+        )
+        productsCache.hasMore =
+          data.products.next_page_url != null &&
+          (data.products.last_page == null || targetPage < data.products.last_page)
+        setError(null)
+        productsCache.error = null
+        productsCache.loaded = true
+        dispatch(setProductsLoaded(true))
+      } catch (err) {
+        if (generation !== genRef.current) return
+        const message = err instanceof Error ? err.message : t('index_load_failed', { defaultValue: "Couldn't load products" })
+        setError(message)
+        productsCache.error = message
+      } finally {
+        setLoadingMore(false)
+        if (generation === genRef.current) lockRef.current = false
+      }
+    },
+    [locale, currentUser, dispatch, t],
+  )
+
+  const loadPage = useCallback(
+    async (targetPage: number) => {
+      await refreshProducts(targetPage, activeFilter)
+    },
+    [refreshProducts, activeFilter],
+  )
+
+  const applyFilter = useCallback(
+    async (next: FilterState) => {
+      const normalized = { ...next, search: next.search.trim(), isUpdated: true }
+      setFilter(normalized)
+      setActiveFilter(normalized)
+      dispatch(setAppliedFilter(normalized))
+      storeFilter(normalized)
+      if (normalized.iso2 === 'all') clearCountryCode()
+      setProducts([])
+      productsCache.products = []
+      setPage(1)
+      productsCache.page = 1
+      setHasMore(true)
+      productsCache.hasMore = true
+      const params = new URLSearchParams()
+      if (normalized.search) params.set('q', normalized.search)
+      if (normalized.iso2 && normalized.iso2 !== 'all') params.set('country', normalized.iso2)
+      setSearchParams(params, { replace: true })
+      prevSearchRef.current = normalized.search
+      setLoading(true)
       productsCache.loaded = true
-      dispatch(setProductsLoaded(true))
-    } catch (err) {
-      const message = err instanceof Error ? err.message : t('index_load_failed', { defaultValue: "Couldn't load products" })
-      setError(message)
-      productsCache.error = message
-    } finally {
-      setLoadingMore(false)
       lockRef.current = false
+      try {
+        await refreshProducts(1, normalized)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [refreshProducts, setSearchParams, dispatch],
+  )
+
+  useEffect(() => {
+    if (prevSearchRef.current === rawSearch) return
+    prevSearchRef.current = rawSearch
+    const base = activeFilter ?? defaultFilter
+    void applyFilter({ ...base, search: rawSearch })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawSearch, applyFilter])
+
+  useEffect(() => {
+    const storedFilter = getStoredFilter()
+    if (storedFilter) {
+      if (storedFilter.iso2 !== 'all') {
+        if (filterRef.current.iso2 === 'all') {
+          void applyFilter({ ...filterRef.current, iso2: storedFilter.iso2, iso3: storedFilter.iso3 })
+        }
+        return
+      }
+      return
     }
-  }, [dispatch, t])
+    const urlCountry = searchParams.get('country')
+    if (urlCountry && urlCountry !== 'all') {
+      if (urlCountry.length === 2 && !getStoredCountryCode()) storeCountryCode(urlCountry)
+      return
+    }
+    const stored = getStoredCountryCode()
+    if (stored) {
+      if (filterRef.current.iso2 === 'all') {
+        void applyFilter({ ...filterRef.current, iso2: stored, iso3: stored })
+      }
+      return
+    }
+    if (detectionInFlight) return
+    detectionInFlight = true
+    void detectCountryByGeolocation().then((code) => {
+      detectionInFlight = false
+      storeCountryCode(code)
+      if (mountedRef.current && filterRef.current.iso2 === 'all') {
+        void applyFilter({ ...filterRef.current, iso2: code, iso3: code })
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (productsCache.loaded) {
@@ -148,7 +302,7 @@ export default function IndexPage() {
 
   return (
     <div className="animate-fade-in">
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-primary-deep px-4 pb-9 pt-7 text-white">
+      {/* <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-primary-deep px-4 pb-9 pt-7 text-white">
         <div className="pointer-events-none absolute -right-10 -top-14 h-48 w-48 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -bottom-16 -left-8 h-40 w-40 rounded-full bg-white/10" />
         <p className="text-xs font-medium uppercase tracking-widest text-white/70">
@@ -162,9 +316,9 @@ export default function IndexPage() {
             defaultValue: 'Thousands of products and services priced in Pi cryptocurrency.',
           })}
         </p>
-      </section>
+      </section> */}
 
-      <section className="px-3 pt-5">
+      <section className="px-1.5 pt-5">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-bold text-primary-dark">
             {query ? (
@@ -187,6 +341,14 @@ export default function IndexPage() {
               })}
             </span>
           )}
+          <button
+            type="button"
+            onClick={() => dispatch(setFilterOpen(true))}
+            className="flex h-8 shrink-0 items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-3 text-xs font-semibold text-primary transition hover:bg-primary hover:text-white"
+          >
+            <SlidersHorizontal size={14} />
+            {t('filter.text', { defaultValue: 'Filter' })}
+          </button>
         </div>
 
         {loading ? (
@@ -234,11 +396,11 @@ export default function IndexPage() {
         ) : isEmpty ? (
           <div className="flex flex-col items-center gap-2 py-16 text-ink-soft">
             <PackageX size={40} className="text-slate-300" />
-            <p className="text-sm font-medium">{t('index_no_products', { defaultValue: 'No products yet' })}</p>
+            <p className="text-sm font-medium">{t('index_no_products', { defaultValue: 'No items yet' })}</p>
           </div>
         ) : (
           <>
-            <div className="columns-2 gap-3 [column-fill:_balance]">
+            <div className="columns-2 gap-2 [column-fill:_balance]">
               {filtered.map((product) => (
                 <div key={product.id} className="mb-3 break-inside-avoid">
                   <ProductCard product={product} />
@@ -253,8 +415,7 @@ export default function IndexPage() {
         )}
       </section>
 
-      {!query && (
-        <div ref={sentinelRef} className="flex justify-center py-8">
+      <div ref={sentinelRef} className="flex justify-center py-8">
           {loadingMore ? (
             <div className="flex items-center gap-2 text-xs font-semibold text-primary">
               <Loader2 size={16} className="animate-spin" />
@@ -270,7 +431,15 @@ export default function IndexPage() {
             </span>
           ) : null}
         </div>
-      )}
+      <FilterModal
+        open={filterOpen}
+        initial={{ ...filter, search: rawSearch }}
+        onClose={() => dispatch(setFilterOpen(false))}
+        onApply={(next) => {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+          void applyFilter(next)
+        }}
+      />
     </div>
   )
 }

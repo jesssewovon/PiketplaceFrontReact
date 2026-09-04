@@ -112,6 +112,7 @@ export default function ShippingManagementPage() {
   type StepDef = {
     key: StepKey
     label: string
+    info?: string
     addVisible: boolean
     toggleVisibleForRole: boolean
     disabled: boolean
@@ -174,7 +175,12 @@ export default function ShippingManagementPage() {
     return [
       {
         key: 'seller_to_buyer',
-        label: t('seller_to_buyer', { defaultValue: 'The seller gave the product to the buyer' }),
+        label: t('seller_to_buyer_', { defaultValue: 'The seller gave the product to the buyer, click to confirm' }),
+        info: isBuyer
+          ? t('seller_to_buyer_buyer_info', {
+              defaultValue: 'This step is for the seller. As the buyer, you wait for the seller to confirm this step.',
+            })
+          : undefined,
         addVisible:
           notShipped && lo.order?.paid === true && isSeller && lo.seller_to_buyer_at == null,
         toggleVisibleForRole: isSeller,
@@ -183,7 +189,10 @@ export default function ShippingManagementPage() {
       },
       {
         key: 'buyer_from_seller',
-        label: t('buyer_from_seller', { defaultValue: 'The buyer received the product from the seller' }),
+        label: t('buyer_from_seller_', { defaultValue: 'The buyer received the product from the seller, click to confirm' }),
+        info: t('buyer_from_seller_info', {
+          defaultValue: 'This step can only be confirmed after the “seller_to_buyer” step above is confirmed.',
+        }),
         addVisible:
           notShipped && lo.seller_to_buyer_at != null && lo.buyer_from_seller_at == null && isBuyer,
         toggleVisibleForRole: isBuyer,
@@ -259,6 +268,12 @@ export default function ShippingManagementPage() {
             )}
           </div>
         </div>
+
+        {step.info && (
+          <p className="mb-1.5 rounded-lg bg-amber-50 px-3 py-1.5 text-[11px] font-medium text-amber-700">
+            {step.info}
+          </p>
+        )}
 
         <div className="mt-3 border-t border-slate-100" />
       </div>

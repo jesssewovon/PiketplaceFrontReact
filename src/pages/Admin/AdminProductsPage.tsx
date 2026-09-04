@@ -124,7 +124,7 @@ export default function AdminProductsPage() {
           connected_user_id: user.id,
           status,
         })
-        const pagination = res.products
+        const pagination = res.products ?? { current_page: page, data: [] }
         if (append) {
           setProducts((prev) => {
             const seen = new Set(prev.map((p) => p.id))

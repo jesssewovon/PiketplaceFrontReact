@@ -1,12 +1,17 @@
 import type {
   PaginatedResponse,
   NewProductPayload,
+  UpdateProductPayload,
   MyProductsResponse,
   StoreData,
   SalesResponse,
   OrdersResponse,
   CancellationReason,
   MessageContactsResponse,
+  MessagesFetchResponse,
+  NewMessagesFetchResponse,
+  OldMessagesFetchResponse,
+  SendMessageResponse,
   PartnershipsResponse,
   AdsDataResponse,
   AdsHistoriesResponse,
@@ -41,14 +46,18 @@ import type {
   NotificationsResponse,
   AdministrationResponse,
   AdminProductsResponse,
+  AdminSettingItem,
   AdminOrdersResponse,
+  AdminUsersResponse,
   PreOrdersResponse,
   AdminWithdrawalsResponse,
   WalletBalanceDetailsData,
   UserShopResponse,
 } from '../types'
+import type { FilterState } from './filterState'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 import { syncAttributesFromPayload } from '../store/attributesSync'
+import { syncUserFromPayload } from '../store/userSync'
 import { authFetch } from './authFetch'
 
 export const API_BASE =
@@ -119,8 +128,34 @@ export async function fetchCitiesByCountry(countryCode: string): Promise<string[
   return parseCities(await response.json())
 }
 
-export async function fetchProducts(page = 1): Promise<PaginatedResponse> {
-  const response = await fetch(`${API_BASE}/index-loading?page=${page}`, {
+export interface FetchProductsOptions {
+  filter?: FilterState
+  locale?: string
+  connected_user_id?: string | number
+}
+
+export async function fetchProducts(
+  page = 1,
+  options: FetchProductsOptions = {},
+): Promise<PaginatedResponse> {
+  const params = new URLSearchParams()
+  params.set('page', String(page))
+  params.set('status', 'validated')
+  params.set('verified_shops', '1')
+  if (options.locale) params.set('locale', options.locale)
+  if (options.connected_user_id) params.set('connected_user_id', String(options.connected_user_id))
+  if (options.filter) {
+    const filter = options.filter
+    if (filter.search) params.set('search', filter.search)
+    params.set('filter[iso2]', filter.iso2)
+    params.set('filter[iso3]', filter.iso3)
+    params.set('filter[search]', filter.search)
+    params.set('filter[show_products_type]', filter.productType)
+    params.set('filter[sort_by]', filter.sortBy)
+    if (filter.category) params.set('filter[category]', String(filter.category))
+    params.set('filter[is_updated]', filter.isUpdated ? '1' : '0')
+  }
+  const response = await fetch(`${API_BASE}/index-loading?${params.toString()}`, {
     headers: { Accept: 'application/json' },
   })
 
@@ -144,8 +179,8 @@ export async function getUserShop(
   if (!response.ok) {
     throw new Error(`Failed to load shop (${response.status})`)
   }
-  const json = (await response.json()) as { data: UserShopResponse }
-  return json.data
+  const json = (await response.json()) as UserShopResponse
+  return json
 }
 
 export async function fetchShopProducts(
@@ -165,9 +200,9 @@ export async function fetchShopProducts(
   return data
 }
 
-export async function createProduct(payload: NewProductPayload): Promise<unknown> {
+export async function createProduct(payload: NewProductPayload, token?: string): Promise<unknown> {
   const formData = new FormData()
-  formData.append('category_selected_id', payload.category_selected_id)
+  formData.append('categories_id', payload.categories_id)
   formData.append('libelle', payload.libelle)
   formData.append('description', payload.description)
   formData.append('price', payload.price)
@@ -177,18 +212,18 @@ export async function createProduct(payload: NewProductPayload): Promise<unknown
   formData.append('city', payload.city)
   formData.append('email', payload.email)
   formData.append('is_digital', payload.is_digital ? '1' : '0')
-  formData.append('shipping_zone', payload.shipping_zone)
+  payload.shipping_zone.forEach((zone) => formData.append('shipping_zone[]', JSON.stringify(zone)))
   formData.append('free_shipping', payload.free_shipping ? '1' : '0')
-  formData.append('free_shipping_zone', payload.free_shipping_zone)
+  payload.free_shipping_zone.forEach((zone) => formData.append('free_shipping_zone[]', JSON.stringify(zone)))
   formData.append('promotion_fees_activated', payload.promotion_fees_activated ? '1' : '0')
   formData.append('promotion_fees_percentage', payload.promotion_fees_percentage)
   formData.append('product_available', payload.product_available ? '1' : '0')
   formData.append('saling_terms_agreements', payload.saling_terms_agreements ? '1' : '0')
   payload.images.forEach((file) => formData.append('images[]', file))
-
-  const response = await fetch(`${API_BASE}${PUBLISH_ENDPOINT}`, {
+  console.log('FormData entries:', payload.images, Array.from(formData.entries())) // Log FormData entries for debugging
+  const response = await authFetch(`${API_BASE}${PUBLISH_ENDPOINT}`, {
     method: 'POST',
-    headers: { Accept: 'application/json' },
+    headers: authHeaders(token),
     body: formData,
   })
 
@@ -205,6 +240,50 @@ export async function createProduct(payload: NewProductPayload): Promise<unknown
 
   const data = (await response.json().catch(() => ({}))) as unknown
   syncAttributesFromPayload(data)
+  return data
+}
+
+export async function updateProduct(
+  productId: number,
+  payload: UpdateProductPayload,
+  token?: string,
+): Promise<{ status?: boolean; message?: string; approbation?: boolean; product?: unknown }> {
+  const formData = new FormData()
+  formData.append('categories_id', payload.categories_id)
+  formData.append('libelle', payload.libelle)
+  formData.append('description', payload.description)
+  formData.append('price', payload.price)
+  formData.append('price_str', payload.price)
+  formData.append('quantity', payload.quantity)
+  formData.append('address', payload.address)
+  formData.append('country_code', payload.country_code)
+  formData.append('city', payload.city)
+  formData.append('email', payload.email)
+  formData.append('is_digital', payload.is_digital ? '1' : '0')
+  payload.shipping_zone.forEach((zone) => formData.append('shipping_zone[]', JSON.stringify(zone)))
+  formData.append('free_shipping', payload.free_shipping ? '1' : '0')
+  payload.free_shipping_zone.forEach((zone) => formData.append('free_shipping_zone[]', JSON.stringify(zone)))
+  formData.append('promotion_fees_activated', payload.promotion_fees_activated ? '1' : '0')
+  formData.append('promotion_fees_percentage', payload.promotion_fees_percentage)
+  payload.photos.forEach((photo) => formData.append('photos[]', photo))
+  payload.images.forEach((file) => formData.append('images[]', file))
+  formData.append('_method', 'PUT')
+  console.log('FormData entries for update:', productId, Array.from(formData.entries())) // Log FormData entries for debugging
+  const response = await authFetch(`${API_BASE}/products/${productId}`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: formData,
+  })
+  const data = (await response.json().catch(() => ({}))) as {
+    status?: boolean
+    message?: string
+    approbation?: boolean
+    product?: unknown
+  }
+  syncAttributesFromPayload(data)
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to update product (${response.status})`)
+  }
   return data
 }
 
@@ -277,7 +356,6 @@ export async function addStock(
   productsId: number,
   quantity: number,
 ): Promise<{ status?: boolean; product?: unknown }> {
-  alert(token)
   const response = await authFetch(`${API_BASE}/add-stock`, {
     method: 'POST',
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
@@ -569,6 +647,7 @@ export async function signIn(authResult: PiAuthResult): Promise<SigninResponse> 
   }
   syncSettingsFromPayload(data)
   syncAttributesFromPayload(data)
+  syncUserFromPayload(data)
   return data
 }
 
@@ -594,6 +673,7 @@ export async function checkMining(token?: string): Promise<MiningResponse> {
   const data = (await response.json()) as MiningResponse
   syncSettingsFromPayload(data)
   syncAttributesFromPayload(data)
+  syncUserFromPayload(data)
   return data
 }
 
@@ -607,6 +687,7 @@ export async function startMining(token?: string): Promise<MiningResponse> {
   const data = (await response.json()) as MiningResponse
   syncSettingsFromPayload(data)
   syncAttributesFromPayload(data)
+  syncUserFromPayload(data)
   return data
 }
 
@@ -639,6 +720,87 @@ export async function fetchMessageContacts(
     throw new Error(`Failed to load message contacts (${response.status})`)
   }
   return (await response.json()) as MessageContactsResponse
+}
+
+export async function fetchOrderMessages(
+  token: string | undefined,
+  params: { user_id: number; corresponding_id: number; line_order_id: number },
+): Promise<MessagesFetchResponse> {
+  const search = new URLSearchParams()
+  search.set('user_id', String(params.user_id))
+  search.set('corresponding_id', String(params.corresponding_id))
+  search.set('line_order_id', String(params.line_order_id))
+  const response = await authFetch(`${API_BASE}/msg-order/messages?${search.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load messages (${response.status})`)
+  }
+  return (await response.json()) as MessagesFetchResponse
+}
+
+export async function fetchOrderNewMessages(
+  token: string | undefined,
+  params: { user_id: number; line_order_id: number; end_message_id?: number },
+): Promise<NewMessagesFetchResponse> {
+  const search = new URLSearchParams()
+  search.set('user_id', String(params.user_id))
+  search.set('line_order_id', String(params.line_order_id))
+  if (params.end_message_id) search.set('end_message_id', String(params.end_message_id))
+  const response = await authFetch(`${API_BASE}/msg-order/new-messages?${search.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load new messages (${response.status})`)
+  }
+  console.log('New messages response:', await response.clone().text()) // Log the raw response for debugging
+  return (await response.json()) as NewMessagesFetchResponse
+}
+
+export async function fetchOrderOldMessages(
+  token: string | undefined,
+  params: { user_id: number; line_order_id: number; start_message_id?: number },
+): Promise<OldMessagesFetchResponse> {
+  const search = new URLSearchParams()
+  search.set('user_id', String(params.user_id))
+  search.set('line_order_id', String(params.line_order_id))
+  if (params.start_message_id) search.set('start_message_id', String(params.start_message_id))
+  const response = await authFetch(`${API_BASE}/msg-order/old-messages?${search.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load old messages (${response.status})`)
+  }
+  return (await response.json()) as OldMessagesFetchResponse
+}
+
+export async function sendOrderMessage(
+  token: string | undefined,
+  params: {
+    sender_id: number
+    receiver_id: number
+    message?: string
+    line_order_id: number
+    end_message_id?: number
+    file?: File | null
+  },
+): Promise<SendMessageResponse> {
+  const formData = new FormData()
+  formData.append('sender_id', String(params.sender_id))
+  formData.append('receiver_id', String(params.receiver_id))
+  if (params.message) formData.append('message', params.message)
+  formData.append('line_order_id', String(params.line_order_id))
+  formData.append('end_message_id', String(params.end_message_id))
+  if (params.file) formData.append('file', params.file)
+  const response = await authFetch(`${API_BASE}/msg-order/send-message`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: formData,
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to send message (${response.status})`)
+  }
+  return (await response.json()) as SendMessageResponse
 }
 
 export async function fetchPartnerships(
@@ -813,7 +975,7 @@ export async function verifyPayment(
     headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ uniqueId, userId }),
   })
-  const data = (await response.json().catch(() => ({}))) as PaymentVerifierResponse
+  const data = (await response.json().catch(() => ({})))
   if (!response.ok) {
     throw new Error(`Failed to verify payment (${response.status})`)
   }
@@ -913,6 +1075,7 @@ export async function fetchCartBuyNowData(
   }
   syncSettingsFromPayload(data)
   syncAttributesFromPayload(data)
+  syncUserFromPayload(data)
   return data
 }
 
@@ -929,6 +1092,7 @@ export async function confirmCart(
   if (!response.ok) {
     throw new Error(data.message ?? `Failed to confirm cart (${response.status})`)
   }
+  syncUserFromPayload(data)
   return data
 }
 
@@ -946,6 +1110,7 @@ export async function payPiketplaceWallet(
   if (!response.ok) {
     throw new Error(data.message ?? `Failed to pay with Piketplace wallet (${response.status})`)
   }
+  syncUserFromPayload(data)
   return data
 }
 
@@ -977,6 +1142,7 @@ export async function fetchReferredUsers(
   if (!response.ok) {
     throw new Error(`Failed to load referred users (${response.status})`)
   }
+  syncUserFromPayload(data)
   return data
 }
 
@@ -993,6 +1159,7 @@ export async function fetchNotifications(
   if (!response.ok) {
     throw new Error(`Failed to load notifications (${response.status})`)
   }
+  syncUserFromPayload(data)
   return data
 }
 
@@ -1007,6 +1174,41 @@ export async function fetchAdministration(
     throw new Error(`Failed to load administration data (${response.status})`)
   }
   return (await response.json()) as AdministrationResponse
+}
+
+export async function saveSettings(
+  token: string | undefined,
+  userId: number,
+  settings: AdminSettingItem[],
+): Promise<AdministrationResponse> {
+  const response = await authFetch(`${API_BASE}/save-settings`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: userId, settings }),
+  })
+  const data = (await response.json().catch(() => ({}))) as AdministrationResponse
+  if (!response.ok) {
+    throw new Error(`Failed to save settings (${response.status})`)
+  }
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function fetchAdminUsers(
+  token: string | undefined,
+  keyword: string,
+  page: number,
+): Promise<AdminUsersResponse> {
+  const params = new URLSearchParams({ keyword, page: String(page) })
+  const response = await fetch(`${API_BASE}/users?${params.toString()}`, {
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as AdminUsersResponse
+  if (!response.ok) {
+    throw new Error(`Failed to load users (${response.status})`)
+  }
+  syncUserFromPayload(data)
+  return data
 }
 
 export interface AdminProductsQuery {
@@ -1167,6 +1369,7 @@ export async function getSettingsUser(token: string | undefined): Promise<Settin
   if (!response.ok) {
     throw new Error(`Failed to load settings (${response.status})`)
   }
+  syncUserFromPayload(data)
   return data
 }
 
@@ -1248,6 +1451,7 @@ export async function updateProfil(
   if (!response.ok) {
     throw new Error(`Failed to save profile (${response.status})`)
   }
+  syncUserFromPayload(data)
   return data
 }
 
@@ -1264,6 +1468,25 @@ export async function sendEmailValidation(
   if (!response.ok) {
     throw new Error(`Failed to send email validation (${response.status})`)
   }
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function setEmailValidation(
+  token: string | undefined,
+  email: string,
+  code: string,
+): Promise<ProfilResponse> {
+  const response = await fetch(`${API_BASE}/set-email-validation`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, code }),
+  })
+  const data = (await response.json().catch(() => ({}))) as ProfilResponse
+  if (!response.ok) {
+    throw new Error(`Failed to validate email (${response.status})`)
+  }
+  syncUserFromPayload(data)
   return data
 }
 
@@ -1293,5 +1516,6 @@ export async function payDeliveryPenaltiesPiketplaceWallet(
   if (!response.ok) {
     throw new Error(data.message ?? `Failed to pay penalties (${response.status})`)
   }
+  syncUserFromPayload(data)
   return data
 }

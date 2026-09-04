@@ -1,27 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import type { AppNotification } from '../types'
 import { fetchNotifications } from '../lib/api'
 import { formatAmount, formatDate } from '../lib/format'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
-
-const NAME_TO_PATH: Record<string, string> = {
-  product: '/product/:id',
-  shipping_management: '/shipping-management/line-order/:id',
-  notifications: '/notifications',
-}
-
-function buildNotificationUrl(
-  url: { name?: string; [key: string]: unknown } | null | undefined,
-): string {
-  if (!url?.name) return '/'
-  const template = NAME_TO_PATH[url.name]
-  if (!template) return '/'
-  const params = (url.params ?? {}) as Record<string, unknown>
-  return template.replace(/:(\w+)/g, (_, key: string) => String(params[key] ?? ''))
-}
 
 export default function NotificationsPage() {
   const { t } = useTranslation()
@@ -51,6 +35,7 @@ export default function NotificationsPage() {
       setIsLoadingMore(true)
       try {
         const res = await fetchNotifications(token ?? undefined, user?.id ?? 0, targetPage)
+        console.log('Fetched notifications:', res)
         const pagination = res.notifications
         const list = pagination?.data ?? []
         setNotifications((prev) => (targetPage === 1 ? list : [...prev, ...list]))
@@ -96,47 +81,73 @@ export default function NotificationsPage() {
     return () => observer.disconnect()
   }, [loadNotifications])
 
-  const renderMessage = (notification: AppNotification) => {
+  const renderMessage = (notification: AppNotification): ReactNode => {
     const datas = (notification.datas ?? {}) as Record<string, unknown>
     const val = (key: string): string =>
       datas[key] === null || datas[key] === undefined ? '' : String(datas[key])
-    const values: Record<string, string> = {
-      name: user?.username ?? '',
-      username: val('username'),
-      applicant: val('applicant'),
-      seller: val('seller'),
-      buyer: val('buyer'),
-      deliver: val('deliver'),
-      from: val('from'),
-      to: val('to'),
-      nb_product: val('nb_product'),
-      amount: formatAmount(datas.amount as number | undefined),
-      fee: formatAmount(datas.fee as number | undefined),
-      time: val('time'),
-      period: datas.period ? t(`time.${String(datas.period)}`, { defaultValue: String(datas.period) }) : '',
-      amount_piket: formatAmount(datas.amount_piket as number | undefined),
-      child: val('child'),
-      product_name: val('product_name'),
-      here: '__HERE__',
-    }
     const key = notification.message.replace(/^message\./, '')
-    const full = t(key, {
-      ...values,
-      defaultValue: t('notification.text', { defaultValue: 'Notification' }),
-    })
-    const hasUrl = Boolean(notification.url && notification.url.name)
-    if (!hasUrl || !full.includes('__HERE__')) {
-      return <span>{full.replace('__HERE__', '')}</span>
-    }
-    const [before, after] = full.split('__HERE__')
+
+    const strong = (children: ReactNode) => (
+      <strong className="font-semibold">{children}</strong>
+    )
+    const here = notification.url ? (
+      <Link className="text-blue-700" to={notification.url}>
+        {t('here', { defaultValue: 'here' })}
+      </Link>
+    ) : (
+      <span>{t('here', { defaultValue: 'here' })}</span>
+    )
+
+    const pn = val('product_name')
+    console.log('Notification pn:', notification, pn)
+    const periodLabel = datas.period
+      ? t(`time.${String(datas.period)}`, { defaultValue: String(datas.period) })
+      : ''
+
     return (
-      <span>
-        {before}
-        <Link className="text-blue-700" to={buildNotificationUrl(notification.url)}>
-          {t('here', { defaultValue: 'here' })}
-        </Link>
-        {after}
-      </span>
+      <Trans
+        i18nKey={key}
+        defaults={t('notification.text', { defaultValue: 'Notification' })}
+        values={{
+          product_name: pn,
+          name: user?.username ?? '',
+          username: val('username'),
+          applicant: val('applicant'),
+          seller: val('seller'),
+          buyer: val('buyer'),
+          deliver: val('deliver'),
+          from: val('from'),
+          to: val('to'),
+          nb_product: val('nb_product'),
+          amount: formatAmount(datas.amount as number | undefined),
+          fee: formatAmount(datas.fee as number | undefined),
+          time: val('time'),
+          period: periodLabel,
+          amount_piket: formatAmount(datas.amount_piket as number | undefined),
+          child: val('child'),
+          here: t('here', { defaultValue: 'here' }),
+        }}
+        components={{
+          product_name: strong(pn),
+          name: strong(user?.username ?? ''),
+          username: strong(val('username')),
+          applicant: strong(val('applicant')),
+          seller: strong(val('seller')),
+          buyer: strong(val('buyer')),
+          deliver: strong(val('deliver')),
+          from: strong(val('from')),
+          to: strong(val('to')),
+          nb_product: strong(val('nb_product')),
+          amount: strong(formatAmount(datas.amount as number | undefined)),
+          fee: strong(formatAmount(datas.fee as number | undefined)),
+          time: strong(val('time')),
+          period: strong(periodLabel),
+          amount_piket: strong(formatAmount(datas.amount_piket as number | undefined)),
+          child: strong(val('child')),
+          here,
+          strong: <strong className="font-semibold" />,
+        }}
+      />
     )
   }
 

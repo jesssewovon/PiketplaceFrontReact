@@ -20,6 +20,7 @@ export default function WalletBalanceDetailsPage() {
   const { t } = useTranslation()
   const { username } = useParams<{ username: string }>()
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
+  const token = useAppSelector((state) => state.auth.token)
 
   const [data, setData] = useState<WalletBalanceDetailsData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -27,11 +28,11 @@ export default function WalletBalanceDetailsPage() {
   useEffect(() => {
     if (!isLoggedIn || !username) return
     setIsLoading(true)
-    fetchWalletBalanceDetails(undefined, username)
+    fetchWalletBalanceDetails(token ?? undefined, username)
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setIsLoading(false))
-  }, [isLoggedIn, username])
+  }, [isLoggedIn, username, token])
 
   return (
     <div className="relative animate-fade-in">

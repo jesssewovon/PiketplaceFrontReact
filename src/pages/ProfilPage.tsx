@@ -85,10 +85,12 @@ export default function ProfilPage() {
   const [avatarPreview, setAvatarPreview] = useState<string>('')
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isSendingEmail, setIsSendingEmail] = useState(false)
   const avatarInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     if (!user) return
+    console.log('user', user)
     setFirstname(emptyStr(user.firstname))
     setLastname(emptyStr(user.lastname))
     setShopName(emptyStr(user.shop_name))
@@ -199,10 +201,10 @@ export default function ProfilPage() {
       )
       return
     }
-    setIsSaving(true)
+    setIsSendingEmail(true)
     try {
       const res = await sendEmailValidation(token ?? undefined, notificationEmail)
-      setIsSaving(false)
+      setIsSendingEmail(false)
       if (res.status === true) {
         navigate(`/email-verification-code/${encodeURIComponent(notificationEmail)}`)
       } else if (emailErrorsInclude(res, 'email_required')) {
@@ -215,7 +217,7 @@ export default function ProfilPage() {
         showAlert('error', t('an_error_occured', { defaultValue: 'An error occurred' }))
       }
     } catch {
-      setIsSaving(false)
+      setIsSendingEmail(false)
       showAlert('error', t('an_error_occured', { defaultValue: 'An error occurred' }))
     }
   }
@@ -360,11 +362,11 @@ export default function ProfilPage() {
             </em>
             <button
               type="button"
-              disabled={notificationEmail === (user?.email ?? '')}
+              disabled={isSendingEmail || notificationEmail === (user?.email ?? '')}
               onClick={() => void updateEmail()}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3 text-xs font-black uppercase text-white shadow-soft transition hover:shadow-hover disabled:opacity-60"
             >
-              <Check size={14} />
+              {isSendingEmail ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
               {t('verify_email', { defaultValue: 'Verify email' })}
             </button>
           </div>
