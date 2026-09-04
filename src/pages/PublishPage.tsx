@@ -1050,8 +1050,8 @@ export default function PublishPage() {
                 <>
                   <Loader2 size={16} className="animate-spin" />
                   {isEdit
-                    ? t('saving', { defaultValue: 'Updating…' })
-                    : t('saving', { defaultValue: 'Publishing…' })}
+                    ? t('updating…', { defaultValue: 'Updating…' })
+                    : t('publishing…', { defaultValue: 'Publishing…' })}
                 </>
               ) : isEdit ? (
                 t('update_product', { defaultValue: 'Update product' })
