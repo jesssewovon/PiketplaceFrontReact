@@ -84,15 +84,15 @@ export default function ShippingZoneForm({
     setError(null)
     const selected = countries.find(([code]) => code === country)
     if (!country || !selected) {
-      setError(t('shipping_zone_country_required', { defaultValue: 'Please select a country for the zone.' }))
+      setError(t('shipping zone country required', { defaultValue: 'Please select a country for the zone.' }))
       return
     }
     if (!city.trim()) {
-      setError(t('shipping_zone_city_required', { defaultValue: 'Please enter a city for the zone.' }))
+      setError(t('shipping zone city required', { defaultValue: 'Please enter a city for the zone.' }))
       return
     }
     if (feeEnabled && (!fee || Number(fee) <= 0)) {
-      setError(t('shipping_zone_fee_required', { defaultValue: 'Please enter a valid shipping fee.' }))
+      setError(t('shipping zone fee required', { defaultValue: 'Please enter a valid shipping fee.' }))
       return
     }
     onSave({
@@ -119,7 +119,7 @@ export default function ShippingZoneForm({
       >
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-sm font-bold text-primary-dark">
-            {t('shipping_zone_title', { defaultValue: 'Add a shipping zone' })}
+            {t('add zone', { defaultValue: 'Add a shipping zone' })}
           </h3>
           <button
             type="button"
