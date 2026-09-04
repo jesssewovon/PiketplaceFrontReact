@@ -126,9 +126,39 @@ function parseCities(data: unknown): string[] {
   return []
 }
 
+const CITIES_CACHE_KEY = 'piketplace_cities_cache'
+
+const citiesCache = new Map<string, string[]>()
+
+function readCitiesCache(): Record<string, string[]> {
+  try {
+    return JSON.parse(localStorage.getItem(CITIES_CACHE_KEY) ?? '{}') as Record<string, string[]>
+  } catch {
+    return {}
+  }
+}
+
+function writeCitiesCache(cache: Record<string, string[]>) {
+  try {
+    localStorage.setItem(CITIES_CACHE_KEY, JSON.stringify(cache))
+  } catch {
+    // storage not available (private mode, SSR, quota) – in-memory cache still works
+  }
+}
+
 export async function fetchCitiesByCountry(countryCode: string): Promise<string[]> {
+  const key = countryCode.trim()
+  const cached = citiesCache.get(key)
+  if (cached) return cached
+
+  const persisted = readCitiesCache()[key]
+  if (Array.isArray(persisted)) {
+    citiesCache.set(key, persisted)
+    return persisted
+  }
+
   const response = await fetch(
-    `${API_BASE}/get-cities-by-country/${encodeURIComponent(countryCode)}`,
+    `${API_BASE}/get-cities-by-country/${encodeURIComponent(key)}`,
     { headers: { Accept: 'application/json' } },
   )
 
@@ -136,7 +166,10 @@ export async function fetchCitiesByCountry(countryCode: string): Promise<string[
     throw new Error(`Failed to load cities (${response.status})`)
   }
 
-  return parseCities(await response.json())
+  const list = parseCities(await response.json())
+  citiesCache.set(key, list)
+  writeCitiesCache({ ...readCitiesCache(), [key]: list })
+  return list
 }
 
 export interface FetchProductsOptions {

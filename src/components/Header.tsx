@@ -170,8 +170,10 @@ export default function Header() {
 
   const pageTitle =
     PAGE_TITLES[location.pathname] ??
-    (location.pathname.startsWith('/product/')
-      ? { key: 'product.details', fallback: 'Product' }
+    (location.pathname.startsWith('/publish/')
+      ? { key: 'update_product', fallback: 'Update product' }
+      : location.pathname.startsWith('/product/')
+        ? { key: 'product.details', fallback: 'Product' }
       : location.pathname.startsWith('/shipping-management/')
         ? { key: 'shipping_confirmation', fallback: 'Shipping confirmation' }
         : location.pathname.startsWith('/add-update-shipping-images/')

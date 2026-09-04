@@ -1284,7 +1284,7 @@ export default function ProductPage() {
 
         {!product.is_digital && (product.shipping_zone?.length ?? 0) > 0 && (
           <div className="mt-4 rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-            <h2 className="mb-3 text-sm font-bold text-ink">
+            <h2 className="mb-0 text-sm font-bold text-ink">
               {t('shipping_zones_and_fees', { defaultValue: 'Shipping zones & fees' })}
             </h2>
             {(product.shipping_zone ?? []).map((zone, index) => (
@@ -1306,7 +1306,7 @@ export default function ProductPage() {
 
         {!product.is_digital && product.free_shipping && (
           <div className="mt-4 rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
-            <h2 className="mb-3 text-sm font-bold text-ink">
+            <h2 className="mb-0 text-sm font-bold text-ink">
               {t('free_shipping_zones', { defaultValue: 'Free shipping zones' })}
             </h2>
             {(product.free_shipping_zone ?? []).map((zone, index) => (
