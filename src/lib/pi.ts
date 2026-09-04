@@ -1,3 +1,5 @@
+import { showAlert } from "./alert"
+
 const SCOPES = ['username', 'payments']
 
 export function isPiReady(): boolean {
@@ -48,6 +50,7 @@ export async function showRewardedAd(): Promise<PiAdResponse> {
   initPi()
   if (!window.Pi?.Ads) throw new Error('Pi Ads is not available')
   const ready = await window.Pi.Ads.isAdReady('rewarded')
+  showAlert('Pi Ads', `Ad ready: ${ready.ready}`, 'info')
   if (ready.ready !== true) {
     const requestAdResponse = await window.Pi.Ads.requestAd('rewarded')
     const result = requestAdResponse.result
