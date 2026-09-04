@@ -107,10 +107,12 @@ export default function UnlockBoostPage() {
   }
 
   const displayAd = async () => {
-    if (adsData !== null && (adsData.remaining_time ?? 0) <= 0) {
+    console.log('displayAd called', adsData)
+    /* if (adsData?.limit_reached && (adsData.remaining_time ?? 0) <= 0) {
+      alert("here")
       await loadData()
       return
-    }
+    } */
     if (adsData?.limit_reached) {
       showAlert(t('info', { defaultValue: 'Info' }), t('ads_unavailable', { defaultValue: 'Ads unavailable' }), 'error')
       return
