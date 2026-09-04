@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Image, Loader2, MapPin, Send } from 'lucide-react'
+import { Image, Loader2, MapPin, Send, X, ZoomIn, ZoomOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { ChatMessage, LineOrder } from '../types'
 import {
@@ -50,6 +50,8 @@ export default function MessageThreadPage() {
   const [noMoreData, setNoMoreData] = useState(false)
   const [addressPanel, setAddressPanel] = useState<AddressPanel>('none')
   const [previewUrl, setPreviewUrl] = useState('')
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [zoomLevel, setZoomLevel] = useState(1)
   const fileRef = useRef<HTMLInputElement | null>(null)
   const selectedFileRef = useRef<File | null>(null)
   const startMessageIdRef = useRef(0)
@@ -261,7 +263,14 @@ export default function MessageThreadPage() {
         </div>
 
         {displayMessages.map((message) => (
-          <MessageLine key={message.id ?? message.created_at} message={message} />
+          <MessageLine
+            key={message.id ?? message.created_at}
+            message={message}
+            onImageClick={(src) => {
+              setPreviewImage(src)
+              setZoomLevel(1)
+            }}
+          />
         ))}
         <div ref={bottomRef} />
       </div>
@@ -320,6 +329,66 @@ export default function MessageThreadPage() {
           {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={15} />}
         </button>
       </div>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col bg-black/95"
+          onClick={() => {
+            setPreviewImage(null)
+            setZoomLevel(1)
+          }}
+        >
+          <div
+            className="flex items-center justify-center gap-3 p-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setZoomLevel((z) => Math.max(1, Number((z - 0.25).toFixed(2))))}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+              aria-label={t('zoom_out', { defaultValue: 'Zoom out' })}
+            >
+              <ZoomOut size={20} />
+            </button>
+            <span className="min-w-[3.5rem] text-center text-sm font-bold text-white">
+              {Math.round(zoomLevel * 100)}%
+            </span>
+            <button
+              type="button"
+              onClick={() => setZoomLevel((z) => Math.min(4, Number((z + 0.25).toFixed(2))))}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+              aria-label={t('zoom_in', { defaultValue: 'Zoom in' })}
+            >
+              <ZoomIn size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPreviewImage(null)
+                setZoomLevel(1)
+              }}
+              className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+              aria-label={t('close', { defaultValue: 'Close' })}
+            >
+              <X size={22} />
+            </button>
+          </div>
+          <div className="min-h-0 flex-1 overflow-auto px-2 pb-2">
+            <div className="flex min-h-full items-center justify-center">
+              <img
+                src={previewImage}
+                alt=""
+                className="object-contain"
+                style={{ width: `${zoomLevel * 100}%`, maxWidth: 'none', minWidth: '100%' }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setZoomLevel((z) => (z >= 4 ? 1 : Math.min(4, z + 0.5)))
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
