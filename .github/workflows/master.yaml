@@ -35,7 +35,7 @@ jobs:
           username: ${{ secrets.TESTNET_FTP_USERNAME }}
           password: ${{ secrets.TESTNET_FTP_PASSWORD }}
           server-dir: / 
-          exclude: |
+          exclude: | 
             **/.git**
             **/.git*/**
             **/node_modules/**
