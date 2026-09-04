@@ -102,6 +102,7 @@ export default function IndexPage() {
   const dataLink = (settings?.data_link as DataLink | undefined) ?? null
 
   const filterOpen = useAppSelector((state) => state.ui.filterOpen)
+  const productsLoaded = useAppSelector((state) => state.ui.productsLoaded)
   const [filter, setFilter] = useState<FilterState>(() => filterFromParams(searchParams))
   const [activeFilter, setActiveFilter] = useState<FilterState | null>(() => {
     const parsed = filterFromParams(searchParams)
@@ -322,33 +323,35 @@ export default function IndexPage() {
       </section> */}
 
       <section className="px-1.5 pt-5">
-        <div className="mb-3 space-y-2">
-          <button
-            type="button"
-            onClick={() => navigate('/unlock-boost')}
-            className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-soft transition hover:bg-primary-dark"
-          >
-            {t('boost_your_account', { defaultValue: 'Boost your account' })}
-          </button>
-
-          {dataLink?.show && dataLink.text && (
+        {productsLoaded && (
+          <div className="mb-3 space-y-2">
             <button
               type="button"
-              onClick={() => {
-                if (dataLink.link) {
-                  if (dataLink.link.startsWith('/')) {
-                    navigate(dataLink.link)
-                  } else {
-                    window.location.href = dataLink.link
-                  }
-                }
-              }}
-              className="w-full rounded-xl border-2 border-primary px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5"
+              onClick={() => navigate('/unlock-boost')}
+              className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-soft transition hover:bg-primary-dark"
             >
-              {dataLink.text}
+              {t('boost_your_account', { defaultValue: 'Boost your account' })}
             </button>
-          )}
-        </div>
+
+            {dataLink?.show && dataLink.text && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (dataLink.link) {
+                    if (dataLink.link.startsWith('/')) {
+                      navigate(dataLink.link)
+                    } else {
+                      window.location.href = dataLink.link
+                    }
+                  }
+                }}
+                className="w-full rounded-xl border-2 border-primary px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5"
+              >
+                {dataLink.text}
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-bold text-primary-dark">
