@@ -62,5 +62,7 @@ export async function showRewardedAd(): Promise<PiAdResponse> {
       return requestAdResponse
     }
   }
-  return window.Pi.Ads.showAd('rewarded')
+  const res = await window.Pi.Ads.showAd('rewarded')
+  showAlert('Pi Ads', `Ad result: ${res.result}`, 'info')
+  return res
 }
