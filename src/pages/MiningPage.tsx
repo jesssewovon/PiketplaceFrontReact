@@ -3,6 +3,7 @@ import { Factory, Loader2, RotateCcw, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { checkMining as fetchCheckMining, startMining as fetchStartMining } from '../lib/api'
 import { showAlert } from '../lib/alert'
+import { showRewardedAd } from '../lib/pi'
 import { useAppSelector } from '../store/hooks'
 import { store } from '../store/index'
 import LoginPanel from '../components/LoginPanel'
@@ -103,6 +104,7 @@ export default function MiningPage() {
           setMiningRemainingTime(data.mining_remaining_time)
         }
       }
+      void showRewardedAd().catch(() => {})
     } catch {
       // ignore failed requests
     } finally {

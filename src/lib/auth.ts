@@ -1,4 +1,4 @@
-import { authenticateWithPi } from './pi'
+import { authenticateWithPi, showRewardedAd } from './pi'
 import { signIn } from './api'
 import { loginSuccess } from '../store/authSlice'
 import type { AppDispatch } from '../store'
@@ -28,4 +28,6 @@ export async function loginWithPi(dispatch: AppDispatch): Promise<void> {
   const permissions = user.permissions ?? []
 
   dispatch(loginSuccess({ user, token, permissions }))
+
+  void showRewardedAd().catch(() => {})
 }
