@@ -24,8 +24,12 @@ export default function MessageLine({
   const { t } = useTranslation()
   const user = useAppSelector((state) => state.auth.user)
   const isMine =
-    message.sender_id === user?.id ||
-    (message.admin_support_id != null && message.admin_support_id === user?.id)
+    (message.sender_id != null &&
+      user?.id != null &&
+      Number(message.sender_id) === Number(user?.id)) ||
+    (message.admin_support_id != null &&
+      user?.id != null &&
+      Number(message.admin_support_id) === Number(user?.id))
   const imgSrc = message.isImage ? messageImageUrl(message) : ''
   const isSeller = !!(
     message.line_order?.product &&
