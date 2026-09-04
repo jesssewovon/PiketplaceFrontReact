@@ -15,7 +15,7 @@ interface Tab {
 }
 
 const tabs: Tab[] = [
-  { to: '/', labelKey: 'home_', labelFallback: 'Home', icon: 'home' },
+  { to: '/', labelKey: 'home', labelFallback: 'Home', icon: 'home' },
   { to: '/publish', labelKey: 'publish', labelFallback: 'Publish', icon: 'publish' },
   { to: '/account', labelKey: 'side_menu.my_account', labelFallback: 'My Account', icon: 'account' },
 ]
