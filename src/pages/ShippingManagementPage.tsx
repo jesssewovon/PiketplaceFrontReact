@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import { ChevronDown, Minus, Plus, X } from 'lucide-react'
+import { ChevronDown, Loader2, Minus, Plus, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { LineOrder } from '../types'
 import { fetchLineOrder, updateLineOrderShippingStatus } from '../lib/api'
@@ -37,6 +37,7 @@ export default function ShippingManagementPage() {
 
   const [lineOrder, setLineOrder] = useState<LineOrder | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [confirming, setConfirming] = useState(false)
   const [productInfoOpen, setProductInfoOpen] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
@@ -75,6 +76,7 @@ export default function ShippingManagementPage() {
       cancelButtonText: t('confirmation.no_cancel', { defaultValue: 'No, cancel' }),
     }).then(async (result) => {
       if (!result.isConfirmed || !lineOrder) return
+      setConfirming(true)
       try {
         const res = await updateLineOrderShippingStatus(token ?? undefined, lineOrder.id, `${step}_at`)
         if (res.status === true) {
@@ -105,6 +107,8 @@ export default function ShippingManagementPage() {
           text: t('an_error_occured', { defaultValue: 'An error occurred' }),
           confirmButtonColor: '#ec11b5',
         })
+      } finally {
+        setConfirming(false)
       }
     })
   }
@@ -417,6 +421,17 @@ export default function ShippingManagementPage() {
           <div className="mt-4">{buildSteps().map(renderStep)}</div>
         </div>
       </section>
+
+      {confirming && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-white px-8 py-6 shadow-lg">
+            <Loader2 size={28} className="animate-spin text-primary" />
+            <span className="text-xs font-semibold text-ink">
+              {t('loading', { defaultValue: 'loading' })}
+            </span>
+          </div>
+        </div>
+      )}
 
       {selectedImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">

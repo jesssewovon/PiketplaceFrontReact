@@ -90,7 +90,7 @@ export default function AddShippingImagesPage() {
     async (file: File) => {
       setPendingUploads((prev) => prev + 1)
       try {
-        const res = await uploadFileToStore(file)
+        const res = await uploadFileToStore(token ?? undefined, file)
         if (res.name) {
           setImages((prev) => [...prev, res.name as string])
           setPreviews((prev) => [
@@ -104,7 +104,7 @@ export default function AddShippingImagesPage() {
         setPendingUploads((prev) => Math.max(0, prev - 1))
       }
     },
-    [showAlert, t],
+    [showAlert, t, token],
   )
 
   const onChange = useCallback(

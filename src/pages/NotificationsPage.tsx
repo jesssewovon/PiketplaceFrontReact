@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { RotateCcw } from 'lucide-react'
 import { Trans, useTranslation } from 'react-i18next'
 import type { AppNotification } from '../types'
 import { fetchNotifications } from '../lib/api'
-import { formatAmount, formatDate } from '../lib/format'
+import { formatAmount, formatDateTime } from '../lib/format'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
 
@@ -35,7 +36,6 @@ export default function NotificationsPage() {
       setIsLoadingMore(true)
       try {
         const res = await fetchNotifications(token ?? undefined, user?.id ?? 0, targetPage)
-        console.log('Fetched notifications:', res)
         const pagination = res.notifications
         const list = pagination?.data ?? []
         setNotifications((prev) => (targetPage === 1 ? list : [...prev, ...list]))
@@ -99,7 +99,6 @@ export default function NotificationsPage() {
     )
 
     const pn = val('product_name')
-    console.log('Notification pn:', notification, pn)
     const periodLabel = datas.period
       ? t(`time.${String(datas.period)}`, { defaultValue: String(datas.period) })
       : ''
@@ -157,14 +156,25 @@ export default function NotificationsPage() {
 
   return (
     <div className="animate-fade-in">
-      <section className="px-4 py-6">
+      <section className="px-2 py-3">
+        <div className="flex justify-center py-1">
+          <button
+            type="button"
+            onClick={() => void loadNotifications(1)}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition hover:bg-black/5 hover:text-primary"
+            aria-label={t('notifications_refresh', { defaultValue: 'Refresh' })}
+          >
+            <RotateCcw size={20} />
+          </button>
+        </div>
+
         {notifications.length > 0 && (
-          <div className="min-h-[500px] rounded-2xl border border-black/5 bg-white p-5 shadow-soft">
+          <div className="min-h-[500px] rounded-2xl border border-black/5 bg-white p-3 shadow-soft">
             <div>
               {notifications.map((notification, index) => (
                 <div
                   key={notification.id ?? index}
-                  className="border-b border-slate-100 py-2.5 text-left leading-[15px]"
+                  className="border-b border-slate-100 py-3.5 text-left leading-[15px]"
                 >
                   <div>
                     {notification.is_new === 1 && (
@@ -175,7 +185,7 @@ export default function NotificationsPage() {
                     {renderMessage(notification)}
                   </div>
                   <sub className="text-[10px] text-ink-soft">
-                    {formatDate(notification.created_at)}
+                    {formatDateTime(notification.created_at)}
                   </sub>
                 </div>
               ))}

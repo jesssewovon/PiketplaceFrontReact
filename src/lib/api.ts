@@ -1423,12 +1423,15 @@ export async function saveShippingImages(
   return data
 }
 
-export async function uploadFileToStore(file: File): Promise<FileStoreResponse> {
+export async function uploadFileToStore(
+  token: string | undefined,
+  file: File,
+): Promise<FileStoreResponse> {
   const formData = new FormData()
   formData.append('selectedFiles', file, file.name)
   const response = await fetch(`${API_BASE}/file-store`, {
     method: 'POST',
-    headers: { Accept: 'application/json' },
+    headers: authHeaders(token),
     body: formData,
   })
   const data = (await response.json().catch(() => ({}))) as FileStoreResponse
