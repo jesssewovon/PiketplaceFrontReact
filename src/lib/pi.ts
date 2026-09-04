@@ -50,7 +50,7 @@ export async function showRewardedAd(): Promise<PiAdResponse> {
   initPi()
   if (!window.Pi?.Ads) throw new Error('Pi Ads is not available')
   const ready = await window.Pi.Ads.isAdReady('rewarded')
-  showAlert('Pi Ads', `Ad ready: ${ready.ready}`, 'info')
+  // showAlert('Pi Ads', `Ad ready: ${ready.ready}`, 'info')
   if (ready.ready !== true) {
     const requestAdResponse = await window.Pi.Ads.requestAd('rewarded')
     const result = requestAdResponse.result
@@ -59,10 +59,11 @@ export async function showRewardedAd(): Promise<PiAdResponse> {
       result === 'AD_FAILED_TO_LOAD' ||
       result === 'AD_NOT_AVAILABLE'
     ) {
+      alert("here")
       return requestAdResponse
     }
   }
   const res = await window.Pi.Ads.showAd('rewarded')
-  showAlert('Pi Ads', `Ad result: ${res.result}`, 'info')
+  showAlert('Pi Ads', `Ad result: ${JSON.stringify(res)}`, 'info')
   return res
 }
