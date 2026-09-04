@@ -56,8 +56,6 @@ function SaleCard({
   const buyer = line.order?.user
   const date = line.shipped ? line.shipped_at : line.order?.ordered_at
   const quantity = line.quantity ?? 0
-  const price = line.price_converted ?? line.product?.price ?? 0
-  const currency = line.currency_conversion ?? ''
   const purchaseTotal = line.purchaseData?.total ?? (line.total ?? 0) + (line.fee ?? 0)
 
   return (

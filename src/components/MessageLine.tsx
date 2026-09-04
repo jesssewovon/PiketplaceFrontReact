@@ -1,7 +1,7 @@
 import { ShoppingCart, Store, Truck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { ChatMessage } from '../types'
-import { formatDate } from '../lib/format'
+import { formatDateTime } from '../lib/format'
 import { useAppSelector } from '../store/hooks'
 
 function messageImageUrl(message: ChatMessage): string {
@@ -39,10 +39,10 @@ export default function MessageLine({
 
   return (
     <div className="mb-3.5">
-      <div className={`flex ${isMine ? 'justify-start' : 'justify-end'}`}>
+      <div className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
         <div
           className={`relative max-w-[78%] rounded-2xl px-3 py-1.5 text-sm leading-snug shadow-sm ${
-            isMine ? 'rounded-tl-sm bg-primary text-white' : 'rounded-tr-sm bg-white text-ink'
+            isMine ? 'rounded-tr-sm bg-primary text-white' : 'rounded-tl-sm bg-white text-ink'
           }`}
         >
           {!isMine && isDeliver && (
@@ -67,7 +67,7 @@ export default function MessageLine({
             />
           )}
           {!isMine && sender?.fullnameOrUsername && (
-            <em className="mr-1 block text-[10px] leading-tight text-ink-soft">
+            <em className="mr-1 block text-[10px] inline leading-tight text-ink-soft">
               {sender.fullnameOrUsername}
             </em>
           )}
@@ -79,7 +79,7 @@ export default function MessageLine({
               onClick={() => onImageClick?.(imgSrc)}
             />
           ) : (
-            <span>{message.message ?? ''}</span>
+            <div>{message.message ?? ''}</div>
           )}
           {!isMine && !message.isImage && !message.message && (
             <ShoppingCart size={16} className="text-ink-soft" />
@@ -87,9 +87,9 @@ export default function MessageLine({
         </div>
       </div>
       <em
-        className={`block text-[10px] text-ink-soft ${isMine ? 'text-left' : 'text-right'}`}
+        className={`block text-[10px] text-ink-soft ${isMine ? 'text-right' : 'text-left'}`}
       >
-        {formatDate(message.created_at)}
+        {formatDateTime(message.created_at)}
       </em>
     </div>
   )
