@@ -50,8 +50,13 @@ export async function showRewardedAd(): Promise<PiAdResponse> {
   const ready = await window.Pi.Ads.isAdReady('rewarded')
   if (ready.ready !== true) {
     const requestAdResponse = await window.Pi.Ads.requestAd('rewarded')
-    if (requestAdResponse.result === 'ADS_NOT_SUPPORTED') {
-      return { result: 'ADS_NOT_SUPPORTED' }
+    const result = requestAdResponse.result
+    if (
+      result === 'ADS_NOT_SUPPORTED' ||
+      result === 'AD_FAILED_TO_LOAD' ||
+      result === 'AD_NOT_AVAILABLE'
+    ) {
+      return requestAdResponse
     }
   }
   return window.Pi.Ads.showAd('rewarded')

@@ -121,6 +121,8 @@ export default function UnlockBoostPage() {
       const result = showAdResponse.result
       if (result === 'AD_REWARDED' && showAdResponse.adId) {
         await rewardAd(showAdResponse.adId)
+      } else if (result === 'AD_FAILED_TO_LOAD') {
+        showAlert(t('info', { defaultValue: 'Info' }), t('ad_failed_to_load', { defaultValue: 'Ad failed to load' }), 'error')
       } else if (result === 'AD_NOT_AVAILABLE') {
         showAlert(t('info', { defaultValue: 'Info' }), t('ads_unavailable', { defaultValue: 'Ads unavailable' }), 'error')
       } else if (result === 'AD_NETWORK_ERROR') {
