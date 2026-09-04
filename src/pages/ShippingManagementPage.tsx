@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import { ChevronDown, Loader2, Minus, Plus, X } from 'lucide-react'
+import { ChevronDown, Loader2, Minus, Plus, RotateCcw, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { LineOrder } from '../types'
 import { fetchLineOrder, updateLineOrderShippingStatus } from '../lib/api'
@@ -324,6 +324,17 @@ export default function ShippingManagementPage() {
   return (
     <div className="animate-fade-in">
       <section className="px-4 py-6">
+        <div className="flex justify-center py-1">
+          <button
+            type="button"
+            onClick={() => void getLineOrder()}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition hover:bg-black/5 hover:text-primary"
+            aria-label={t('shipping_reload', { defaultValue: 'Reload' })}
+          >
+            <RotateCcw size={20} />
+          </button>
+        </div>
+
         <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-soft">
           <img src="/site_images/shipping.jpg" alt="" className="mx-auto h-[150px] object-contain" />
           <div className="mt-3">

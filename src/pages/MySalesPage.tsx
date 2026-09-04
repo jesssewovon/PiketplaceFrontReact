@@ -120,7 +120,8 @@ function SaleCard({
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium leading-snug text-ink">{product?.libelle ?? ''}</p>
           <p className="mt-1 text-xs font-semibold text-primary">
-            {formatAmount(price, currency)}
+            {/* {formatAmount(price, currency)} */}
+            {<span dangerouslySetInnerHTML={{ __html: line.purchaseData?.item_total?? '' }} />}
             <span className="ml-2 text-[11px] font-medium text-ink-soft">
               {quantity}x {t('item', { defaultValue: 'Item' })}
             </span>
@@ -138,10 +139,10 @@ function SaleCard({
             </p>
           ) : line.purchaseData?.handling_fee ? (
             <p className="mt-1 text-[11px] text-ink-soft">
-              {t('handling_fee_percentage', {
-                defaultValue: 'Handling fee: {amount}',
-                amount: formatAmount(line.purchaseData.handling_fee),
-              })}
+              {<div dangerouslySetInnerHTML={{ __html: t('handling_fee_percentage', {
+                defaultValue: 'Total : {amount}',
+                amount: line.purchaseData?.handling_fee,
+              }) }} />}
             </p>
           ) : line.noshipping ? (
             <p className="mt-1 text-[11px] text-ink-soft">
@@ -149,10 +150,10 @@ function SaleCard({
             </p>
           ) : null}
           <p className="mt-1 text-right text-xs font-semibold text-primary">
-            {t('total_display', {
+            {<div dangerouslySetInnerHTML={{ __html: t('total_display', {
               defaultValue: 'Total : {amount}',
-              amount: formatAmount(purchaseTotal),
-            })}
+              amount: purchaseTotal,
+            }) }} />}
           </p>
         </div>
       </div>
