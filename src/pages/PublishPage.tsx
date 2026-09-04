@@ -436,7 +436,7 @@ export default function PublishPage() {
         if ((res as any).status) {
           setSuccess(true)
           showAlert(
-            t('publish_update_success_title', { defaultValue: 'Product updated!' }),
+            t('updated successfully', { defaultValue: 'Product updated!' }),
             '',
             'success',
             1400,
@@ -465,7 +465,7 @@ export default function PublishPage() {
       if ((res as any).status) {
         setSuccess(true)
         showAlert(
-          t('publish_success_title', { defaultValue: 'Product published!' }),
+          t('created successfully', { defaultValue: 'Product published!' }),
           t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' }),
           'success',
           1400,
@@ -498,8 +498,8 @@ export default function PublishPage() {
             </span>
             <h2 className="text-lg font-bold text-primary-dark">
               {isEdit
-                ? t('publish_update_success_title', { defaultValue: 'Product updated!' })
-                : t('publish_success_title', { defaultValue: 'Product published!' })}
+                ? t('updated successfully', { defaultValue: 'Product updated!' })
+                : t('created successfully', { defaultValue: 'Product published!' })}
             </h2>
             <p className="text-xs text-ink-soft">
               {isEdit
