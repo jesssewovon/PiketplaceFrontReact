@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import Header from './Header'
 import BottomNav from './BottomNav'
+import Elevator from './Elevator'
 import { useAppSelector } from '../store/hooks'
 
 export default function Layout() {
@@ -18,6 +19,7 @@ export default function Layout() {
         <Outlet />
       </main>
       {showBottomNav && <BottomNav />}
+      <Elevator bottom={showBottomNav ? 88 : 16} />
     </div>
   )
 }

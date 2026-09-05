@@ -39,7 +39,6 @@ export default function NotificationsPage() {
       setIsLoadingMore(true)
       try {
         const res = await fetchNotifications(token ?? undefined, user?.id ?? 0, targetPage)
-        console.log('fetchNotifications res:', res)
         const pagination = res.notifications
         const list = pagination?.data ?? []
         setNotifications((prev) => (targetPage === 1 ? list : [...prev, ...list]))
