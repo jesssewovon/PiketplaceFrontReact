@@ -17,7 +17,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-black/5 bg-transparent shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-hover"
+      className="group flex flex-col overflow-hidden rounded-lg border border-black/5 bg-transparent shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-hover"
     >
       <div className="relative overflow-hidden">
         <LazyImage

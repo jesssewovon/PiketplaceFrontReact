@@ -26,7 +26,7 @@ export default function LazyImage({
         decoding="async"
         onLoad={() => setLoaded(true)}
         className={`w-full transition-opacity duration-500 ${
-          loaded ? 'h-auto opacity-100' : 'lazy-shimmer min-h-[180px]'
+          loaded ? 'h-auto min-h-[150px] opacity-100' : 'lazy-shimmer min-h-[180px]'
         } ${imgClassName ?? ''} ${className ?? ''}`}
       />
     )
