@@ -128,6 +128,23 @@ export default function IndexPage() {
     [products, query],
   )
 
+  const columns = useMemo(() => {
+    const left: Product[] = []
+    const right: Product[] = []
+    let boostedPlaced = 0
+    filtered.forEach((product) => {
+      if (product.isBoosted) {
+        if (boostedPlaced++ % 2 === 0) left.push(product)
+        else right.push(product)
+      } else if (left.length <= right.length) {
+        left.push(product)
+      } else {
+        right.push(product)
+      }
+    })
+    return { left, right }
+  }, [filtered])
+
   const refreshProducts = useCallback(
     async (targetPage: number, activeFilter?: FilterState | null) => {
       if (lockRef.current) return
@@ -434,12 +451,21 @@ export default function IndexPage() {
           </div>
         ) : (
           <>
-            <div className="columns-2 gap-2 [column-fill:_balance]">
-              {filtered.map((product) => (
-                <div key={product.id} className="mb-3 break-inside-avoid">
-                  <ProductCard product={product} />
-                </div>
-              ))}
+            <div className="flex items-start gap-2">
+              <div className="flex-1 min-w-0">
+                {columns.left.map((product) => (
+                  <div key={product.id} className="mb-3">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+              <div className="flex-1 min-w-0">
+                {columns.right.map((product) => (
+                  <div key={product.id} className="mb-3">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
             </div>
 
             {error && products.length > 0 && (
