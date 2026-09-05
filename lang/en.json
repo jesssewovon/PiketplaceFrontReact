@@ -247,6 +247,7 @@
     "stock_added_successfully": "Stock added successfully",
     "you_going_display_product": "You are going to display this product",
     "you_going_hide_product": "You are going to hide this product",
+    "you_going_delete_product": "You are going to delete this product",
     "display": "Display",
     "hide": "Hide",
     "boost": "Boost",

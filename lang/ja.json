@@ -246,6 +246,7 @@
     "stock_added_successfully": "在庫を追加しました",
     "you_going_display_product": "この商品を表示します",
     "you_going_hide_product": "この商品を非表示にします",
+    "you_going_delete_product": "この商品を削除します",
     "display": "表示",
     "hide": "非表示",
     "boost": "ブースト",
