@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Product } from '../types'
 import { flagEmoji } from '../lib/geo'
 import { formatAmount } from '../lib/format'
+import BoostBadge from './BoostBadge'
 import LazyImage from './LazyImage'
 import ProductShippingLabel from './ProductShippingLabel'
 
@@ -20,8 +21,9 @@ export default function ProductCard({ product }: ProductCardProps) {
       className="group flex flex-col overflow-hidden rounded-lg border border-black/5 bg-transparent shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-hover"
     >
       <div className="relative overflow-hidden">
+        {product.isBoosted && <BoostBadge className="absolute right-0 top-0 z-10" />}
         <LazyImage
-          src={image ?? ''}
+          src={image}
           alt={product.libelle}
           variant="natural"
           imgClassName="group-hover:scale-105 transition-transform duration-500"

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 interface LazyImageProps {
-  src: string
+  src?: string
   alt: string
   className?: string
   imgClassName?: string
@@ -18,6 +18,9 @@ export default function LazyImage({
   const [loaded, setLoaded] = useState(false)
 
   if (variant === 'natural') {
+    if (!src) {
+      return <div className={`lazy-shimmer min-h-[180px] w-full ${className ?? ''}`} />
+    }
     return (
       <img
         src={src}
@@ -30,6 +33,10 @@ export default function LazyImage({
         } ${imgClassName ?? ''} ${className ?? ''}`}
       />
     )
+  }
+
+  if (!src) {
+    return <div className={`lazy-shimmer h-full w-full ${className ?? ''}`} />
   }
 
   return (

@@ -4,7 +4,7 @@ import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 import type { AdsBalanceItem, AdsData } from '../types'
 import { fetchAdsData, fetchAdsHistories, rewardUserAds } from '../lib/api'
-import { showRewardedAd } from '../lib/pi'
+import { showRewardedAd, authenticateWithPi } from '../lib/pi'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
@@ -106,7 +106,7 @@ export default function UnlockBoostPage() {
     }
   }
 
-  const displayAd = async () => {
+  const displayAd = async (retried = false) => {
     console.log('displayAd called', adsData)
     /* if (adsData?.limit_reached && (adsData.remaining_time ?? 0) <= 0) {
       alert("here")
@@ -142,11 +142,24 @@ export default function UnlockBoostPage() {
           'error',
         )
       } else if (result === 'USER_UNAUTHENTICATED') {
-        showAlert(
-          t('info', { defaultValue: 'Info' }),
-          t('not_authenticated_try_again', { defaultValue: 'Not authenticated, try again' }),
-          'error',
-        )
+        try {
+          await authenticateWithPi()
+          if (!retried) {
+            await displayAd(true)
+            return
+          }
+          showAlert(
+            t('info', { defaultValue: 'Info' }),
+            t('not_authenticated_try_again', { defaultValue: 'Not authenticated, try again' }),
+            'error',
+          )
+        } catch {
+          showAlert(
+            t('info', { defaultValue: 'Info' }),
+            t('not_authenticated_try_again', { defaultValue: 'Not authenticated, try again' }),
+            'error',
+          )
+        }
       } else if (result !== 'ADS_NOT_SUPPORTED' && result !== 'AD_CLOSED') {
         showAlert(t('info', { defaultValue: 'Info' }), t('an_error_occured', { defaultValue: 'An error occurred' }), 'error')
       }else{

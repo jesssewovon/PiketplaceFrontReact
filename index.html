@@ -5,10 +5,19 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#ec11b5" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta
       name="description"
-      content="Piketplace — buy and sell goods and services using Pi cryptocurrency."
+      content="Piketplace, e-commerce, a Pi Network marketplace that exchange goods and services for Pi Network currency (cryptocurrency), Pioneers can publish goods for sale, can shopping and apply for shipping goods from seller to buyer, Piketplace uses several languages like English, Chinese, French, Spanish and even more. Pi Apps, Selling, Purchasing, Buying, Shopping, Shipping, Shipping application, Goods, Services, Multilingual, Pi, marketplace, Piket, Place, Piket Place"
     />
+    <meta
+      name="keywords"
+      content="Piketplace, e-commerce, Pi Network, crypto, cryptocurrency, blockchain, Pi Apps, Application, Marketplace, Selling, Buying, Purchasing, Shopping, Services, Goods, Shipping, Multilingue,Vente, Achat, Livraison, Marché, Biens et Service, America, Europa, Asia, Africa, World"
+    />
+    <meta name="author" content="Piketplace" />
+    <meta name="robots" content="index, follow" />
+    <link rel="apple-touch-icon" href="/site_images/Piketplace_favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -17,9 +26,179 @@
     />
     <title>Piketplace — Pi Network Marketplace</title>
     <script async src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <!-- AdSense avec détection intelligente -->
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3962442438023665"
+      crossorigin="anonymous"
+      onerror="console.warn('AdSense script failed to load')"
+    ></script>
+    <script>
+      // Configuration intelligente et gratuite avec CloudFlare
+      (function () {
+        // Détection du pays via CloudFlare (100% gratuit, illimité)
+        fetch("https://cloudflare.com/cdn-cgi/trace")
+          .then((response) => response.text())
+          .then((data) => {
+            // Extraction du code pays
+            const countryMatch = data.match(/loc=(\w+)/);
+            const country = countryMatch ? countryMatch[1] : null;
+
+            // Liste complète des pays RGPD (EEE + UK + Suisse)
+            const gdprCountries = [
+              "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+              "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+              "PL", "PT", "RO", "SK", "SI", "ES", "SE", "GB", "CH", "IS",
+              "LI", "NO"
+            ];
+
+            // Application de la configuration selon le pays
+            if (country && gdprCountries.includes(country)) {
+              // PAYS RGPD = Annonces non-personnalisées
+              (adsbygoogle = window.adsbygoogle || []).requestNonPersonalizedAds = 1;
+              (adsbygoogle = window.adsbygoogle || []).privacySettings = {
+                nonPersonalizedAds: true,
+              };
+              console.log("Pays RGPD détecté:", country, "- Annonces non-personnalisées activées");
+            } else if (country) {
+              // AUTRES PAYS = Annonces personnalisées (revenus maximums)
+              console.log("Pays non-RGPD:", country, "- Annonces personnalisées (revenus MAX)");
+            }
+          })
+          .catch((error) => {
+            // En cas d'erreur, on ne fait RIEN (garde le mode par défaut)
+            console.warn("Détection pays échouée:", error);
+          });
+      })();
+    </script>
+    <!-- GOOGLE ANALYTICS -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-26YBHTC3M2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-26YBHTC3M2");
+    </script>
+    <!-- END GOOGLE ANALYTICS -->
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- TAWK CHAT WIDGET -->
+    <script>
+      var Tawk_API = Tawk_API || {};
+      Tawk_API.customStyle = {
+        visibility: {
+          desktop: {
+            position: "bl",
+            xOffset: "16px",
+            yOffset: 92,
+          },
+          mobile: {
+            position: "bl",
+            xOffset: "16px",
+            yOffset: 92,
+          },
+          bubble: {
+            rotate: "0deg",
+            xOffset: 0,
+            yOffset: 0,
+          },
+        },
+      };
+
+      function tawkToggle() {
+        try {
+          if (window.Tawk_API && window.Tawk_API.toggle) window.Tawk_API.toggle();
+          else if (window.Tawk_API && window.Tawk_API.maximize) window.Tawk_API.maximize();
+        } catch (e) {
+          /* ignore */
+        }
+      }
+
+      function setTawkFrameVisible(visible) {
+        var frames = document.querySelectorAll('iframe[src*="tawk.to"], iframe[title*="chat"]');
+        for (var i = 0; i < frames.length; i++) {
+          frames[i].style.display = visible ? "" : "none";
+        }
+        var launcher = document.getElementById("piket-tawk-launcher");
+        if (launcher) launcher.style.display = visible ? "none" : "flex";
+      }
+
+      function setTawkMinimized() {
+        setTawkFrameVisible(false);
+        try {
+          if (window.Tawk_API && window.Tawk_API.hideWidget) window.Tawk_API.hideWidget();
+        } catch (e) {
+          /* ignore */
+        }
+      }
+
+      var Tawk_LoadStart = new Date();
+      (function () {
+        var s1 = document.createElement("script");
+        s1.async = true;
+        s1.src = "https://embed.tawk.to/61d893b7f7cf527e84d0fcf2/1for024mo";
+        s1.charset = "UTF-8";
+        s1.setAttribute("crossorigin", "*");
+
+        var s0 = document.getElementsByTagName("script")[0];
+        if (s0 && s0.parentNode) {
+          s0.parentNode.insertBefore(s1, s0);
+        }
+      })();
+
+      Tawk_API.onLoad = function () {
+        setTawkMinimized();
+      };
+
+      Tawk_API.onChatMaximized = function () {
+        setTawkFrameVisible(true);
+      };
+
+      Tawk_API.onChatMinimized = function () {
+        setTawkMinimized();
+      };
+
+      setTimeout(setTawkMinimized, 20000);
+    </script>
+    <button
+      id="piket-tawk-launcher"
+      type="button"
+      aria-label="Support chat"
+      onclick="tawkToggle()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"
+          fill="#ffffff"
+        />
+      </svg>
+    </button>
+    <style>
+      #piket-tawk-launcher {
+        position: fixed;
+        left: 16px;
+        bottom: 92px;
+        width: 48px;
+        height: 48px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #fbb148, #f5a72b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        z-index: 1000;
+      }
+      #piket-tawk-launcher svg {
+        width: 22px;
+        height: 22px;
+      }
+    </style>
+    <!-- END TAWK CHAT WIDGET -->
   </body>
 </html>

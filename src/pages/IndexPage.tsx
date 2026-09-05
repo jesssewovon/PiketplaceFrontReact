@@ -410,7 +410,7 @@ export default function IndexPage() {
               }}
               className="mt-4 rounded-full bg-primary px-5 py-2 text-xs font-semibold text-white transition hover:bg-primary-dark"
             >
-              {t('index_try_again', { defaultValue: 'Try again' })}
+              {t('try_again', { defaultValue: 'Try again' })}
             </button>
           </div>
         ) : noResults ? (

@@ -12,6 +12,7 @@ interface PiPaymentLoaderProps {
   userId?: number
   verifyDelay?: number
   onVerified?: () => void
+  successMessageKey?: string
 }
 
 const piLogoPath =
@@ -25,6 +26,7 @@ export default function PiPaymentLoader({
   userId,
   verifyDelay = 15000,
   onVerified,
+  successMessageKey = 'donation_thanks',
 }: PiPaymentLoaderProps) {
   const { t } = useTranslation()
   const [verifyReady, setVerifyReady] = useState(false)
@@ -51,7 +53,7 @@ export default function PiPaymentLoader({
         void Swal.fire({
           icon: 'success',
           title: t('info', { defaultValue: 'Info' }),
-          text: t('donation_thanks', { defaultValue: 'Thanks for your donation' }),
+          text: t(successMessageKey, { defaultValue: 'Payment completed successfully' }),
           confirmButtonColor: '#ec11b5',
         }).then(() => onVerified?.())
       } else {

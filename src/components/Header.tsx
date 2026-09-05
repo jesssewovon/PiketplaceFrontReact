@@ -82,7 +82,7 @@ export default function Header() {
             type="button"
             onClick={handleBack}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-ink transition"
-            aria-label={t('back', { defaultValue: 'Back' })}
+            aria-label={t('go_back', { defaultValue: 'Go back' })}
           >
             {/* <ArrowLeft size={19} /> */}
             <svg className="tw:ml-[10px] tw:align-[sub!important] tw:inline" width="20px" height="20px" viewBox="0 0 75.80 75.80" xmlns="http://www.w3.org/2000/svg" fill="#000000" stroke="#000000" stroke-width="0.00075803"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="2.27409"> <g id="Group_64" data-name="Group 64" transform="translate(-624.082 -383.588)"> <path id="Path_56" data-name="Path 56" d="M660.313,383.588a1.5,1.5,0,0,1,1.06,2.561l-33.556,33.56a2.528,2.528,0,0,0,0,3.564l33.556,33.558a1.5,1.5,0,0,1-2.121,2.121L625.7,425.394a5.527,5.527,0,0,1,0-7.807l33.556-33.559A1.5,1.5,0,0,1,660.313,383.588Z" fill="#a63289"></path> </g> </g><g id="SVGRepo_iconCarrier"> <g id="Group_64" data-name="Group 64" transform="translate(-624.082 -383.588)"> <path id="Path_56" data-name="Path 56" d="M660.313,383.588a1.5,1.5,0,0,1,1.06,2.561l-33.556,33.56a2.528,2.528,0,0,0,0,3.564l33.556,33.558a1.5,1.5,0,0,1-2.121,2.121L625.7,425.394a5.527,5.527,0,0,1,0-7.807l33.556-33.559A1.5,1.5,0,0,1,660.313,383.588Z" fill="#a63289"></path> </g> </g></svg>
@@ -112,7 +112,7 @@ export default function Header() {
                     navigate('/')
                   }}
                   className="absolute right-1.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-ink-soft transition hover:bg-black/5"
-                  aria-label={t('header_clear_search', { defaultValue: 'Clear search' })}
+                  aria-label={t('index_clear_search', { defaultValue: 'Clear search' })}
                 >
                   <X size={13} />
                 </button>
@@ -152,7 +152,7 @@ export default function Header() {
           <Link
             to="/notifications"
             className={`relative ${iconButton}`}
-            aria-label={t('header_notifications', { defaultValue: 'Notifications' })}
+            aria-label={t('notification.notifications', { defaultValue: 'Notifications' })}
           >
             <Bell size={16} />
             {(user?.nbNotification ?? 0) > 0 && (
@@ -197,7 +197,7 @@ export default function Header() {
             type="button"
             onClick={handleBack}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-ink transition"
-            aria-label={t('back', { defaultValue: 'Back' })}
+            aria-label={t('go_back', { defaultValue: 'Go back' })}
           >
             {/* <ArrowLeft size={19} /> */}
             <svg className="tw:ml-[10px] tw:align-[sub!important] tw:inline" width="20px" height="20px" viewBox="0 0 75.80 75.80" xmlns="http://www.w3.org/2000/svg" fill="#000000" stroke="#000000" stroke-width="0.00075803"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="2.27409"> <g id="Group_64" data-name="Group 64" transform="translate(-624.082 -383.588)"> <path id="Path_56" data-name="Path 56" d="M660.313,383.588a1.5,1.5,0,0,1,1.06,2.561l-33.556,33.56a2.528,2.528,0,0,0,0,3.564l33.556,33.558a1.5,1.5,0,0,1-2.121,2.121L625.7,425.394a5.527,5.527,0,0,1,0-7.807l33.556-33.559A1.5,1.5,0,0,1,660.313,383.588Z" fill="#a63289"></path> </g> </g><g id="SVGRepo_iconCarrier"> <g id="Group_64" data-name="Group 64" transform="translate(-624.082 -383.588)"> <path id="Path_56" data-name="Path 56" d="M660.313,383.588a1.5,1.5,0,0,1,1.06,2.561l-33.556,33.56a2.528,2.528,0,0,0,0,3.564l33.556,33.558a1.5,1.5,0,0,1-2.121,2.121L625.7,425.394a5.527,5.527,0,0,1,0-7.807l33.556-33.559A1.5,1.5,0,0,1,660.313,383.588Z" fill="#a63289"></path> </g> </g></svg>
@@ -232,7 +232,7 @@ export default function Header() {
           <Link
             to="/notifications"
             className={`relative ${iconButton}`}
-            aria-label={t('header_notifications', { defaultValue: 'Notifications' })}
+            aria-label={t('notification.notifications', { defaultValue: 'Notifications' })}
           >
             <Bell size={16} />
             {(user?.nbNotification ?? 0) > 0 && (

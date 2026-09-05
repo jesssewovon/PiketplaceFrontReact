@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react'
 import { Trans, useTranslation } from 'react-i18next'
+import BoostBadge from '../components/BoostBadge'
 import type { BoostPeriod, CancellationReason, Product, ProductDetailResponse } from '../types'
 import {
   addStock,
@@ -35,9 +36,10 @@ import {
 import { formatAmount, formatDate } from '../lib/format'
 import { flagEmoji } from '../lib/geo'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { initPi, waitForPi } from '../lib/pi'
+import { createPiPayment, initPi, waitForPi } from '../lib/pi'
 import { loginWithPi } from '../lib/auth'
 import FullScreenLoader from '../components/FullScreenLoader'
+import PiPaymentLoader from '../components/PiPaymentLoader'
 import { postPiPayment } from '../lib/api'
 
 function sanitizeAmount(raw: string): string {
@@ -152,6 +154,8 @@ export default function ProductPage() {
   })
   const [boostForm, setBoostForm] = useState({ amount: '', currencies_code: '', period: '' })
   const [walletOpen, setWalletOpen] = useState(false)
+  const [piLoaderOpen, setPiLoaderOpen] = useState(false)
+  const uniqueIdRef = useRef<string>('')
 
   const [promotionEnabled, setPromotionEnabled] = useState(false)
   const [promotionPercentage, setPromotionPercentage] = useState('')
@@ -517,7 +521,8 @@ export default function ProductPage() {
               : t('boosted_successfully', { defaultValue: 'Boosted successfully' }),
             confirmButtonColor: '#ec11b5',
           })
-          navigate('/')
+          //navigate('/')
+          setShowBoostPanel(false)
         }
       } else if (res.message && res.message !== '') {
         const opts: Record<string, string> = {}
@@ -567,6 +572,7 @@ export default function ProductPage() {
     if (!product) return
     setWalletOpen(false)
     const uniqueId = crypto.randomUUID()
+    uniqueIdRef.current = uniqueId
     const memo = isUpgrade
       ? t('boost_upgrade', { defaultValue: 'Boost upgrade' })
       : t('boost_for_on', {
@@ -582,6 +588,14 @@ export default function ProductPage() {
         ? { type: 'product_boost_upgrade' }
         : { type: 'product_boost', period: boostForm.period }),
     }
+    const callbacks = {
+      onReadyForServerApproval: (paymentId: string) =>
+        postPiPayment(token ?? undefined, user?.uid, 'approve', { paymentId }),
+      onReadyForServerCompletion: (paymentId: string, txid: string) =>
+        postPiPayment(token ?? undefined, user?.uid, 'complete', { paymentId, txid }),
+      onCancel: () => undefined,
+      onError: () => undefined,
+    }
     try {
       await waitForPi()
       initPi()
@@ -595,19 +609,8 @@ export default function ProductPage() {
         }).catch(() => undefined)
       }
       await window.Pi.authenticate(['username', 'payments'], onIncompletePaymentFound).catch(() => undefined)
-      window.Pi.createPayment(
-        { amount: Number(boostForm.amount), memo, metadata },
-        {
-          onReadyForServerApproval: (paymentId) =>
-            postPiPayment(token ?? undefined, user?.uid, 'approve', { paymentId }),
-          onReadyForServerCompletion: (paymentId, txid) =>
-            postPiPayment(token ?? undefined, user?.uid, 'complete', { paymentId, txid }).then(() => {
-              void submitBoost('continue')
-            }),
-          onCancel: () => undefined,
-          onError: () => undefined,
-        },
-      )
+      await createPiPayment({ amount: Number(boostForm.amount), memo, metadata }, callbacks)
+      setPiLoaderOpen(true)
     } catch {
       showError(t('please_use_pi_browser', { defaultValue: 'Please use the Pi browser' }))
     }
@@ -1094,7 +1097,8 @@ export default function ProductPage() {
         )}
 
         {image && (
-          <div className="mb-7 overflow-hidden rounded-2xl border border-black/5 shadow-soft">
+          <div className="relative mb-7 overflow-hidden rounded-2xl border border-black/5 shadow-soft">
+            {product.isBoosted && <BoostBadge className="absolute right-0 top-0 z-10" />}
             <img src={image} alt={product.libelle} className="w-full" />
           </div>
         )}
@@ -1431,48 +1435,50 @@ export default function ProductPage() {
         document.body,
       )}
 
-      {walletOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
-          onClick={() => setWalletOpen(false)}
-        >
+      {walletOpen &&
+        createPortal(
           <div
-            className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
-            onClick={(event) => event.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
+            onClick={() => setWalletOpen(false)}
           >
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-ink">
-                {t('pay_with', { defaultValue: 'Pay with' })}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setWalletOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-slate-100"
-              >
-                <X size={18} />
-              </button>
+            <div
+              className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-ink">
+                  {t('pay_with', { defaultValue: 'Pay with' })}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setWalletOpen(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-slate-100"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() => void askPinAndBoost()}
+                  className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3.5 text-left text-sm font-bold text-white shadow-soft transition hover:opacity-90"
+                >
+                  <Wallet size={18} />
+                  {t('piketplace_wallet', { defaultValue: 'Piketplace Wallet' })}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void payWithPiNetwork()}
+                  className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-[#fbb148] to-[#f5a72b] px-4 py-3.5 text-left text-sm font-bold text-white shadow-soft transition hover:opacity-90"
+                >
+                  <img src="/site_images/pi.png" alt="π" className="h-5 w-5 rounded-full object-cover" />
+                  {t('pinetwork_wallet', { defaultValue: 'Pi Network wallet' })}
+                </button>
+              </div>
             </div>
-            <div className="space-y-2.5">
-              <button
-                type="button"
-                onClick={() => void askPinAndBoost()}
-                className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3.5 text-left text-sm font-bold text-white shadow-soft transition hover:opacity-90"
-              >
-                <Wallet size={18} />
-                {t('piketplace_wallet', { defaultValue: 'Piketplace Wallet' })}
-              </button>
-              <button
-                type="button"
-                onClick={() => void payWithPiNetwork()}
-                className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-[#fbb148] to-[#f5a72b] px-4 py-3.5 text-left text-sm font-bold text-white shadow-soft transition hover:opacity-90"
-              >
-                <img src="/site_images/pi.png" alt="π" className="h-5 w-5 rounded-full object-cover" />
-                {t('pinetwork_wallet', { defaultValue: 'Pi Network wallet' })}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       {stockOpen && createPortal(
         <div
@@ -1579,6 +1585,26 @@ export default function ProductPage() {
         </div>,
         document.body,
       )}
+
+      <PiPaymentLoader
+        open={piLoaderOpen}
+        token={token}
+        uniqueId={uniqueIdRef.current}
+        userId={user?.id}
+        successMessageKey={isUpgrade ? 'boost_upgraded_successfully' : 'boosted_successfully'}
+        onClose={() => {
+          alert('onclose')
+          setPiLoaderOpen(false)
+          uniqueIdRef.current = ''
+        }}
+        onVerified={() => {
+          alert('verified')
+          setPiLoaderOpen(false)
+          uniqueIdRef.current = ''
+          setShowBoostPanel(false)
+          //void submitBoost('continue')
+        }}
+      />
     </div>
   )
 }
