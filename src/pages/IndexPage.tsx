@@ -367,14 +367,14 @@ export default function IndexPage() {
               t('index_latest_products', { defaultValue: 'Latest products' })
             )}
           </h2>
-          {!loading && !error && !query && (
+          {/* {!loading && !error && !query && (
             <span className="text-[11px] font-medium text-ink-soft">
               {t('index_items', {
                 count: products.length,
                 defaultValue: '{count} items',
               })}
             </span>
-          )}
+          )} */}
           <button
             type="button"
             onClick={() => dispatch(setFilterOpen(true))}

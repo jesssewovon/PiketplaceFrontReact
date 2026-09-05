@@ -209,7 +209,7 @@ export default function MyAccountPage() {
             <span className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-white px-4 py-3 text-sm font-bold">
               <Wallet size={18} strokeWidth={2.2} className="text-primary" />
               <span className="bg-gradient-to-r from-primary to-primary-deep bg-clip-text text-transparent">
-                {t('account_open_wallet', { defaultValue: 'Open Pi Wallet' })}
+                {t('go to Piket wallet', { defaultValue: 'Open Pi Wallet' })}
               </span>
             </span>
           </a>
