@@ -7,6 +7,8 @@
     "which_country_you_from": "Which country are you from ?",
     "loading": "loading",
     "reload": "reload",
+    "new_version_available": "A new version is available",
+    "new_version_available_click_ok": "A new version is now available. Click OK to reload the page.",
     "load": "Load",
     "load more": "Load more",
     "index_loading_more": "Loading more…",

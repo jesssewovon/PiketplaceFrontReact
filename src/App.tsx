@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from './store/hooks'
 import { initAuthFetch } from './lib/authFetch'
+import { useAppVersionCheck } from './lib/appVersion'
 import Layout from './components/Layout'
 import IndexPage from './pages/IndexPage'
 import ProductPage from './pages/ProductPage'
@@ -46,6 +47,8 @@ import WalletBalanceDetailsPage from './pages/Admin/WalletBalanceDetailsPage'
 function App() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
+  useAppVersionCheck()
 
   useEffect(() => {
     initAuthFetch(dispatch, navigate)

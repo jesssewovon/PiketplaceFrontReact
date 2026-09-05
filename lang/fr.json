@@ -7,6 +7,8 @@
     "which_country_you_from": "De quel pays êtes-vous?",
     "loading": "chargement",
     "reload": "recharger",
+    "new_version_available": "Une nouvelle version est disponible",
+    "new_version_available_click_ok": "Une nouvelle version est maintenant disponible. Cliquez sur OK pour recharger la page.",
     "load": "Charger",
     "load more": "Charger plus",
     "index_loading_more": "Chargement…",
