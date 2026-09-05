@@ -32,10 +32,14 @@ export default function NotificationsPage() {
     async (targetPage: number) => {
       if (loadingRef.current) return
       loadingRef.current = true
-      if (targetPage === 1) setIsLoading(true)
+      if (targetPage === 1) {
+        setIsLoading(true)
+        setNoMoreData(false)
+      }
       setIsLoadingMore(true)
       try {
         const res = await fetchNotifications(token ?? undefined, user?.id ?? 0, targetPage)
+        console.log('fetchNotifications res:', res)
         const pagination = res.notifications
         const list = pagination?.data ?? []
         setNotifications((prev) => (targetPage === 1 ? list : [...prev, ...list]))
@@ -51,6 +55,14 @@ export default function NotificationsPage() {
     },
     [token, user?.id],
   )
+
+  const reloadPage = useCallback(() => {
+    pageRef.current = 1
+    lastPageRef.current = 2
+    setNoMoreData(false)
+    setNotifications([])
+    void loadNotifications(1)
+  }, [loadNotifications])
 
   useEffect(() => {
     if (maintenanceMode) {
@@ -79,7 +91,7 @@ export default function NotificationsPage() {
     )
     observer.observe(node)
     return () => observer.disconnect()
-  }, [loadNotifications])
+  }, [loadNotifications, notifications.length])
 
   const renderMessage = (notification: AppNotification): ReactNode => {
     const datas = (notification.datas ?? {}) as Record<string, unknown>
@@ -160,7 +172,7 @@ export default function NotificationsPage() {
         <div className="flex justify-center py-1">
           <button
             type="button"
-            onClick={() => window.location.reload()}
+            onClick={() => reloadPage()}
             className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition hover:bg-black/5 hover:text-primary"
             aria-label={t('notifications_refresh', { defaultValue: 'Refresh' })}
           >
