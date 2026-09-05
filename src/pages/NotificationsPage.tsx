@@ -160,7 +160,7 @@ export default function NotificationsPage() {
         <div className="flex justify-center py-1">
           <button
             type="button"
-            onClick={() => void loadNotifications(1)}
+            onClick={() => window.location.reload()}
             className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition hover:bg-black/5 hover:text-primary"
             aria-label={t('notifications_refresh', { defaultValue: 'Refresh' })}
           >
