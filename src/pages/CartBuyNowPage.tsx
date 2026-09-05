@@ -19,13 +19,13 @@ import {
   payPiketplaceWallet,
   postPiPayment,
   searchDeliveryCompanies,
-  verifyPayment,
 } from '../lib/api'
 import { createPiPayment, initPi, waitForPi } from '../lib/pi'
 import { formatAmount } from '../lib/format'
 import { flagEmoji } from '../lib/geo'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
+import PiPaymentLoader from '../components/PiPaymentLoader'
 
 const inputClass =
   'w-full rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20'
@@ -124,8 +124,8 @@ export default function CartBuyNowPage() {
 
   const [confirming, setConfirming] = useState(false)
   const [isPaying, setIsPaying] = useState(false)
+  const [piLoaderOpen, setPiLoaderOpen] = useState(false)
 
-  const verifierRef = useRef<number | null>(null)
   const uniqueIdRef = useRef('')
 
   const countries = useMemo(() => {
@@ -264,13 +264,6 @@ export default function CartBuyNowPage() {
   useEffect(() => {
     if (user?.email) setEmail(user.email)
   }, [user?.email])
-
-  useEffect(() => () => {
-    if (verifierRef.current !== null) {
-      window.clearInterval(verifierRef.current)
-      verifierRef.current = null
-    }
-  }, [])
 
   useEffect(() => {
     if (!form.country_code) {
@@ -561,29 +554,6 @@ export default function CartBuyNowPage() {
     }
   }
 
-  const startPaymentVerifier = () => {
-    if (verifierRef.current !== null) window.clearInterval(verifierRef.current)
-    verifierRef.current = window.setInterval(async () => {
-      if (uniqueIdRef.current === '') return
-      try {
-        const res = await verifyPayment(token ?? undefined, uniqueIdRef.current, user?.id)
-        if (res.payment != null && verifierRef.current !== null) {
-          window.clearInterval(verifierRef.current)
-          verifierRef.current = null
-          uniqueIdRef.current = ''
-          void Swal.fire({
-            icon: 'success',
-            title: t('info', { defaultValue: 'Info' }),
-            text: t('cart.payment_done', { defaultValue: 'Payment done successfully' }),
-            confirmButtonColor: '#ec11b5',
-          }).then(() => navigate('/my-orders'))
-        }
-      } catch {
-        // keep polling
-      }
-    }, 3000)
-  }
-
   const payWithPiNetworkWallet = async () => {
     if (!product) return
     if (!product.is_digital && !noShipping && !addressSet) {
@@ -678,7 +648,7 @@ export default function CartBuyNowPage() {
           onError: () => undefined,
         },
       )
-      startPaymentVerifier()
+      setPiLoaderOpen(true)
     } catch {
       showError(t('please_use_pi_browser', { defaultValue: 'Please use the Pi browser' }))
     }
@@ -1442,6 +1412,23 @@ export default function CartBuyNowPage() {
           <Loader2 size={32} className="animate-spin text-white" />
         </div>
       )}
+
+      <PiPaymentLoader
+        open={piLoaderOpen}
+        token={token}
+        uniqueId={uniqueIdRef.current}
+        userId={user?.id}
+        successMessageKey="cart.payment_done"
+        onClose={() => {
+          setPiLoaderOpen(false)
+          uniqueIdRef.current = ''
+        }}
+        onVerified={() => {
+          setPiLoaderOpen(false)
+          uniqueIdRef.current = ''
+          navigate('/my-orders')
+        }}
+      />
     </div>
   )
 }
