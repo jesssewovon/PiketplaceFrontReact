@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Factory, Loader2, RotateCcw, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { checkMining as fetchCheckMining, startMining as fetchStartMining } from '../lib/api'
+import { checkMining as fetchCheckMining, countRewardAd, startMining as fetchStartMining } from '../lib/api'
 import { showAlert } from '../lib/alert'
 import { showRewardedAd } from '../lib/pi'
 import { useAppSelector } from '../store/hooks'
@@ -32,6 +32,7 @@ export default function MiningPage() {
   const { t } = useTranslation()
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const token = useAppSelector((state) => state.auth.token)
+  const username = useAppSelector((state) => state.auth.user?.username)
   const walletUrl = useAppSelector((state) =>
     typeof state.settings.settings?.piket_wallet_frontend_url === 'string'
       ? (state.settings.settings.piket_wallet_frontend_url as string)
@@ -104,7 +105,13 @@ export default function MiningPage() {
           setMiningRemainingTime(data.mining_remaining_time)
         }
       }
-      void showRewardedAd().catch(() => {})
+      void showRewardedAd()
+        .then((res) => {
+          if (res.result === 'AD_REWARDED' && res.adId) {
+            void countRewardAd(token ?? undefined, res.adId, 'after-mining', username ?? '').catch(() => {})
+          }
+        })
+        .catch(() => {})
     } catch {
       // ignore failed requests
     } finally {

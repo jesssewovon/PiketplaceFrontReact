@@ -1,7 +1,8 @@
 import { authenticateWithPi, showRewardedAd } from './pi'
-import { signIn } from './api'
+import { countRewardAd, signIn } from './api'
 import { loginSuccess } from '../store/authSlice'
 import type { AppDispatch } from '../store'
+import { store } from '../store/index'
 import { syncSettingsFromPayload } from '../store/settingsSync'
 
 export async function loginWithPi(dispatch: AppDispatch): Promise<void> {
@@ -29,5 +30,15 @@ export async function loginWithPi(dispatch: AppDispatch): Promise<void> {
 
   dispatch(loginSuccess({ user, token, permissions }))
 
-  void showRewardedAd().catch(() => {})
+  if (store.getState().settings.settings?.activate_pi_rewarded_ads_after_login !== true) {
+    return
+  }
+
+  void showRewardedAd()
+    .then((res) => {
+      if (res.result === 'AD_REWARDED' && res.adId) {
+        void countRewardAd(token, res.adId, 'after-login', user?.username ?? '').catch(() => {})
+      }
+    })
+    .catch(() => {})
 }

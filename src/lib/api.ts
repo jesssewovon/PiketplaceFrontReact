@@ -915,6 +915,24 @@ export async function rewardUserAds(
   return data
 }
 
+export async function countRewardAd(
+  token: string | undefined,
+  adId: string,
+  origin: string,
+  username: string,
+): Promise<unknown> {
+  const response = await authFetch(`${API_BASE}/count-rewarded-ads/sfdtzfjfsjdshjdhjdsdh`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adId, origin, username }),
+  })
+  const data = (await response.json().catch(() => ({}))) as { message?: string }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to count rewarded ads (${response.status})`)
+  }
+  return data
+}
+
 export async function fetchPartnerAccount(
   token: string | undefined,
 ): Promise<PartnerAccountResponse> {
