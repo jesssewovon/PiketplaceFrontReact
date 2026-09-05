@@ -169,7 +169,7 @@ export default function UnlockBoostPage() {
       setSaving(false)
     } catch {
       setSaving(false)
-      showAlert(t('info', { defaultValue: 'Info' }), t('an_error_occured', { defaultValue: 'An error occurred' }), 'error')
+      showAlert(t('info', { defaultValue: 'Info' }), t('ads_unavailable', { defaultValue: 'An error occurred' }), 'error')
     } finally {
       setSaving(false)
     }

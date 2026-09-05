@@ -43,7 +43,7 @@ export async function createPiPayment(
   window.Pi.createPayment(paymentData, callbacks)
 }
 
-export async function showRewardedAd(timeoutMs = 15000): Promise<PiAdResponse> {
+export async function showRewardedAd(timeoutMs = 10000): Promise<PiAdResponse> {
   const run = async () => {
     await waitForPi()
     initPi()
