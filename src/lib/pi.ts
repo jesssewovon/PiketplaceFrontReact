@@ -43,24 +43,32 @@ export async function createPiPayment(
   window.Pi.createPayment(paymentData, callbacks)
 }
 
-export async function showRewardedAd(): Promise<PiAdResponse> {
-  await waitForPi()
-  initPi()
-  if (!window.Pi?.Ads) throw new Error('Pi Ads is not available')
-  const ready = await window.Pi.Ads.isAdReady('rewarded')
-  // showAlert('Pi Ads', `Ad ready: ${ready.ready}`, 'info')
-  if (ready.ready !== true) {
-    const requestAdResponse = await window.Pi.Ads.requestAd('rewarded')
-    const result = requestAdResponse.result
-    if (
-      result === 'ADS_NOT_SUPPORTED' ||
-      result === 'AD_FAILED_TO_LOAD' ||
-      result === 'AD_NOT_AVAILABLE'
-    ) {
-      return requestAdResponse
+export async function showRewardedAd(timeoutMs = 30000): Promise<PiAdResponse> {
+  const run = async () => {
+    await waitForPi()
+    initPi()
+    if (!window.Pi?.Ads) throw new Error('Pi Ads is not available')
+    const ready = await window.Pi.Ads.isAdReady('rewarded')
+    // showAlert('Pi Ads', `Ad ready: ${ready.ready}`, 'info')
+    if (ready.ready !== true) {
+      const requestAdResponse = await window.Pi.Ads.requestAd('rewarded')
+      const result = requestAdResponse.result
+      if (
+        result === 'ADS_NOT_SUPPORTED' ||
+        result === 'AD_FAILED_TO_LOAD' ||
+        result === 'AD_NOT_AVAILABLE'
+      ) {
+        return requestAdResponse
+      }
     }
+    const res = await window.Pi.Ads.showAd('rewarded')
+    // showAlert('Pi Ads', `Ad result: ${JSON.stringify(res)}`, 'info')
+    return res
   }
-  const res = await window.Pi.Ads.showAd('rewarded')
-  // showAlert('Pi Ads', `Ad result: ${JSON.stringify(res)}`, 'info')
-  return res
+  return Promise.race([
+    run(),
+    new Promise<never>((_resolve, reject) => {
+      setTimeout(() => reject(new Error('Pi Ads timed out')), timeoutMs)
+    }),
+  ])
 }
