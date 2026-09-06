@@ -730,7 +730,7 @@ export default function MyStorePage() {
             </div>
           </div>
 
-          <div className="border-t border-black/5 px-2 pb-4">
+          <div className="border-t border-black/5 px-0 pb-4">
             {activeTab === 'home' ? renderHome() : renderProducts()}
           </div>
         </div>
