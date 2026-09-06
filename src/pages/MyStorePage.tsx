@@ -656,7 +656,7 @@ export default function MyStorePage() {
       ) : error && products.length === 0 ? (
         <p className="rounded-xl bg-red-50 p-3 text-center text-xs font-medium text-red-600">{error}</p>
       ) : products.length > 0 ? (
-        <div className="columns-2 gap-3 [column-fill:_balance]">
+        <div className="columns-2 gap-1.5 [column-fill:_balance]">
           {products.map((product) => (
             <div key={product.id} className="mb-3 break-inside-avoid">
               <OwnerProductCard
@@ -712,8 +712,8 @@ export default function MyStorePage() {
             </h1>
           </div>
 
-          <div className="border-t border-black/5 px-4">
-            <div className="flex items-center gap-8">
+          <div className="border-t border-black/5 px-2">
+            <div className="flex items-center gap-4">
               {STORE_TABS.filter((tab) => tab.key !== 'home' || hasShop).map((tab) => (
                 <button
                   key={tab.key}
