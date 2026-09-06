@@ -8,19 +8,7 @@ import { showRewardedAd, authenticateWithPi } from '../lib/pi'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
-
-function pad(value: number): string {
-  return value < 10 ? `0${value}` : `${value}`
-}
-
-function formatCountdown(milliseconds: number): string {
-  const totalSeconds = Math.floor(milliseconds / 1000)
-  const hours = Math.floor(totalSeconds / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = totalSeconds % 60
-  const tenths = Math.floor((milliseconds % 1000) / 100)
-  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${tenths}`
-}
+import Countdown from '../components/Countdown'
 
 export default function UnlockBoostPage() {
   const { t } = useTranslation()
@@ -71,14 +59,6 @@ export default function UnlockBoostPage() {
     const remainingTime = (adsData?.remaining_time ?? 0) * 1000
     setRemainingMs(remainingTime)
   }, [adsData?.remaining_time])
-
-  useEffect(() => {
-    if (remainingMs <= 0) return
-    const interval = window.setInterval(() => {
-      setRemainingMs((value) => Math.max(0, value - 100))
-    }, 100)
-    return () => window.clearInterval(interval)
-  }, [remainingMs])
 
   const rewardAd = async (adId: string) => {
     try {
@@ -224,7 +204,7 @@ export default function UnlockBoostPage() {
                   minutes: '',
                   seconds: '',
                 })}
-                <span className="ml-1 font-bold text-primary">{formatCountdown(remainingMs)}</span>
+                <Countdown remainingMs={remainingMs} onEnd={reload} />
                 <button
                   type="button"
                   onClick={reload}
