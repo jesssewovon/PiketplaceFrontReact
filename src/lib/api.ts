@@ -268,7 +268,7 @@ export async function createProduct(payload: NewProductPayload, token?: string):
   formData.append('product_available', payload.product_available ? '1' : '0')
   formData.append('saling_terms_agreements', payload.saling_terms_agreements ? '1' : '0')
   payload.images.forEach((file) => formData.append('images[]', file))
-  console.log('FormData entries:', payload.images, Array.from(formData.entries())) // Log FormData entries for debugging
+  //console.log('FormData entries:', payload.images, Array.from(formData.entries())) // Log FormData entries for debugging
   const response = await authFetch(`${API_BASE}${PUBLISH_ENDPOINT}`, {
     method: 'POST',
     headers: authHeaders(token),

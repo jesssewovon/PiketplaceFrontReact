@@ -8,6 +8,7 @@ export interface ShippingZone {
   country_code: string
   country_name: string
   city: string
+  everywhere?: boolean
   fee?: string
 }
 
@@ -38,6 +39,7 @@ export default function ShippingZoneForm({
   const { t } = useTranslation()
   const [country, setCountry] = useState('')
   const [city, setCity] = useState('')
+  const [everywhere, setEverywhere] = useState(false)
   const [fee, setFee] = useState('')
   const [cities, setCities] = useState<string[]>([])
   const [citiesLoading, setCitiesLoading] = useState(false)
@@ -87,7 +89,7 @@ export default function ShippingZoneForm({
       setError(t('shipping zone country required', { defaultValue: 'Please select a country for the zone.' }))
       return
     }
-    if (!city.trim()) {
+    if (!everywhere && !city.trim()) {
       setError(t('shipping zone city required', { defaultValue: 'Please enter a city for the zone.' }))
       return
     }
@@ -98,11 +100,13 @@ export default function ShippingZoneForm({
     onSave({
       country_code: country,
       country_name: selected[1],
-      city: city.trim(),
+      city: everywhere ? '' : city.trim(),
+      everywhere,
       ...(feeEnabled ? { fee } : {}),
     })
     setCountry('')
     setCity('')
+    setEverywhere(false)
     setFee('')
   }
 
@@ -157,39 +161,57 @@ export default function ShippingZoneForm({
             <label className={labelClass}>
               {t('address.city', { defaultValue: 'City' })}
             </label>
-            {citiesLoading ? (
-              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-2.5 text-xs font-semibold text-ink-soft">
-                <Loader2 size={14} className="animate-spin text-primary" />
-                {t('loading', { defaultValue: 'Loading cities…' })}
-              </div>
-            ) : cities.length > 0 ? (
-              <select
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className={inputClass}
-              >
-                <option value="" disabled>
-                  {t('select_city', { defaultValue: 'Select a city…' })}
-                </option>
-                {cities.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
+            {!everywhere &&
+              (citiesLoading ? (
+                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-2.5 text-xs font-semibold text-ink-soft">
+                  <Loader2 size={14} className="animate-spin text-primary" />
+                  {t('loading', { defaultValue: 'Loading cities…' })}
+                </div>
+              ) : cities.length > 0 ? (
+                <select
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className={inputClass}
+                >
+                  <option value="" disabled>
+                    {t('select_city', { defaultValue: 'Select a city…' })}
                   </option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type="text"
-                maxLength={120}
-                placeholder={t('select_city', { defaultValue: 'Type a city' })}
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className={inputClass}
-              />
-            )}
-            {citiesError && showCityInput && (
+                  {cities.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  maxLength={120}
+                  placeholder={t('select_city', { defaultValue: 'Type a city' })}
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className={inputClass}
+                />
+              ))}
+            {!everywhere && citiesError && showCityInput && (
               <p className="mt-1.5 text-[10px] text-slate-400">{citiesError}</p>
             )}
+
+            <label className="mt-2 flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={everywhere}
+                onChange={(e) => {
+                  setEverywhere(e.target.checked)
+                  if (e.target.checked) setCity('')
+                }}
+                className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+              />
+              <span className="text-xs font-semibold text-ink">
+                {t('everywhere_in_country', {
+                  defaultValue: 'Everywhere in the country',
+                })}
+              </span>
+            </label>
           </div>
 
           {feeEnabled && (

@@ -24,6 +24,7 @@ import type { Product, ProductShippingZone } from '../types'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import ShippingZoneForm, { type ShippingZone, type CountryOption } from '../components/ShippingZoneForm'
+import LoginPanel from '../components/LoginPanel'
 
 const FALLBACK_COUNTRIES = [
   ['US', 'United States'],
@@ -201,6 +202,14 @@ export default function PublishPage() {
 
   const authToken = useAppSelector((state) => state.auth.token)
   const user = useAppSelector((state) => state.auth.user)
+  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
+  const productValidation = useAppSelector(
+    (state) => state.settings.settings?.product_validation === true,
+  )
+  const approbationMessage = t('submitted_for_approbation', {
+    defaultValue:
+      "Submitted successfully, we'll get back to you after review the product for approbation",
+  })
 
   const maxFiles = useAppSelector((state) => {
     const value = state.settings.settings?.nb_files_product
@@ -208,15 +217,19 @@ export default function PublishPage() {
     return Number.isFinite(nb) && nb > 0 ? nb : 4
   })
 
-  const mapZone = (zone: ProductShippingZone): ShippingZone => ({
-    country_code: String(zone.country_code ?? ''),
-    country_name: String(zone.country_name ?? ''),
-    city: String(zone.city ?? ''),
-    fee:
-      zone.fee != null || zone.fee_amount != null
-        ? String(zone.fee ?? zone.fee_amount)
-        : undefined,
-  })
+  const mapZone = (zone: ProductShippingZone): ShippingZone => {
+    const city = String(zone.city ?? '')
+    return {
+      country_code: String(zone.country_code ?? ''),
+      country_name: String(zone.country_name ?? ''),
+      city,
+      everywhere: !city,
+      fee:
+        zone.fee != null || zone.fee_amount != null
+          ? String(zone.fee ?? zone.fee_amount)
+          : undefined,
+    }
+  }
 
   const prefillProduct = (product: Product) => {
     setForm({
@@ -435,13 +448,12 @@ export default function PublishPage() {
         setSubmitting(false)
         if ((res as any).status) {
           setSuccess(true)
-          showAlert(
+          await showAlert(
             t('updated successfully', { defaultValue: 'Product updated!' }),
-            '',
+            productValidation ? approbationMessage : '',
             'success',
-            1400,
           )
-          setTimeout(() => navigate(`/product/${productIdNum}`), 1400)
+          navigate(`/product/${productIdNum}`)
           return
         }
         if ((res as any).message) {
@@ -464,13 +476,14 @@ export default function PublishPage() {
       setSubmitting(false)
       if ((res as any).status) {
         setSuccess(true)
-        showAlert(
+        await showAlert(
           t('created successfully', { defaultValue: 'Product published!' }),
-          t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' }),
+          productValidation
+            ? approbationMessage
+            : t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' }),
           'success',
-          1400,
         )
-        setTimeout(() => navigate('/my-store'), 1400)
+        navigate('/my-store')
         return
       }else if((res as any).message) {
         setError((res as any).message)
@@ -489,7 +502,7 @@ export default function PublishPage() {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="relative animate-fade-in">
       <section className="px-4 py-6">
         {success ? (
           <div className="flex flex-col items-center gap-3 py-16 text-center">
@@ -502,9 +515,13 @@ export default function PublishPage() {
                 : t('created successfully', { defaultValue: 'Product published!' })}
             </h2>
             <p className="text-xs text-ink-soft">
-              {isEdit
-                ? t('publish_success_subtitle', { defaultValue: 'Redirecting to the product…' })
-                : t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' })}
+              {productValidation ? (
+                approbationMessage
+              ) : isEdit ? (
+                t('publish_success_subtitle', { defaultValue: 'Redirecting to the product…' })
+              ) : (
+                t('publish_success_subtitle', { defaultValue: 'Redirecting to the marketplace…' })
+              )}
             </p>
           </div>
         ) : loadingProduct ? (
@@ -793,7 +810,14 @@ export default function PublishPage() {
                           >
                             <div className="text-xs font-semibold text-ink">
                               <span>{zone.country_name}</span>
-                              {zone.city && <span className="text-ink-soft"> · {zone.city}</span>}
+                              {zone.everywhere ? (
+                                <span className="text-ink-soft">
+                                  {' '}
+                                  · {t('everywhere_in_country', { defaultValue: 'Everywhere in the country' })}
+                                </span>
+                              ) : (
+                                zone.city && <span className="text-ink-soft"> · {zone.city}</span>
+                              )}
                             </div>
                             <div className="flex items-center gap-2">
                               {zone.fee && Number(zone.fee) > 0 ? (
@@ -869,7 +893,14 @@ export default function PublishPage() {
                           >
                             <div className="text-xs font-semibold text-ink">
                               <span>{zone.country_name}</span>
-                              {zone.city && <span className="text-ink-soft"> · {zone.city}</span>}
+                              {zone.everywhere ? (
+                                <span className="text-ink-soft">
+                                  {' '}
+                                  · {t('everywhere_in_country', { defaultValue: 'Everywhere in the country' })}
+                                </span>
+                              ) : (
+                                zone.city && <span className="text-ink-soft"> · {zone.city}</span>
+                              )}
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-bold text-emerald-500">
@@ -1144,6 +1175,8 @@ export default function PublishPage() {
           </div>,
           document.body,
         )}
+
+      {!isLoggedIn && <LoginPanel />}
     </div>
   )
 }

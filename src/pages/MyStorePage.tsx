@@ -114,7 +114,15 @@ function OwnerProductCard({
         )}
 
         {approbationActive && product.status && (
-          <p className="mt-2 text-right text-[10px] text-gray-500">
+          <p
+            className={`mt-2 text-right text-[10px] font-semibold ${
+              product.status === 'validated'
+                ? 'text-emerald-500'
+                : product.status === 'rejected'
+                  ? 'text-red-500'
+                  : 'text-amber-500'
+            }`}
+          >
             {t(`product_${product.status}`, { defaultValue: product.status })}
           </p>
         )}

@@ -41,7 +41,7 @@ export default function LoginPanel() {
   }
 
   return (
-    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-white/40 px-6 text-center backdrop-blur-[4px]">
+    <div className="fixed inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-white/40 px-6 text-center backdrop-blur-[4px]">
       <img src="/Piketplace.png" alt="Piketplace" className="h-20 w-20 object-contain" />
       <div>
         <h2 className="text-lg font-bold text-primary-dark">{t('login_title', { defaultValue: 'Sign in to continue' })}</h2>

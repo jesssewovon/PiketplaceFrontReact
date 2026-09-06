@@ -6,10 +6,11 @@ export const showAlert = (
   icon: 'success' | 'error' | 'warning' | 'info' | 'question' = 'info',
   timer: number = 0,
 ) => {
-  void Swal.fire({
+  return Swal.fire({
     icon,
     title,
     text,
+    confirmButtonText: 'OK',
     confirmButtonColor: '#ec11b5',
     ...(timer > 0 ? { timer, timerProgressBar: true, showConfirmButton: false } : {}),
   })
