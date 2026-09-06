@@ -43,7 +43,7 @@ export async function createPiPayment(
   window.Pi.createPayment(paymentData, callbacks)
 }
 
-export async function showRewardedAd(timeoutMs = 10000): Promise<PiAdResponse> {
+export async function showRewardedAd(timeoutMs: number | null = null): Promise<PiAdResponse> {
   const run = async () => {
     await waitForPi()
     initPi()
@@ -64,6 +64,9 @@ export async function showRewardedAd(timeoutMs = 10000): Promise<PiAdResponse> {
     const res = await window.Pi.Ads.showAd('rewarded')
     // showAlert('Pi Ads', `Ad result: ${JSON.stringify(res)}`, 'info')
     return res
+  }
+  if (timeoutMs === null) {
+    return run()
   }
   return Promise.race([
     run(),
