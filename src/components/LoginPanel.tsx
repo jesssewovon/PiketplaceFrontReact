@@ -99,6 +99,7 @@ export default function LoginPanel() {
           <div
             className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 py-2"
             onClick={(event) => event.stopPropagation()}
+            style={{ marginBottom: 'calc(96px + env(safe-area-inset-bottom))' }}
           >
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-bold text-primary-dark">
