@@ -145,11 +145,14 @@ export default function UnlockBoostPage() {
             'error',
           )
         }
-      } else if (result !== 'ADS_NOT_SUPPORTED' && result !== 'AD_CLOSED') {
+      } else if (result === 'ADS_NOT_SUPPORTED') {
+        showAlert(t('info', { defaultValue: 'Info' }), t('pi ad not supported by the browser', { defaultValue: 'Pi Ad is not supported by the browser' }), 'error')
+      } else if (result !== 'AD_CLOSED') {
         showAlert(t('info', { defaultValue: 'Info' }), t('an_error_occured', { defaultValue: 'An error occurred' }), 'error')
-      }else{
-        showAlert(t('info', { defaultValue: 'Info' }), JSON.stringify(showAdResponse), 'error')
       }
+      /* else{
+        showAlert(t('info', { defaultValue: 'Info' }), JSON.stringify(showAdResponse), 'error')
+      } */
       setSaving(false)
     } catch {
       setSaving(false)

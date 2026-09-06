@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "Вознаграждаемая реклама временно отключена. Доступно только на Mainnet",
     "rewarded_ads_daily_limit_reached": "Достигнут дневной лимит вознаграждаемой рекламы",
     "ads_unavailable": "Реклама недоступна",
+    "pi ad not supported by the browser": "Реклама Pi не поддерживается браузером",
     "rewarded_ads_availble_in": "Доступно через : {hours} ч {minutes} мин {seconds} сек",
     "ping in": "Пинг через : {hours} ч {minutes} мин {seconds} сек",
     "view_ads_to_be_rewarded_in_pi_or_piket": "Просмотрите рекламу ниже, чтобы получить вознаграждение в Pi или Piket",
@@ -1181,4 +1182,5 @@
     "the shipping of the item has been completed by the delivery person companies": "Доставка товара :item_name успешно завершена курьером (или компанией) :deliver_name",
     "identifiant already exists, maybe the item has already been integrated": "Идентификатор уже существует, возможно, товар уже интегрирован"
 }
+
 

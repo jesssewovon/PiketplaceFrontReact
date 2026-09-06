@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "Les publicités de récompense sont temporairement désactivées. Disponible uniquement sur le Mainnet",
     "rewarded_ads_daily_limit_reached": "La limite quotidienne des publicités récompensées est atteinte",
     "ads_unavailable": "Annonces indisponibles",
+    "pi ad not supported by the browser": "Les annonces Pi ne sont pas prises en charge par le navigateur",
     "rewarded_ads_availble_in": "Disponible dans : {hours} heures {minutes} minutes {seconds} secondes",
     "ping in": "Ping dans : {hours} heures {minutes} minutes {seconds} secondes",
     "view_ads_to_be_rewarded_in_pi_or_piket": "Consultez les annonces ci-dessous pour être récompensé en Pi ou Piket",
@@ -1185,6 +1186,7 @@
     "the shipping of the item has been completed by the delivery person companies": "L'expédition de l'article :item_name a été effectuée avec succès par le livreur (personne ou entreprise) :deliver_name",
     "identifiant already exists, maybe the item has already been integrated": "L'identifiant existe déjà, peut-être que l'élément a déjà été intégré"
   }
+
 
 
 

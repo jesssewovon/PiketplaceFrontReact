@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "Pansamantalang hindi pinagana ang mga reward ad. Available lang sa Mainnet",
     "rewarded_ads_daily_limit_reached": "Naabot na ang pang-araw-araw na limitasyon ng mga rewarded ad",
     "ads_unavailable": "Hindi available ang mga ad",
+    "pi ad not supported by the browser": "Hindi sinusuportahan ng browser ang Pi ad",
     "rewarded_ads_availble_in": "Magagamit sa : {hours} oras {minutes} minuto {seconds} segundo",
     "ping in": "Mag-ping sa : {hours} oras {minutes} minuto {seconds} segundo",
     "view_ads_to_be_rewarded_in_pi_or_piket": "Tingnan ang mga ad sa ibaba upang magantimpalaan sa Pi o Piket",
@@ -1183,6 +1184,7 @@
     "the shipping of the item has been completed by the delivery person companies": "Ang pagpapadala ng item :item_name ay matagumpay na nakumpleto ng paghahatid (tao o kumpanya) :deliver_name",
     "identifiant already exists, maybe the item has already been integrated": "Umiiral na ang pagkakakilanlan, baka naisama na ang item"
 }
+
 
 
 

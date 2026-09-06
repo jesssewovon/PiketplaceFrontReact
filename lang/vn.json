@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "Quảng cáo phần thưởng tạm thời bị vô hiệu hóa. Chỉ khả dụng trên Mainnet",
     "rewarded_ads_daily_limit_reached": "Đã đạt đến giới hạn quảng cáo được thưởng hàng ngày",
     "ads_unavailable": "Quảng cáo không khả dụng",
+    "pi ad not supported by the browser": "Quảng cáo Pi không được trình duyệt hỗ trợ",
     "rewarded_ads_availble_in": "Có sẵn trong: {hours} giờ {minutes} phút {seconds} giây",
     "ping in": "Ping trong: {hours} giờ {minutes} phút {seconds} giây",
     "view_ads_to_be_rewarded_in_pi_or_piket": "Xem quảng cáo bên dưới để được thưởng bằng Pi hoặc Piket",
@@ -1182,6 +1183,7 @@
     "the shipping of the item has been completed by the delivery person companies": "Việc vận chuyển mặt hàng :item_name đã được hoàn tất thành công bởi bên giao hàng (cá nhân hoặc công ty) :deliver_name",
     "identifiant already exists, maybe the item has already been integrated": "Mã định danh đã tồn tại, có thể mục đã được tích hợp"
 }
+
 
 
 

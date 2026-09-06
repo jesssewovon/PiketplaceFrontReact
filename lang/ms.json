@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "Iklan ganjaran dilumpuhkan buat sementara waktu. Hanya tersedia di Mainnet",
     "rewarded_ads_daily_limit_reached": "Had harian iklan ganjaran tercapai",
     "ads_unavailable": "Iklan tidak tersedia",
+    "pi ad not supported by the browser": "Iklan Pi tidak disokong oleh pelayar",
     "rewarded_ads_availble_in": "Tersedia dalam: {hours} jam {minutes} minit {seconds} saat",
     "ping in": "Ping dalam: {hours} jam {minutes} minit {seconds} saat",
     "view_ads_to_be_rewarded_in_pi_or_piket": "Tonton iklan di bawah untuk diberi ganjaran dalam Pi atau Piket",
@@ -1180,4 +1181,5 @@
     "the shipping of the item has been completed by the delivery person companies": "Penghantaran item :item_name telah berjaya diselesaikan oleh penghantar :deliver_name",
     "identifiant already exists, maybe the item has already been integrated": "ID sudah wujud, mungkin item telah pun diintegrasikan"
 }
+
 

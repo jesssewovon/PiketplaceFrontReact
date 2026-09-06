@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "奖励广告暂时禁用。仅在 Mainnet 上可用",
     "rewarded_ads_daily_limit_reached": "激励广告每日上限已达",
     "ads_unavailable": "广告不可用",
+    "pi ad not supported by the browser": "此浏览器不支持 Pi 广告",
     "rewarded_ads_availble_in": "可用时间：{hours} 小时 {minutes} 分钟 {seconds} 秒",
     "ping in": "Ping 时间：{hours} 小时 {minutes} 分钟 {seconds} 秒",
     "view_ads_to_be_rewarded_in_pi_or_piket": "查看以下广告即可获得 Pi 或 Piket 奖励",
@@ -1183,6 +1184,7 @@
     "the shipping of the item has been completed by the delivery person companies": "商品 :item_name 的运送已由送货人（个人或公司） :deliver_name 成功完成",
     "identifiant already exists, maybe the item has already been integrated": "标识符已存在，可能该项目已被集成"
   }
+
 
 
 

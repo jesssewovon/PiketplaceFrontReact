@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "Ödüllü reklamlar geçici olarak devre dışı. Yalnızca Mainnet'te kullanılabilir",
     "rewarded_ads_daily_limit_reached": "Günlük ödüllü reklam sınırına ulaşıldı",
     "ads_unavailable": "Reklamlar kullanılamıyor",
+    "pi ad not supported by the browser": "Pi reklamı tarayıcı tarafından desteklenmemektedir",
     "rewarded_ads_availble_in": "Kullanılabilir: {hours} saat {minutes} dakika {seconds} saniye içinde",
     "ping in": "Ping: {hours} saat {minutes} dakika {seconds} saniye içinde",
     "view_ads_to_be_rewarded_in_pi_or_piket": "Pi veya Piket ile ödüllendirilmek için aşağıdaki reklamları izleyin",
@@ -1182,4 +1183,5 @@
     "the shipping of the item has been completed by the delivery person companies": ":item_name ürününün gönderimi teslimatçı :deliver_name tarafından başarıyla tamamlandı",
     "identifiant already exists, maybe the item has already been integrated": "Tanımlayıcı zaten mevcut, öğe daha önce entegre edilmiş olabilir"
 }
+
 

@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "報酬広告は一時的に無効です。Mainnet でのみ利用可能",
     "rewarded_ads_daily_limit_reached": "報酬広告の1日あたりの制限に達しました",
     "ads_unavailable": "広告は利用できません",
+    "pi ad not supported by the browser": "このブラウザは Pi 広告に対応していません",
     "rewarded_ads_availble_in": "利用可能まで : {hours} 時間 {minutes} 分 {seconds} 秒",
     "ping in": "Ping まで : {hours} 時間 {minutes} 分 {seconds} 秒",
     "view_ads_to_be_rewarded_in_pi_or_piket": "以下の広告を視聴して Pi または Piket を獲得しましょう",
@@ -1176,3 +1177,4 @@
     "the shipping of the item has been completed by the delivery person companies": "アイテム :item_name の配送が配達員 :deliver_name によって正常に完了しました",
     "identifiant already exists, maybe the item has already been integrated": "識別子は既に存在します。アイテムは既に統合されている可能性があります"
 }
+

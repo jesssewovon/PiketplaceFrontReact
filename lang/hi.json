@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "पुरस्कृत विज्ञापन अस्थायी रूप से अक्षम हैं। केवल मेननेट पर उपलब्ध",
     "rewarded_ads_daily_limit_reached": "पुरस्कृत विज्ञापनों की दैनिक सीमा समाप्त",
     "ads_unavailable": "विज्ञापन अनुपलब्ध",
+    "pi ad not supported by the browser": "ब्राउज़र Pi विज्ञापन का समर्थन नहीं करता है",
     "rewarded_ads_availble_in": "उपलब्ध: {hours} घंटे {minutes} मिनट {seconds} सेकंड में",
     "ping in": "पिंग: {hours} घंटे {minutes} मिनट {seconds} सेकंड में",
     "view_ads_to_be_rewarded_in_pi_or_piket": "Pi या Piket में पुरस्कृत होने के लिए नीचे विज्ञापन देखें",
@@ -1174,4 +1175,5 @@
     "the shipping of the item has been completed by the delivery person companies": "आइटम :item_name की शिपिंग डिलीवरी (व्यक्ति या कंपनी) :deliver_name द्वारा सफलतापूर्वक पूरी कर ली गई है",
     "identifiant already exists, maybe the item has already been integrated": "पहचानकर्ता पहले से मौजूद है, हो सकता है आइटम पहले ही एकीकृत हो चुका हो"
 }
+
 

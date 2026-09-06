@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "تم تعطيل إعلانات المكافآت مؤقتًا. متاحة فقط على  Mainnet",
     "rewarded_ads_daily_limit_reached": "تم الوصول إلى الحد الأقصى اليومي للإعلانات المكافئة",
     "ads_unavailable": "الإعلانات غير متاحة",
+    "pi ad not supported by the browser": "إعلانات Pi غير مدعومة في المتصفح",
     "rewarded_ads_availble_in": "متوفر في : {hours} ساعة {minutes} دقيقة {seconds} ثانية",
     "ping in": "Ping في: {hours} ساعة  {minutes} دقيقة  {seconds} ثانية",
     "view_ads_to_be_rewarded_in_pi_or_piket": "شاهد الإعلانات أدناه لتتم مكافأتك في Pi أو Piket",
@@ -1182,6 +1183,7 @@
     "the shipping of the item has been completed by the delivery person companies": "تم شحن العنصر  :item_name بنجاح بواسطة المرسل (الشخص أو الشركة) :deliver_name",
     "identifiant already exists, maybe the item has already been integrated": "المعرف موجود بالفعل، ربما تم دمج العنصر بالفعل"
 }
+
 
 
 

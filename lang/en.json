@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "Reward ads are temporarily disabled. Only available on Mainnet",
     "rewarded_ads_daily_limit_reached": "Rewarded ads daily limit reached",
     "ads_unavailable": "Ads unavailable",
+    "pi ad not supported by the browser": "Pi Ad is not supported by the browser",
     "rewarded_ads_availble_in": "Available in : {hours} hours {minutes} minutes {seconds} seconds",
     "ping in": "Ping in : {hours} hours {minutes} minutes {seconds} seconds",
     "view_ads_to_be_rewarded_in_pi_or_piket": "View ads below to be rewarded in Pi or Piket",
@@ -1183,6 +1184,7 @@
     "the shipping of the item has been completed by the delivery person companies": "The shipping of item :item_name has been successfully completed by the delivery (person or company) :deliver_name",
     "identifiant already exists, maybe the item has already been integrated": "Identifiant already exists, maybe the item has already been integrated"
 }
+
 
 
 

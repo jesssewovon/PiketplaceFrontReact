@@ -114,6 +114,7 @@
     "rewarded_ads_deactivated_temporarily": "보상 광고는 일시적으로 비활성화되었습니다. Mainnet 에서만 사용 가능",
     "rewarded_ads_daily_limit_reached": "보상형 광고 일일 한도에 도달했습니다.",
     "ads_unavailable": "광고 없음",
+    "pi ad not supported by the browser": "브라우저에서 Pi 광고를 지원하지 않습니다",
     "rewarded_ads_availble_in": "사용 가능 시간: {hours}시간 {minutes}분 {seconds}초",
     "ping in": "핑 시간: {hours} 시간 {minutes} 분 {seconds} 초",
     "view_ads_to_be_rewarded_in_pi_or_piket": "아래 광고를 보고 Pi 또는 Piket으로 보상을 받으세요",
@@ -1182,6 +1183,7 @@
     "the shipping of the item has been completed by the delivery person companies": ":item_name 품목의 배송이 배송자(개인 또는 회사) :deliver_name 에 의해 성공적으로 완료되었습니다.",
     "identifiant already exists, maybe the item has already been integrated": "식별자가 이미 존재합니다. 항목이 이미 통합되었을 수 있습니다."
 }
+
 
 
 
