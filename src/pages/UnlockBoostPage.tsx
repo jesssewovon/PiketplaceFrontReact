@@ -176,6 +176,7 @@ export default function UnlockBoostPage() {
   }
 
   const reload = () => {
+    setSaving(false)
     void loadData()
     void loadRecentBalances()
   }
