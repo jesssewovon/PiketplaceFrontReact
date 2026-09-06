@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Check, MapPin } from 'lucide-react'
+import { X, Check, MapPin, LocateFixed, Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { flagEmoji } from '../lib/geo'
+import { flagEmoji, detectCountryByGeolocation } from '../lib/geo'
 import countries from '../locales/countries.json'
 import type { FilterState, ProductTypeFilter, SortBy } from '../lib/filterState'
 
@@ -30,6 +30,7 @@ export default function FilterModal({ open, initial, onClose, onApply }: FilterM
   const [iso3, setIso3] = useState(initial.iso3)
   const [productType, setProductType] = useState<ProductTypeFilter>(initial.productType)
   const [sortBy, setSortBy] = useState<SortBy>(initial.sortBy)
+  const [locating, setLocating] = useState(false)
 
   useEffect(() => {
     if (open) {
@@ -56,6 +57,20 @@ export default function FilterModal({ open, initial, onClose, onApply }: FilterM
     } else {
       setIso2(country.iso2)
       setIso3(country.iso3)
+    }
+  }
+
+  const locateMe = async () => {
+    if (locating) return
+    setLocating(true)
+    try {
+      const code = await detectCountryByGeolocation()
+      const country = countryList.find(
+        (c) => c.iso2 === code || c.iso3 === code || c.iso2 === code.toUpperCase() || c.iso3 === code.toUpperCase(),
+      )
+      if (country) selectCountry(country)
+    } finally {
+      setLocating(false)
     }
   }
 
@@ -119,9 +134,25 @@ export default function FilterModal({ open, initial, onClose, onApply }: FilterM
 
           <div>
             <div className="mb-0.5 flex items-center justify-between">
-              <label className="text-xs font-semibold text-ink">
-                {t('filter.sort_by_country', { defaultValue: 'Sort by country' })}
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-semibold text-ink">
+                  {t('filter.sort_by_country', { defaultValue: 'Sort by country' })}
+                </label>
+                <button
+                  type="button"
+                  onClick={locateMe}
+                  disabled={locating}
+                  aria-label={t('filter.locate_me', { defaultValue: 'Use my location' })}
+                  title={t('filter.locate_me', { defaultValue: 'Use my location' })}
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary transition hover:bg-primary/20 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {locating ? (
+                    <Loader2 size={13} className="animate-spin" />
+                  ) : (
+                    <LocateFixed size={13} />
+                  )}
+                </button>
+              </div>
               {iso2 !== 'all' && (
                 <button
                   type="button"
