@@ -8,18 +8,10 @@ import { showRewardedAd, authenticateWithPi } from '../lib/pi'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
+import Countdown from 'react-countdown'
 
-function pad(value: number): string {
+function padNumber(value: number): string {
   return value < 10 ? `0${value}` : `${value}`
-}
-
-function formatCountdown(milliseconds: number): string {
-  const totalSeconds = Math.floor(milliseconds / 1000)
-  const hours = Math.floor(totalSeconds / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = totalSeconds % 60
-  const tenths = Math.floor((milliseconds % 1000) / 100)
-  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${tenths}`
 }
 
 export default function UnlockBoostPage() {
@@ -71,14 +63,6 @@ export default function UnlockBoostPage() {
     const remainingTime = (adsData?.remaining_time ?? 0) * 1000
     setRemainingMs(remainingTime)
   }, [adsData?.remaining_time])
-
-  useEffect(() => {
-    if (remainingMs <= 0) return
-    const interval = window.setInterval(() => {
-      setRemainingMs((value) => Math.max(0, value - 100))
-    }, 100)
-    return () => window.clearInterval(interval)
-  }, [remainingMs])
 
   const rewardAd = async (adId: string) => {
     try {
@@ -224,7 +208,19 @@ export default function UnlockBoostPage() {
                   minutes: '',
                   seconds: '',
                 })}
-                <span className="ml-1 font-bold text-primary">{formatCountdown(remainingMs)}</span>
+                <Countdown
+                  date={Date.now() + remainingMs}
+                  daysInHours
+                  zeroPadTime={2}
+                  intervalDelay={100}
+                  onComplete={() => reload()}
+                  renderer={({ hours, minutes, seconds, milliseconds }) => (
+                    <span className="ml-1 font-bold text-primary">
+                      {padNumber(hours)}:{padNumber(minutes)}:{padNumber(seconds)}.
+                      {Math.floor(milliseconds / 100)}
+                    </span>
+                  )}
+                />
                 <button
                   type="button"
                   onClick={reload}
