@@ -708,6 +708,7 @@
     "geolocation": "Geolokasi",
     "pick geolocation": "Pilih geolokasi",
     "geolocation error, check and activate and try again": "Ralat geolokasi, periksa dan aktifkan geolokasi anda dan cuba lagi",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Gagal menentukan lokasi. Mungkin masalah sambungan Internet — semak sambungan anda dan dayakan geolokasi peranti jika belum diaktifkan, kemudian cuba lagi.",
     "staking amount": "Jumlah taruhan",
     "stake the amount": "Taruhkan jumlah",
     "tracking": "Penjejakan",

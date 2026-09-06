@@ -86,6 +86,44 @@ export async function detectCountryByGeolocation(): Promise<string> {
   })
 }
 
+export async function locateUserCountry(timeoutMs = 8000): Promise<string | null> {
+  if (typeof navigator === 'undefined' || !navigator.geolocation) return null
+  const getPosition = () =>
+    new Promise<{ latitude: number; longitude: number } | null>((resolve) => {
+      let settled = false
+      const done = (value: { latitude: number; longitude: number } | null) => {
+        if (!settled) {
+          settled = true
+          resolve(value)
+        }
+      }
+      const timer = window.setTimeout(() => done(null), timeoutMs)
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          window.clearTimeout(timer)
+          done({ latitude: position.coords.latitude, longitude: position.coords.longitude })
+        },
+        () => {
+          window.clearTimeout(timer)
+          done(null)
+        },
+        { timeout: timeoutMs, maximumAge: 0, enableHighAccuracy: false },
+      )
+    })
+  const coords = await getPosition()
+  if (!coords) return null
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.latitude}&lon=${coords.longitude}`
+    const response = await fetch(url, { headers: { Accept: 'application/json' } })
+    if (!response.ok) return null
+    const data = (await response.json()) as { address?: { country_code?: string } }
+    const code = data.address?.country_code ?? ''
+    return code && code.length === 2 ? code.toUpperCase() : null
+  } catch {
+    return null
+  }
+}
+
 export function flagEmoji(countryCode: string): string {
   const upper = countryCode.toUpperCase()
   if (upper.length !== 2) return '🌐'

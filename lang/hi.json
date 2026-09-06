@@ -709,6 +709,7 @@
     "geolocation": "भू-स्थान",
     "pick geolocation": "भू-स्थान चुनें",
     "geolocation error, check and activate and try again": "भू-स्थान त्रुटि, अपनी भू-स्थान जांचें और सक्रिय करें और पुनः प्रयास करें",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "भू-स्थान निर्धारित करने में विफल। यह इंटरनेट कनेक्शन की समस्या हो सकती है — अपना कनेक्शन जांचें और यदि डिवाइस का भू-स्थान सक्षम नहीं है तो उसे सक्षम करें, फिर पुनः प्रयास करें।",
     "staking amount": "गिरवी राशि",
     "stake the amount": "राशि गिरवी रखें",
     "tracking": "ट्रैकिंग",

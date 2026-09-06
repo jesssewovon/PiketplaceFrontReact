@@ -709,6 +709,7 @@
     "geolocation": "位置情報",
     "pick geolocation": "位置情報を選択",
     "geolocation error, check and activate and try again": "位置情報エラー。位置情報を確認して有効にし、再試行してください",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "位置情報の取得に失敗しました。インターネット接続の問題の可能性があります — 接続を確認し、デバイスの位置情報が無効なら有効にして、もう一度お試しください。",
     "staking amount": "保証金額",
     "stake the amount": "金額を保証",
     "tracking": "追跡",

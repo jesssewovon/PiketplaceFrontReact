@@ -710,6 +710,7 @@
     "geolocation": "Vị trí địa lý",
     "pick geolocation": "Chọn vị trí địa lýn",
     "geolocation error, check and activate and try again": "Lỗi định vị địa lý, hãy kiểm tra và kích hoạt định vị địa lý của bạn và thử lại",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Không xác định được vị trí. Có thể do sự cố kết nối Internet — hãy kiểm tra kết nối của bạn và bật định vị trên thiết bị nếu chưa được bật, rồi thử lại.",
     "staking amount": "Số tiền đặt cược",
     "stake the amount": "Đặt cược số tiền",
     "tracking": "Theo dõi",

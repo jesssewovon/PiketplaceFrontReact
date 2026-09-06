@@ -710,6 +710,7 @@
     "geolocation": "Konum",
     "pick geolocation": "Konum seç",
     "geolocation error, check and activate and try again": "Konum hatası, konumunuzu kontrol edin ve etkinleştirin ve tekrar deneyin",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Konum belirleme başarısız oldu. Bu bir internet bağlantısı sorunu olabilir — bağlantınızı kontrol edin ve cihaz konumunuz etkin değilse etkinleştirin, ardından tekrar deneyin.",
     "staking amount": "Taahhüt tutarı",
     "stake the amount": "Tutarı taahhüt et",
     "tracking": "Takip",

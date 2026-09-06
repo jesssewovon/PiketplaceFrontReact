@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Check, MapPin, LocateFixed, Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { flagEmoji, detectCountryByGeolocation } from '../lib/geo'
+import { flagEmoji, locateUserCountry } from '../lib/geo'
+import { showAlert } from '../lib/alert'
 import countries from '../locales/countries.json'
 import type { FilterState, ProductTypeFilter, SortBy } from '../lib/filterState'
 
@@ -64,7 +65,21 @@ export default function FilterModal({ open, initial, onClose, onApply }: FilterM
     if (locating) return
     setLocating(true)
     try {
-      const code = await detectCountryByGeolocation()
+      const code = await locateUserCountry(8000)
+      if (!code) {
+        showAlert(
+          t('geolocation', { defaultValue: 'Geolocation' }),
+          t(
+            'geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again',
+            {
+              defaultValue:
+                'Geolocation failed. It could be an Internet connection issue — check your connection and enable your device geolocation if not enabled, then try again.',
+            },
+          ),
+          'error',
+        )
+        return
+      }
       const country = countryList.find(
         (c) => c.iso2 === code || c.iso3 === code || c.iso2 === code.toUpperCase() || c.iso3 === code.toUpperCase(),
       )

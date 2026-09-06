@@ -710,6 +710,7 @@
     "geolocation": "Geolocation",
     "pick geolocation": "Pumili ng geolocation",
     "geolocation error, check and activate and try again": "Error sa geolocation, suriin at i-activate ang iyong geolocation at subukang muli",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Nabigong matukoy ang lokasyon. Maaaring problema ito sa koneksyon sa Internet — suriin ang iyong koneksyon at i-activate ang geolocation ng device kung hindi ito naka-activate, pagkatapos ay subukang muli.",
     "staking amount": "Halaga ng staking",
     "stake the amount": "Itala ang halaga",
     "tracking": "Pagsubaybay",

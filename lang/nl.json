@@ -708,6 +708,7 @@
     "geolocation": "Geolocatie",
     "pick geolocation": "Kies geolocatie",
     "geolocation error, check and activate and try again": "Geolocatiefout, controleer en activeer je geolocatie en probeer opnieuw",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Geolocatie mislukt. Het kan een probleem met de internetverbinding zijn — controleer je verbinding en schakel de geolocatie van je apparaat in als deze is uitgeschakeld, en probeer het opnieuw.",
     "staking amount": "Vastzettingsbedrag",
     "stake the amount": "Zet het bedrag vast",
     "tracking": "Tracking",

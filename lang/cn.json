@@ -710,6 +710,7 @@
     "geolocation": "地理位置",
     "pick geolocation": "选择地理位置",
     "geolocation error, check and activate and try again": "地理位置错误，请检查并激活您的地理位置，然后重试",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "定位失败。可能是网络连接问题 — 请检查您的连接，如果设备定位功能未启用请启用它，然后重试。",
     "staking amount": "质押金额",
     "stake the amount": "质押金额",
     "tracking": "追踪",

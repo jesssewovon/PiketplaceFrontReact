@@ -709,6 +709,7 @@
     "geolocation": "Geolocalización",
     "pick geolocation": "Seleccione geolocalización",
     "geolocation error, check and activate and try again": "Error de geolocalización, comprueba y activa tu geolocalización y vuelve a intentarlo",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Error de geolocalización. Puede ser un problema de conexión a Internet — comprueba tu conexión y activa la geolocalización del dispositivo si no está activada, luego inténtalo de nuevo.",
     "staking amount": "Monto de la apuesta",
     "stake the amount": "Apueste la cantidad",
     "tracking": "Seguimiento",

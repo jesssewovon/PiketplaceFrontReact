@@ -710,6 +710,7 @@
     "geolocation": "Geolokalisierung",
     "pick geolocation": "Geolokalisierung auswählen",
     "geolocation error, check and activate and try again": "Geolokalisierungsfehler, überprüfen und aktivieren Sie Ihre Geolokalisierung und versuchen Sie es erneut",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Geolokalisierung fehlgeschlagen. Möglicherweise liegt ein Problem mit der Internetverbindung vor — prüfen Sie Ihre Verbindung und aktivieren Sie die Geolokalisierung Ihres Geräts, falls deaktiviert, und versuchen Sie es erneut.",
     "staking amount": "Hinterlegungsbetrag",
     "stake the amount": "Betrag hinterlegen",
     "tracking": "Verfolgung",

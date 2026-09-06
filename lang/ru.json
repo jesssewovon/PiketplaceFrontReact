@@ -710,6 +710,7 @@
     "geolocation": "Геолокация",
     "pick geolocation": "Выбрать геолокацию",
     "geolocation error, check and activate and try again": "Ошибка геолокации, проверьте и активируйте геолокацию и попробуйте снова",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Не удалось определить местоположение. Это может быть связано с подключением к Интернету — проверьте подключение и включите геолокацию устройства, если она выключена, затем попробуйте снова.",
     "staking amount": "Сумма обеспечения",
     "stake the amount": "Внести обеспечение",
     "tracking": "Отслеживание",

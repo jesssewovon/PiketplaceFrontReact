@@ -710,6 +710,7 @@
     "geolocation": "Geolocation",
     "pick geolocation": "Pick geolocation",
     "geolocation error, check and activate and try again": "Geolocation error, check and activate your geolocation and try again",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "Geolocation failed. It could be an Internet connection issue — check your connection and enable your device geolocation if not enabled, then try again.",
     "staking amount": "Staking amount",
     "stake the amount": "Stake the amount",
     "tracking": "Tracking",

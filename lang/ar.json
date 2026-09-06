@@ -709,6 +709,7 @@
     "geolocation": "تحديد الموقع الجغرافي",
     "pick geolocation": "اختر الموقع الجغرافي",
     "geolocation error, check and activate and try again": "خطأ في تحديد الموقع الجغرافي، تحقق من تحديد موقعك الجغرافي وقم بتنشيطه وحاول مرة أخرى",
+    "geolocation failed, check your Internet connection and enable your device geolocation if not activated, then try again": "فشل تحديد الموقع الجغرافي. قد يكون ذلك بسبب مشكلة في اتصال الإنترنت — تحقق من اتصالك وفعّل خدمة تحديد الموقع الجغرافي في جهازك إذا لم تكن مفعلة، ثم حاول مرة أخرى.",
     "staking amount": "مبلغ الرهان",
     "stake the amount": "راهن على المبلغ",
     "tracking": "التتبع",
