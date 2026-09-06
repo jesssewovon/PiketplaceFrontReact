@@ -9,6 +9,27 @@ interface VersionPayload {
   version?: string
 }
 
+export async function clearAppCaches(): Promise<void> {
+  try {
+    localStorage.clear()
+  } catch {
+    /* ignore */
+  }
+  try {
+    sessionStorage.clear()
+  } catch {
+    /* ignore */
+  }
+  if ('caches' in window) {
+    try {
+      const keys = await window.caches.keys()
+      await Promise.all(keys.map((key) => window.caches.delete(key)))
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 async function fetchVersion(): Promise<string | null> {
   try {
     const res = await fetch(VERSION_URL, { cache: 'no-store' })
@@ -62,6 +83,7 @@ export function useAppVersionCheck() {
 
         if (isConfirmed) {
           baselineRef.current = version
+          await clearAppCaches()
           window.location.reload()
         }
       } finally {
