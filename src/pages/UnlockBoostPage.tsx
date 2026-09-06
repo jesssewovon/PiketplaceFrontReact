@@ -205,14 +205,14 @@ export default function UnlockBoostPage() {
                   seconds: '',
                 })}
                 <Countdown remainingMs={remainingMs} onEnd={reload} />
-                <button
+                {/* <button
                   type="button"
                   onClick={reload}
                   className="ml-2 inline-flex align-middle text-primary"
                   aria-label={t('reload', { defaultValue: 'reload' })}
                 >
                   <RotateCcw size={16} />
-                </button>
+                </button> */}
               </div>
             )}
 
