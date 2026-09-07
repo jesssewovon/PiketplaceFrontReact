@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { BadgeCheck, Clock, Loader2, Megaphone, Pencil, Plus, Trash2, Wallet, X, XCircle } from 'lucide-react'
 import Swal from 'sweetalert2'
@@ -81,6 +82,15 @@ export default function MyAdsPage() {
   const [confirming, setConfirming] = useState(false)
   const [piLoaderOpen, setPiLoaderOpen] = useState(false)
   const uniqueIdRef = useRef('')
+
+  useEffect(() => {
+    if (!walletAd) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [walletAd])
 
   const rejectionText = (codes?: string[] | null): string => {
     const list = normalizeCancellationReasons(reasonsByLocale, i18n.language)
@@ -493,51 +503,53 @@ export default function MyAdsPage() {
         </div>
       </section>
 
-      {walletAd && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
-          onClick={() => setWalletAd(null)}
-        >
+      {walletAd &&
+        createPortal(
           <div
-            className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
-            onClick={(event) => event.stopPropagation()}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40"
+            onClick={() => setWalletAd(null)}
           >
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-ink">
-                {t('pay_with', { defaultValue: 'Pay with' })}
-                {walletAd.period && Number(walletAd.period.amount ?? 0) > 0 && (
-                  <span className="ml-1 text-primary">(π {walletAd.period.amount})</span>
-                )}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setWalletAd(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-slate-100"
-              >
-                <X size={18} />
-              </button>
+            <div
+              className="w-full max-w-[430px] rounded-t-3xl bg-white p-5 pb-8"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-ink">
+                  {t('pay_with', { defaultValue: 'Pay with' })}
+                  {walletAd.period && Number(walletAd.period.amount ?? 0) > 0 && (
+                    <span className="ml-1 text-primary">(π {walletAd.period.amount})</span>
+                  )}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setWalletAd(null)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-slate-100"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() => void askPinAndPayPiketplaceWallet(walletAd)}
+                  className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3.5 text-left text-sm font-bold text-white shadow-soft transition hover:opacity-90"
+                >
+                  <Wallet size={18} />
+                  {t('piketplace_wallet', { defaultValue: 'Piketplace Wallet' })}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void payWithPiNetworkWallet(walletAd)}
+                  className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-[#fbb148] to-[#f5a72b] px-4 py-3.5 text-left text-sm font-bold text-white shadow-soft transition hover:opacity-90"
+                >
+                  <img src="/site_images/pi.png" alt="π" className="h-5 w-5 rounded-full object-cover" />
+                  {t('pinetwork_wallet', { defaultValue: 'Pi Network wallet' })}
+                </button>
+              </div>
             </div>
-            <div className="space-y-2.5">
-              <button
-                type="button"
-                onClick={() => void askPinAndPayPiketplaceWallet(walletAd)}
-                className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3.5 text-left text-sm font-bold text-white shadow-soft transition hover:opacity-90"
-              >
-                <Wallet size={18} />
-                {t('piketplace_wallet', { defaultValue: 'Piketplace Wallet' })}
-              </button>
-              <button
-                type="button"
-                onClick={() => void payWithPiNetworkWallet(walletAd)}
-                className="flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-[#fbb148] to-[#f5a72b] px-4 py-3.5 text-left text-sm font-bold text-white shadow-soft transition hover:opacity-90"
-              >
-                <img src="/site_images/pi.png" alt="π" className="h-5 w-5 rounded-full object-cover" />
-                {t('pinetwork_wallet', { defaultValue: 'Pi Network wallet' })}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       {(isPaying || confirming) && (
         <div className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-black/30">
