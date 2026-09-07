@@ -12,7 +12,7 @@ import {
   postPiPayment,
 } from '../lib/api'
 import { createPiPayment, initPi, waitForPi } from '../lib/pi'
-import { formatDate, normalizeCancellationReasons } from '../lib/format'
+import { formatDate, getPeriodLabel, normalizeCancellationReasons } from '../lib/format'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
@@ -374,9 +374,7 @@ export default function MyAdsPage() {
                       </div>
                       <p className="mt-0.5 flex items-center gap-1 text-[11px] text-ink-soft">
                         <Megaphone size={12} />
-                        {ad.period
-                          ? `${ad.period.type ?? ''}${ad.period.period ? ' - ' + ad.period.period : ''}`
-                          : '-'}
+                        {ad.period ? getPeriodLabel(ad.period, t) : '-'}
                       </p>
                       {ad.country_code && (
                         <p className="mt-0.5 text-[11px] text-ink-soft">

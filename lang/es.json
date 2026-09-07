@@ -1186,6 +1186,7 @@
   "back_to_my_ads": "Back to my ads",
   "invalid_image": "Invalid image",
   "saving": "Saving...",
+  "ad_terms_page_title": "Ad terms and conditions",
   "custom_ads": {
     "validated": "Validated",
     "rejected": "Rejected",
@@ -1245,7 +1246,12 @@
     "save_changes": "Save changes",
     "submitting": "Submitting...",
     "create_ad": "Create ad",
-    "create_my_ad": "Show my ad here"
+    "create_my_ad": "Show my ad here",
+    "period_week": "Week",
+    "period_month": "Month",
+    "accept_terms_title": "Ad terms and conditions",
+    "accept_terms_text": "I accept the ad terms and conditions",
+    "accept_terms_required": "Please accept the ad terms and conditions before creating your ad."
   }
   }
 

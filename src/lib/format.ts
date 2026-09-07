@@ -1,4 +1,16 @@
 import type { CancellationReason } from '../types'
+import type { TFunction } from 'i18next'
+
+export function getPeriodLabel(
+  period: { type?: string | null; period?: string | null } | undefined | null,
+  t: TFunction,
+): string {
+  if (period?.period) {
+    const localized = t(`custom_ads.period_${period.period}`, { defaultValue: '' }) as string
+    if (localized) return localized
+  }
+  return [period?.type, period?.period].filter(Boolean).join(' - ')
+}
 
 function stripMarkup(value: string): string {
   return value

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ImagePlus, Loader2, X } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ImagePlus, Loader2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { fetchPeriods, fetchMyCustomAds, fetchCustomAd, submitCustomAd, updateCustomAd } from '../lib/api'
 import type { CustomAdPeriod } from '../types'
+import { getPeriodLabel } from '../lib/format'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
@@ -67,6 +68,7 @@ export default function SubmitCustomAdPage() {
   const [submitting, setSubmitting] = useState(false)
   const [isRejected, setIsRejected] = useState(false)
   const [notEditable, setNotEditable] = useState(false)
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -182,6 +184,16 @@ export default function SubmitCustomAdPage() {
       return
     }
     if (!validateForm() || !imageFile) return
+    if (!acceptedTerms) {
+      void showAlert(
+        t('info', { defaultValue: 'Info' }),
+        t('custom_ads.accept_terms_required', {
+          defaultValue: 'Please accept the ad terms and conditions before creating your ad.',
+        }),
+        'error',
+      )
+      return
+    }
     setSubmitting(true)
     try {
       const period_id = selectedPeriod?.id ?? Number(periodId)
@@ -218,6 +230,16 @@ export default function SubmitCustomAdPage() {
 
   const save = async () => {
     if (!validateForm() || editId == null) return
+    if (!acceptedTerms) {
+      void showAlert(
+        t('info', { defaultValue: 'Info' }),
+        t('custom_ads.accept_terms_required', {
+          defaultValue: 'Please accept the ad terms and conditions before creating your ad.',
+        }),
+        'error',
+      )
+      return
+    }
     setSubmitting(true)
     try {
       const period_id = selectedPeriod?.id ?? Number(periodId)
@@ -256,14 +278,14 @@ export default function SubmitCustomAdPage() {
   return (
     <div className="relative animate-fade-in">
       <section className="px-4 py-6">
-        <button
+        {/* <button
           type="button"
           onClick={() => navigate('/my-ads')}
           className="mb-2 flex items-center gap-1 text-xs font-semibold text-ink-soft transition hover:text-primary"
         >
           <ArrowLeft size={14} />
           {t('back_to_my_ads', { defaultValue: 'Back to my ads' })}
-        </button>
+        </button> */}
 
         {editId != null && loadingAd ? (
           <div className="flex items-center justify-center py-20">
@@ -332,8 +354,7 @@ export default function SubmitCustomAdPage() {
                   </option>
                   {periods.map((period) => (
                     <option key={period.id} value={period.id}>
-                      {period.type}
-                      {period.period ? ` - ${period.period}` : ''}
+                      {getPeriodLabel(period, t)}
                       {period.amount != null ? ` (${period.amount} π)` : ''}
                     </option>
                   ))}
@@ -441,11 +462,43 @@ export default function SubmitCustomAdPage() {
                 )}
               </div>
 
+              <div className="mt-4 space-y-2">
+                <Link
+                  to="/ad-terms"
+                  className="text-xs font-semibold text-primary underline underline-offset-2"
+                >
+                  {t('custom_ads.accept_terms_title', { defaultValue: 'Ad terms and conditions' })}
+                </Link>
+                <label
+                  htmlFor="custom_ad_terms"
+                  className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-3"
+                >
+                  <span className="text-xs font-semibold text-ink-soft">
+                    {t('custom_ads.accept_terms_title', {
+                      defaultValue: 'Ad terms and conditions',
+                    })}
+                    <span className="block text-[10px] font-normal text-slate-400">
+                      {t('custom_ads.accept_terms_text', {
+                        defaultValue: 'I accept the ad terms and conditions',
+                      })}
+                    </span>
+                  </span>
+                  <input
+                    id="custom_ad_terms"
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className="peer sr-only"
+                  />
+                  <span className="relative h-6 w-11 shrink-0 rounded-full bg-slate-300 transition peer-checked:bg-primary after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
+                </label>
+              </div>
+
               {editId != null ? (
                 <button
                   type="button"
                   onClick={() => void save()}
-                  disabled={submitting}
+                  disabled={submitting || !acceptedTerms}
                   className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3.5 text-sm font-bold text-white shadow-soft transition-all duration-300 hover:shadow-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {submitting && <Loader2 size={18} className="animate-spin" />}
@@ -459,7 +512,7 @@ export default function SubmitCustomAdPage() {
                 <button
                   type="button"
                   onClick={() => void submit()}
-                  disabled={submitting || !canCreate || !imageFile}
+                  disabled={submitting || !canCreate || !imageFile || !acceptedTerms}
                   className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3.5 text-sm font-bold text-white shadow-soft transition-all duration-300 hover:shadow-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {submitting && <Loader2 size={18} className="animate-spin" />}

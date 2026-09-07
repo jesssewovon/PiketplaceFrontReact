@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { CustomAd, CancellationReason } from '../../types'
 import { approveCustomAd, fetchAdminCustomAds, rejectCustomAd } from '../../lib/api'
-import { formatDate, normalizeCancellationReasons } from '../../lib/format'
+import { formatDate, getPeriodLabel, normalizeCancellationReasons } from '../../lib/format'
 import { useAppSelector } from '../../store/hooks'
 import LoginPanel from '../../components/LoginPanel'
 import CancellationReasonsModal from '../../components/CancellationReasonsModal'
@@ -274,9 +274,7 @@ export default function AdminCustomAdsPage() {
                     <p className="mt-0.5 truncate text-[11px] text-ink-soft">@{ad.user.username}</p>
                   )}
                   <p className="mt-0.5 text-[11px] text-ink-soft">
-                    {ad.period
-                      ? `${ad.period.type ?? ''}${ad.period.period ? ' - ' + ad.period.period : ''}`
-                      : '-'}
+                    {ad.period ? getPeriodLabel(ad.period, t) : '-'}
                   </p>
                   <p className="mt-0.5 text-[11px] text-ink-soft">
                     {t('custom_ads.country', { defaultValue: 'Country' })}: {ad.country_code ?? '-'}

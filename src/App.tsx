@@ -25,6 +25,7 @@ import MyOrdersPage from './pages/MyOrdersPage'
 import MessageContactsPage from './pages/MessageContactsPage'
 import MessageThreadPage from './pages/MessageThreadPage'
 import TermsPage from './pages/TermsPage'
+import AdTermsPage from './pages/AdTermsPage'
 import FaqPage from './pages/FaqPage'
 import PartnershipsPage from './pages/PartnershipsPage'
 import UnlockBoostPage from './pages/UnlockBoostPage'
@@ -80,6 +81,7 @@ function App() {
         <Route path="message-contacts" element={<MessageContactsPage />} />
         <Route path="messages/:correspondingId/:lineOrderId" element={<MessageThreadPage />} />
         <Route path="terms" element={<TermsPage />} />
+        <Route path="ad-terms" element={<AdTermsPage />} />
         <Route path="faq" element={<FaqPage />} />
         <Route path="partnerships" element={<PartnershipsPage />} />
         <Route path="unlock-boost" element={<UnlockBoostPage />} />

@@ -1189,6 +1189,7 @@
   "back_to_my_ads": "Retour à mes annonces",
   "invalid_image": "Image invalide",
   "saving": "Enregistrement...",
+  "ad_terms_page_title": "Conditions des annonces",
   "custom_ads": {
     "validated": "Validée",
     "rejected": "Rejetée",
@@ -1248,7 +1249,12 @@
     "save_changes": "Enregistrer les modifications",
     "submitting": "Soumission en cours...",
     "create_ad": "Créer l’annonce",
-    "create_my_ad": "Afficher mon annonce ici"
+    "create_my_ad": "Afficher mon annonce ici",
+    "period_week": "Semaine",
+    "period_month": "Mois",
+    "accept_terms_title": "Conditions des annonces",
+    "accept_terms_text": "J'accepte les conditions des annonces",
+    "accept_terms_required": "Veuillez accepter les conditions des annonces avant de créer votre annonce."
   }
   }
 
