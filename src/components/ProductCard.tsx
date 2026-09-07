@@ -40,8 +40,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         </span>
       </p>
       
-      <div className="mt-0.5 inline-flex items-center gap-1 px-1.5 pb-1.5">
-        <span className="text-sm font-semibold text-black">
+      <div className="mt-0.5 block items-center gap-1 px-1.5 pb-1.5">
+        <span className="text-sm font-semibold text-black mr-1">
           {formatAmount(product.price, product.currency)}
         </span>
         {product.is_digital ? (
