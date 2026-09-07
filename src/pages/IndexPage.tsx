@@ -2,13 +2,14 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PackageX, Loader2, SearchX, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import type { DataLink, Product } from '../types'
+import type { DataLink, Product, CustomAd } from '../types'
 import { fetchProducts } from '../lib/api'
 import { productsCache, saveProductsScroll } from '../lib/productsStore'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setFilterOpen, setProductsLoaded, setAppliedFilter } from '../store/uiSlice'
 import ProductCard from '../components/ProductCard'
 import FilterModal from '../components/FilterModal'
+import CustomAdsSlider from '../components/CustomAdsSlider'
 import { defaultFilter, getStoredFilter, storeFilter, type FilterState } from '../lib/filterState'
 import { clearCountryCode, detectCountryByGeolocation, getStoredCountryCode, storeCountryCode } from '../lib/geo'
 import i18n from '../i18n'
@@ -103,6 +104,7 @@ export default function IndexPage() {
 
   const filterOpen = useAppSelector((state) => state.ui.filterOpen)
   const productsLoaded = useAppSelector((state) => state.ui.productsLoaded)
+  const [customAds, setCustomAds] = useState<CustomAd[]>([])
   const [filter, setFilter] = useState<FilterState>(() => filterFromParams(searchParams))
   const [activeFilter, setActiveFilter] = useState<FilterState | null>(() => {
     const parsed = filterFromParams(searchParams)
@@ -158,6 +160,9 @@ export default function IndexPage() {
           connected_user_id: currentUser?.id,
         })
         if (generation !== genRef.current) return
+        if (targetPage === 1 && Array.isArray(data.custom_ads)) {
+          setCustomAds(data.custom_ads)
+        }
         setProducts((prev) => {
           const seen = new Set(prev.map((p) => p.id))
           const fresh = data.products.data.filter((p) => !seen.has(p.id))
@@ -282,6 +287,24 @@ export default function IndexPage() {
   }, [dispatch, loadPage])
 
   useEffect(() => {
+    if (!productsCache.loaded) return
+    let cancelled = false
+    fetchProducts(1, {
+      locale,
+      connected_user_id: currentUser?.id,
+    })
+      .then((data) => {
+        if (!cancelled && Array.isArray(data.custom_ads)) setCustomAds(data.custom_ads)
+      })
+      .catch(() => {
+        // keep previously loaded ads
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [locale, currentUser?.id])
+
+  useEffect(() => {
     const sentinel = sentinelRef.current
     if (!sentinel) return
 
@@ -342,13 +365,24 @@ export default function IndexPage() {
       <section className="px-1.5 pt-5">
         {productsLoaded && (
           <div className="mb-3 space-y-2">
-            <button
-              type="button"
-              onClick={() => navigate('/unlock-boost')}
-              className="w-full rounded-3xl bg-primary py-3 text-sm font-bold text-white shadow-soft transition hover:bg-primary-dark"
-            >
-              {t('boost_your_account', { defaultValue: 'Boost your account' })}
-            </button>
+            {customAds.length > 0 && (
+              <div className="mb-1">
+                <CustomAdsSlider ads={customAds} />
+              </div>
+            )}
+
+            <div className={`flex ${customAds.length === 0 ? 'items-center justify-center gap-2' : ''}`}>
+              {customAds.length === 0 && <CustomAdsSlider ads={customAds} />}
+              <button
+                type="button"
+                onClick={() => navigate('/unlock-boost')}
+                className={`rounded-3xl bg-primary py-2 text-sm font-bold text-white shadow-soft transition hover:bg-primary-dark ${
+                  customAds.length === 0 ? 'px-6' : 'w-full'
+                }`}
+              >
+                {t('boost_your_account', { defaultValue: 'Boost your account' })}
+              </button>
+            </div>
 
             {dataLink?.show && dataLink.text && (
               <button
@@ -362,7 +396,7 @@ export default function IndexPage() {
                     }
                   }
                 }}
-                className="w-full rounded-3xl border-2 border-primary px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/5"
+                className="w-full rounded-3xl border-2 border-primary px-4 py-2 text-sm font-bold text-primary transition hover:bg-primary/5"
               >
                 {dataLink.text}
               </button>

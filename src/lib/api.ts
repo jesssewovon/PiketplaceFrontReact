@@ -53,6 +53,15 @@ import type {
   AdminWithdrawalsResponse,
   WalletBalanceDetailsData,
   UserShopResponse,
+  CustomAdsResponse,
+  AdminCustomAdsResponse,
+  PeriodsResponse,
+  SubmitCustomAdPayload,
+  UpdateCustomAdPayload,
+  GetCustomAdResponse,
+  PayCustomAdWalletPayload,
+  PayCustomAdWalletResponse,
+  CustomAd,
 } from '../types'
 import type { FilterState } from './filterState'
 import { syncSettingsFromPayload } from '../store/settingsSync'
@@ -930,6 +939,208 @@ export async function countRewardAd(
   if (!response.ok) {
     throw new Error(data.message ?? `Failed to count rewarded ads (${response.status})`)
   }
+  return data
+}
+
+export async function fetchPeriods(): Promise<PeriodsResponse> {
+  const response = await fetch(`${API_BASE}/get-periods`, {
+    headers: { Accept: 'application/json' },
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load periods (${response.status})`)
+  }
+  return (await response.json()) as PeriodsResponse
+}
+
+export async function fetchMyCustomAds(
+  token: string | undefined,
+  page = 1,
+  status = '',
+): Promise<CustomAdsResponse> {
+  const params = new URLSearchParams({ page: String(page) })
+  if (status) params.set('status', status)
+  const response = await authFetch(`${API_BASE}/my-custom-ads?${params.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load my ads (${response.status})`)
+  }
+  const data = (await response.json()) as CustomAdsResponse
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function submitCustomAd(
+  token: string | undefined,
+  payload: SubmitCustomAdPayload,
+): Promise<{ status?: boolean; message?: string; ad?: CustomAd }> {
+  const formData = new FormData()
+  formData.append('period_id', String(payload.period_id))
+  formData.append('name', payload.name)
+  if (payload.url) formData.append('url', payload.url)
+  formData.append('country_code', payload.country_code)
+  formData.append('image', payload.image, payload.image.name)
+  const response = await authFetch(`${API_BASE}/custom-ads`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: formData,
+  })
+  const data = (await response.json().catch(() => ({}))) as {
+    status?: boolean
+    message?: string
+    ad?: CustomAd
+  }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to submit ad (${response.status})`)
+  }
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function fetchCustomAd(
+  token: string | undefined,
+  id: number,
+): Promise<GetCustomAdResponse> {
+  const response = await authFetch(`${API_BASE}/custom-ads/${id}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load ad (${response.status})`)
+  }
+  const data = (await response.json().catch(() => ({}))) as GetCustomAdResponse
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function updateCustomAd(
+  token: string | undefined,
+  id: number,
+  payload: UpdateCustomAdPayload,
+): Promise<{ status?: boolean; message?: string; ad?: CustomAd }> {
+  const formData = new FormData()
+  formData.append('period_id', String(payload.period_id))
+  formData.append('name', payload.name)
+  if (payload.url) formData.append('url', payload.url)
+  formData.append('country_code', payload.country_code)
+  if (payload.image) formData.append('image', payload.image, payload.image.name)
+  formData.append('_method', 'PUT')
+  const response = await authFetch(`${API_BASE}/custom-ads/${id}`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: formData,
+  })
+  const data = (await response.json().catch(() => ({}))) as {
+    status?: boolean
+    message?: string
+    ad?: CustomAd
+  }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to update ad (${response.status})`)
+  }
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function deleteCustomAd(
+  token: string | undefined,
+  id: number,
+): Promise<{ status?: boolean; message?: string }> {
+  const response = await authFetch(`${API_BASE}/custom-ads/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+  })
+  const data = (await response.json().catch(() => ({}))) as { status?: boolean; message?: string }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to delete ad (${response.status})`)
+  }
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function payCustomAdPiketplaceWallet(
+  token: string | undefined,
+  uid: string | undefined,
+  payload: PayCustomAdWalletPayload,
+): Promise<PayCustomAdWalletResponse> {
+  const response = await authFetch(`${API_BASE}/pay-custom-ad-piketplace-wallet`, {
+    method: 'POST',
+    headers: { ...authHeaders(token, uid), 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = (await response.json().catch(() => ({}))) as PayCustomAdWalletResponse
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to pay with Piketplace wallet (${response.status})`)
+  }
+  syncUserFromPayload(data)
+  return data
+}
+
+export interface FetchAdminCustomAdsQuery {
+  page?: number
+  status?: string
+  locale?: string
+}
+
+export async function fetchAdminCustomAds(
+  token: string | undefined,
+  query: FetchAdminCustomAdsQuery = {},
+): Promise<AdminCustomAdsResponse> {
+  const params = new URLSearchParams()
+  if (query.page) params.set('page', String(query.page))
+  if (query.status) params.set('status', query.status)
+  if (query.locale) params.set('locale', query.locale)
+  const response = await authFetch(`${API_BASE}/admin-custom-ads?${params.toString()}`, {
+    headers: authHeaders(token),
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to load admin ads (${response.status})`)
+  }
+  const data = (await response.json()) as AdminCustomAdsResponse
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function approveCustomAd(
+  token: string | undefined,
+  adId: number,
+): Promise<{ status?: boolean; message?: string; ad?: CustomAd }> {
+  const response = await authFetch(`${API_BASE}/admin-approve-custom-ad/${adId}`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({}),
+  })
+  const data = (await response.json().catch(() => ({}))) as {
+    status?: boolean
+    message?: string
+    ad?: CustomAd
+  }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to approve ad (${response.status})`)
+  }
+  syncUserFromPayload(data)
+  return data
+}
+
+export async function rejectCustomAd(
+  token: string | undefined,
+  adId: number,
+  reasons: string[],
+  customReason?: string,
+): Promise<{ status?: boolean; message?: string; ad?: CustomAd }> {
+  const response = await authFetch(`${API_BASE}/admin-reject-custom-ad/${adId}`, {
+    method: 'POST',
+    headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reasons, custom_reason: customReason }),
+  })
+  const data = (await response.json().catch(() => ({}))) as {
+    status?: boolean
+    message?: string
+    ad?: CustomAd
+  }
+  if (!response.ok) {
+    throw new Error(data.message ?? `Failed to reject ad (${response.status})`)
+  }
+  syncUserFromPayload(data)
   return data
 }
 

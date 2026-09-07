@@ -43,6 +43,9 @@ import AdminWithdrawalsPage from './pages/Admin/AdminWithdrawalsPage'
 import AdminUsersPage from './pages/Admin/AdminUsers'
 import AdminSettingsPage from './pages/Admin/AdminSettings'
 import WalletBalanceDetailsPage from './pages/Admin/WalletBalanceDetailsPage'
+import SubmitCustomAdPage from './pages/SubmitCustomAdPage'
+import MyAdsPage from './pages/MyAdsPage'
+import AdminCustomAdsPage from './pages/Admin/AdminCustomAdsPage'
 
 function App() {
   const dispatch = useAppDispatch()
@@ -95,6 +98,10 @@ function App() {
         <Route path="users" element={<AdminUsersPage />} />
         <Route path="admin/settings" element={<AdminSettingsPage />} />
         <Route path="wallet-balance-details/:username" element={<WalletBalanceDetailsPage />} />
+        <Route path="submit-ad" element={<SubmitCustomAdPage />} />
+        <Route path="submit-ad/:id" element={<SubmitCustomAdPage />} />
+        <Route path="my-ads" element={<MyAdsPage />} />
+        <Route path="admin-custom-ads" element={<AdminCustomAdsPage />} />
         <Route path="*" element={<ComingSoonPage />} />
       </Route>
     </Routes>

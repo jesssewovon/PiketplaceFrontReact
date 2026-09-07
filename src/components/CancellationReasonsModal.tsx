@@ -9,7 +9,8 @@ interface CancellationReasonsModalProps {
   open: boolean
   reasons: CancellationReason[]
   onClose: () => void
-  onSubmit: (selected: CancellationReason[]) => void
+  onSubmit: (selected: CancellationReason[], extraText?: string) => void
+  extraInputLabel?: string
 }
 
 export default function CancellationReasonsModal({
@@ -17,12 +18,15 @@ export default function CancellationReasonsModal({
   reasons,
   onClose,
   onSubmit,
+  extraInputLabel,
 }: CancellationReasonsModalProps) {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<CancellationReason[]>([])
+  const [extraText, setExtraText] = useState('')
 
   useEffect(() => {
     if (!open) return
+    setExtraText('')
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
@@ -51,7 +55,7 @@ export default function CancellationReasonsModal({
       })
       return
     }
-    onSubmit(selected.map(({ code, text, penalty_point }) => ({ code, text, penalty_point })))
+    onSubmit(selected.map(({ code, text, penalty_point }) => ({ code, text, penalty_point })), extraText.trim() || undefined)
     setSelected([])
     onClose()
   }
@@ -102,6 +106,18 @@ export default function CancellationReasonsModal({
             )
           })}
         </div>
+
+        {extraInputLabel && (
+          <div className="mt-3">
+            <textarea
+              value={extraText}
+              onChange={(event) => setExtraText(event.target.value)}
+              placeholder={extraInputLabel}
+              rows={2}
+              className="w-full resize-none rounded-xl border border-black/10 bg-slate-50 px-3 py-2 text-sm text-ink outline-none transition placeholder:text-ink-soft/70 focus:border-primary"
+            />
+          </div>
+        )}
 
         <button
           type="button"

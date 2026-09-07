@@ -22,6 +22,7 @@ import {
   X,
   Check,
   Settings,
+  Megaphone,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { flagEmoji } from '../lib/geo'
@@ -82,6 +83,7 @@ const groups: AccountGroup[] = [
     titleKey: 'side_menu.others',
     titleFallback: 'Others',
     items: [
+      { to: '/my-ads', labelKey: 'my_ads', labelFallback: 'My ads', icon: Megaphone },
       { to: '/donation', labelKey: 'donation', labelFallback: 'Donation', icon: HandCoins },
       { to: '/mining', labelKey: 'side_menu.mining', labelFallback: 'Mining', icon: Pickaxe },
       { labelKey: 'side_menu.language', labelFallback: 'Language', icon: Languages },

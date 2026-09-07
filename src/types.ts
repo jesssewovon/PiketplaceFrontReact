@@ -84,6 +84,108 @@ export interface PaginatedResponse {
   products: PaginatedProducts
   settings_user?: unknown
   data_link?: DataLink
+  custom_ads?: CustomAd[]
+}
+
+export interface CustomAdPeriod {
+  id: number
+  type?: string
+  period?: string
+  amount?: number | string
+  created_at?: string
+}
+
+export interface AdApprobation {
+  id: number
+  custom_ad_id?: number
+  status: 'rejected' | 'validated'
+  reasons?: string[] | null
+  custom_reason?: string | null
+  created_at?: string
+}
+
+export interface CustomAd {
+  id: number
+  pi_users_id?: number
+  period_id?: number
+  name: string
+  url?: string | null
+  image: string
+  country_code?: string | null
+  status?: 'unpaid' | 'pending' | 'validated' | 'rejected'
+  validated_at?: string | null
+  expires_at?: string | null
+  paid_at?: string | null
+  created_at?: string
+  period?: CustomAdPeriod | null
+  approbations?: AdApprobation[]
+  user?: {
+    id?: number
+    username?: string
+    firstname?: string
+    lastname?: string
+    avatar?: string
+    shop_name?: string
+  } | null
+}
+
+export interface PaginatedCustomAds {
+  current_page: number
+  data: CustomAd[]
+  last_page?: number
+  next_page_url?: string | null
+  total?: number
+}
+
+export interface CustomAdsResponse {
+  status?: boolean
+  ads?: PaginatedCustomAds
+  can_create?: boolean
+  [key: string]: unknown
+}
+
+export interface AdminCustomAdsResponse extends CustomAdsResponse {
+  reasons?: CancellationReason[] | Record<string, CancellationReason[]>
+}
+
+export interface PeriodsResponse {
+  status?: boolean
+  periods?: CustomAdPeriod[]
+}
+
+export interface SubmitCustomAdPayload {
+  period_id: number
+  name: string
+  url?: string
+  country_code: string
+  image: File
+}
+
+export interface UpdateCustomAdPayload {
+  period_id: number
+  name: string
+  url?: string
+  country_code: string
+  image?: File
+}
+
+export interface GetCustomAdResponse {
+  status?: boolean
+  message?: string
+  ad?: CustomAd
+  current_user_for_automatic_update?: unknown
+}
+
+export interface PayCustomAdWalletPayload {
+  code_pin: string
+  custom_ad_id: number
+}
+
+export interface PayCustomAdWalletResponse {
+  status?: boolean
+  message?: string
+  payment_unique_id?: string
+  current_user_for_automatic_update?: unknown
 }
 
 export interface DataLink {
@@ -833,6 +935,7 @@ export interface AdministrationData {
   nb_users?: number
   nb_products_pending?: number
   nb_products?: number
+  nb_custom_ads_pending?: number
   nb_orders_shipped?: number
   nb_orders?: number
   nb_failed_payments?: number

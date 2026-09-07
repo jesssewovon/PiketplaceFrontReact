@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Loader2, RefreshCw, Settings, Users, Package, ShoppingBag, CreditCard, PhoneCall, Wallet, Store, DollarSign } from 'lucide-react'
+import { Loader2, RefreshCw, Settings, Users, Package, ShoppingBag, CreditCard, PhoneCall, Wallet, Store, DollarSign, Megaphone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { fetchAdministration } from '../../lib/api'
 import type { AdministrationData, AdminSettingItem } from '../../types'
@@ -160,6 +160,12 @@ export default function AdministrationPage() {
                 to="/partners-payment"
                 icon={DollarSign}
                 label={t('admin.partner_payment', { defaultValue: 'Partner Payment' })}
+              />
+              <AdminLink
+                to="/admin-custom-ads"
+                icon={Megaphone}
+                label={t('admin.custom_ads', { defaultValue: 'Custom ads' })}
+                count={data.nb_custom_ads_pending ?? 0}
               />
             </div>
           </>
