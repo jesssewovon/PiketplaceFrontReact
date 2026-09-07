@@ -155,7 +155,7 @@ export default function MessageContactsPage() {
                       </div>
                       {lastMessage && (
                         <div className="mt-0.5 flex items-center justify-between gap-2">
-                          <p className="min-w-0 flex-1 truncate text-xs font-semibold text-ink">
+                          <p className="min-w-0 flex-1 truncate text-xs text-ink">
                             {lastMessage.isImage
                               ? `${t('picture', { defaultValue: 'Image' })} ${lastMessage.imageName ?? ''}`
                               : (lastMessage.message ?? '')}
