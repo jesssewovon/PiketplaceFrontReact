@@ -298,13 +298,13 @@ export default function SubmitCustomAdPage() {
                 defaultValue: 'This ad cannot be edited anymore.',
               })}
             </p>
-            <button
+            {/* <button
               type="button"
               onClick={() => navigate('/my-ads')}
               className="rounded-full bg-primary px-5 py-2 text-xs font-semibold text-white transition hover:bg-primary-dark"
             >
               {t('back_to_my_ads', { defaultValue: 'Back to my ads' })}
-            </button>
+            </button> */}
           </div>
         ) : (
           <>
@@ -411,6 +411,11 @@ export default function SubmitCustomAdPage() {
                     </span>
                   )}
                 </label>
+                <p className="-mt-1 mb-2 text-[11px] text-ink-soft">
+                  {t('custom_ads.image_size_hint', {
+                    defaultValue: 'JPG, PNG, GIF or WEBP — max 5 MB, recommended 1280×768',
+                  })}
+                </p>
                 <div
                   role="button"
                   tabIndex={0}

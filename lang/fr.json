@@ -1254,7 +1254,8 @@
     "period_month": "Mois",
     "accept_terms_title": "Conditions des annonces",
     "accept_terms_text": "J'accepte les conditions des annonces",
-    "accept_terms_required": "Veuillez accepter les conditions des annonces avant de créer votre annonce."
+    "accept_terms_required": "Veuillez accepter les conditions des annonces avant de créer votre annonce.",
+    "image_size_hint": "JPG, PNG, GIF ou WEBP — 5 Mo maximum, taille recommandée 1280×768"
   }
   }
 

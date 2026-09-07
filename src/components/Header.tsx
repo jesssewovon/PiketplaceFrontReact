@@ -8,6 +8,7 @@ import { setFilterOpen } from '../store/uiSlice'
 
 const PAGE_TITLES: Record<string, { key: string; fallback: string }> = {
   '/publish': { key: 'publish', fallback: 'Publish' },
+  '/submit-ad': { key: 'custom_ads.submit_title', fallback: 'Submit an ad' },
   '/account': { key: 'side_menu.my_account', fallback: 'My Account' },
   '/account/sales': { key: 'side_menu.my_sales', fallback: 'My Sales' },
   '/account/orders': { key: 'side_menu.my_orders', fallback: 'My Orders' },
@@ -172,7 +173,9 @@ export default function Header() {
     PAGE_TITLES[location.pathname] ??
     (location.pathname.startsWith('/publish/')
       ? { key: 'update_product', fallback: 'Update product' }
-      : location.pathname.startsWith('/product/')
+      : location.pathname.startsWith('/submit-ad/')
+        ? { key: 'custom_ads.edit_title', fallback: 'Edit your ad' }
+        : location.pathname.startsWith('/product/')
         ? { key: 'product.details', fallback: 'Product' }
       : location.pathname.startsWith('/shipping-management/')
         ? { key: 'shipping_confirmation', fallback: 'Shipping confirmation' }
