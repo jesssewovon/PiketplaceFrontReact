@@ -339,7 +339,7 @@ export default function SubmitCustomAdPage() {
             <div className="mt-5 space-y-4">
               <div>
                 <label className={labelClass}>
-                  {t('custom_ads.period', { defaultValue: 'Period' })} *
+                  {t('period', { defaultValue: 'Period' })} *
                 </label>
                 <select
                   value={periodId}

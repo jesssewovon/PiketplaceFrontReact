@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import type { DataLink, Product, CustomAd } from '../types'
 import { fetchProducts } from '../lib/api'
 import { productsCache, saveProductsScroll } from '../lib/productsStore'
+import { customAdsCache, cacheCustomAds } from '../lib/customAdsStore'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { setFilterOpen, setProductsLoaded, setAppliedFilter } from '../store/uiSlice'
 import ProductCard from '../components/ProductCard'
@@ -104,7 +105,7 @@ export default function IndexPage() {
 
   const filterOpen = useAppSelector((state) => state.ui.filterOpen)
   const productsLoaded = useAppSelector((state) => state.ui.productsLoaded)
-  const [customAds, setCustomAds] = useState<CustomAd[]>([])
+  const [customAds, setCustomAds] = useState<CustomAd[]>(customAdsCache.ads)
   const [filter, setFilter] = useState<FilterState>(() => filterFromParams(searchParams))
   const [activeFilter, setActiveFilter] = useState<FilterState | null>(() => {
     const parsed = filterFromParams(searchParams)
@@ -161,6 +162,7 @@ export default function IndexPage() {
         })
         if (generation !== genRef.current) return
         if (targetPage === 1 && Array.isArray(data.custom_ads)) {
+          cacheCustomAds(data.custom_ads)
           setCustomAds(data.custom_ads)
         }
         setProducts((prev) => {
@@ -294,7 +296,10 @@ export default function IndexPage() {
       connected_user_id: currentUser?.id,
     })
       .then((data) => {
-        if (!cancelled && Array.isArray(data.custom_ads)) setCustomAds(data.custom_ads)
+        if (!cancelled && Array.isArray(data.custom_ads)) {
+          cacheCustomAds(data.custom_ads)
+          setCustomAds(data.custom_ads)
+        }
       })
       .catch(() => {
         // keep previously loaded ads
