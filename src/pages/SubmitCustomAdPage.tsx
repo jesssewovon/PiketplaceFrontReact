@@ -61,7 +61,6 @@ export default function SubmitCustomAdPage() {
   const [loadingAd, setLoadingAd] = useState(editId != null)
   const [periodId, setPeriodId] = useState('')
   const [name, setName] = useState('')
-  const [url, setUrl] = useState('')
   const [countryCode, setCountryCode] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -94,7 +93,6 @@ export default function SubmitCustomAdPage() {
           setIsRejected(ad.status === 'rejected')
           setPeriodId(ad.period_id != null ? String(ad.period_id) : '')
           setName(ad.name ?? '')
-          setUrl(ad.url ?? '')
           setCountryCode(ad.country_code ?? '')
           setImagePreview(ad.image ?? null)
         })
@@ -190,7 +188,6 @@ export default function SubmitCustomAdPage() {
       const res = await submitCustomAd(token ?? undefined, {
         period_id,
         name: name.trim(),
-        url: url.trim() || undefined,
         country_code: countryCode,
         image: imageFile,
       })
@@ -227,7 +224,6 @@ export default function SubmitCustomAdPage() {
       const res = await updateCustomAd(token ?? undefined, editId, {
         period_id,
         name: name.trim(),
-        url: url.trim() || undefined,
         country_code: countryCode,
         image: imageFile ?? undefined,
       })
@@ -361,24 +357,6 @@ export default function SubmitCustomAdPage() {
                   onChange={(e) => setName(e.target.value)}
                   maxLength={100}
                   placeholder={t('custom_ads.name_placeholder', { defaultValue: 'Your ad name' })}
-                  className={inputClass}
-                />
-              </div>
-
-              <div>
-                <label className={labelClass}>
-                  {t('custom_ads.url', { defaultValue: 'URL' })}
-                  <span className="font-normal text-slate-400">
-                    {' '}
-                    ({t('custom_ads.optional', { defaultValue: 'optional' })})
-                  </span>
-                </label>
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  maxLength={500}
-                  placeholder={t('custom_ads.url_placeholder', { defaultValue: 'https://...' })}
                   className={inputClass}
                 />
               </div>
