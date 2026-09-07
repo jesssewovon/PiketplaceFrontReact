@@ -37,7 +37,7 @@ export default function BottomNav() {
             to={to}
             end={to === '/'}
             className={({ isActive }) =>
-              `flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[10px] font-semibold transition-colors ${
+              `flex flex-1 flex-col items-center gap-0.5 py-1 text-[10px] font-semibold transition-colors ${
                 isActive ? 'text-primary' : 'text-ink-soft hover:text-primary'
               }`
             }
@@ -46,7 +46,7 @@ export default function BottomNav() {
               <>
                 {icon === 'publish' ? (
                   <span
-                    className={`-mt-7 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-deep text-white shadow-soft transition-all duration-200 ${
+                    className={`-mt-6 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-deep text-white shadow-soft transition-all duration-200 ${
                       isActive ? 'scale-105 ring-4 ring-primary/20' : ''
                     }`}
                   >

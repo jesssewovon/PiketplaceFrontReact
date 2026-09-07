@@ -104,6 +104,15 @@ body {
   background: transparent;
 }
 
+/* Hide the horizontal scrollbar on sliders/carousels */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .text-shadow-hero {
   text-shadow: 0 2px 12px rgba(129, 42, 107, 0.35);
 }

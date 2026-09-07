@@ -77,7 +77,7 @@ export default function Header() {
   if (isHome) {
     return (
       <header className="sticky top-0 z-40 border-b border-black/10 bg-white/70 backdrop-blur-md">
-        <div className="flex items-center gap-1.5 px-3 py-2">
+        <div className="flex items-center gap-1.5 px-3 py-1.5">
           <button
             type="button"
             onClick={handleBack}
@@ -102,7 +102,7 @@ export default function Header() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t('search_product', { defaultValue: 'Search products…' })}
-                className="h-9 w-full bg-transparent pl-4 pr-8 text-sm text-ink outline-none [&::-webkit-search-cancel-button]:hidden"
+                className="h-8 w-full bg-transparent pl-4 pr-8 text-sm text-ink outline-none [&::-webkit-search-cancel-button]:hidden"
               />
               {query && (
                 <button
@@ -120,7 +120,7 @@ export default function Header() {
             </div>
             <button
               type="submit"
-              className="flex h-9 items-center gap-1 bg-primary px-3 text-sm font-semibold text-white transition hover:bg-primary-dark"
+              className="flex h-8 items-center gap-1 bg-primary px-3 text-sm font-semibold text-white transition hover:bg-primary-dark"
               aria-label={t('search', { defaultValue: 'Search' })}
             >
               <Search size={15} />
@@ -191,7 +191,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-black/10 bg-white/70 backdrop-blur-md">
-      <div className="flex items-center justify-between px-3 py-2">
+      <div className="flex items-center justify-between px-3 py-1.5">
         <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
@@ -208,10 +208,10 @@ export default function Header() {
                 <img
                   src={user.avatar}
                   alt={user.username}
-                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-primary/30"
+                  className="h-8 w-8 shrink-0 rounded-full object-cover ring-2 ring-primary/30"
                 />
               ) : (
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-deep text-sm font-bold text-white">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-deep text-xs font-bold text-white">
                   {user.username.charAt(0).toUpperCase()}
                 </span>
               )}

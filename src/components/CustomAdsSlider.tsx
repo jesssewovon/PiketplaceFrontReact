@@ -18,25 +18,28 @@ export default function CustomAdsSlider({ ads, onOpenUrl }: CustomAdsSliderProps
   const list = Array.isArray(ads) ? ads : []
 
   useEffect(() => {
-    if (list.length <= 1) return
     const interval = window.setInterval(() => {
       const track = trackRef.current
       if (!track) return
       const maxScroll = track.scrollWidth - track.clientWidth
       if (maxScroll <= 0) return
+      const item = track.firstElementChild as HTMLElement | null
+      const step = item ? item.offsetWidth + 12 : Math.min(300, track.clientWidth)
       if (track.scrollLeft >= maxScroll - 10) {
         track.scrollTo({ left: 0, behavior: 'smooth' })
       } else {
-        track.scrollBy({ left: Math.min(300, track.clientWidth), behavior: 'smooth' })
+        track.scrollBy({ left: step, behavior: 'smooth' })
       }
     }, 4000)
     return () => window.clearInterval(interval)
-  }, [list.length])
+  }, [])
 
   const scroll = (dir: 1 | -1) => {
     const track = trackRef.current
     if (!track) return
-    track.scrollBy({ left: dir * Math.min(300, track.clientWidth), behavior: 'smooth' })
+    const item = track.firstElementChild as HTMLElement | null
+    const step = item ? item.offsetWidth + 12 : Math.min(300, track.clientWidth)
+    track.scrollBy({ left: dir * step, behavior: 'smooth' })
   }
 
   const handleOpen = (ad: CustomAd) => {
@@ -125,7 +128,7 @@ export default function CustomAdsSlider({ ads, onOpenUrl }: CustomAdsSliderProps
         </>
       )}
 
-      <div ref={trackRef} className="app-scroll flex snap-x gap-3 overflow-x-auto px-0.5 pb-1">
+      <div ref={trackRef} className="no-scrollbar flex snap-x gap-3 overflow-x-auto px-0.5 pb-1">
         {items}
       </div>
     </div>
