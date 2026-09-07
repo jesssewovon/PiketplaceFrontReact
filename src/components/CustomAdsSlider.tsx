@@ -74,7 +74,7 @@ export default function CustomAdsSlider({ ads, onOpenUrl }: CustomAdsSliderProps
         <button
           type="button"
           onClick={() => navigate('/submit-ad')}
-          className="flex items-center justify-center rounded-3xl bg-gradient-to-br from-primary to-primary-deep px-8 py-2 text-sm font-bold text-white shadow-soft transition hover:opacity-90"
+          className="flex items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-deep px-4 py-1.5 text-[10px] font-bold text-white shadow-soft transition hover:opacity-90"
         >
           {t('custom_ads.create_my_ad', { defaultValue: 'Show my ad here' })}
         </button>
