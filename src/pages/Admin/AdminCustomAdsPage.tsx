@@ -11,17 +11,16 @@ import LoginPanel from '../../components/LoginPanel'
 import CancellationReasonsModal from '../../components/CancellationReasonsModal'
 import LazyImage from '../../components/LazyImage'
 
-type AdStatus = '' | 'unpaid' | 'pending' | 'validated' | 'rejected'
+type AdStatus = '' | 'pending' | 'validated' | 'rejected'
 
 const STATUS_OPTIONS: { value: AdStatus; labelKey: string; labelFallback: string }[] = [
-  { value: 'unpaid', labelKey: 'custom_ads.unpaid', labelFallback: 'Impayé' },
   { value: 'pending', labelKey: 'admin.pending', labelFallback: 'En attente' },
   { value: 'validated', labelKey: 'admin.validated', labelFallback: 'Validé' },
   { value: 'rejected', labelKey: 'admin.rejected', labelFallback: 'Rejeté' },
   { value: '', labelKey: 'admin.all', labelFallback: 'Tout' },
 ]
 
-function StatusTag({ status }: { status?: string }) {
+function StatusTag({ status, paidAt }: { status?: string; paidAt?: string | null }) {
   const { t } = useTranslation()
   if (status === 'validated') {
     return (
@@ -37,7 +36,7 @@ function StatusTag({ status }: { status?: string }) {
       </span>
     )
   }
-  if (status === 'unpaid') {
+  if (paidAt === null || paidAt === undefined) {
     return (
       <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-gray-600">
         {t('custom_ads.unpaid', { defaultValue: 'Unpaid' })}
@@ -269,7 +268,7 @@ export default function AdminCustomAdsPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <p className="truncate text-sm font-semibold text-ink">{ad.name}</p>
-                    <StatusTag status={ad.status} />
+                    <StatusTag status={ad.status} paidAt={ad.paid_at} />
                   </div>
                   {ad.user?.username && (
                     <p className="mt-0.5 truncate text-[11px] text-ink-soft">@{ad.user.username}</p>
@@ -285,7 +284,7 @@ export default function AdminCustomAdsPage() {
                   {ad.created_at && (
                     <p className="mt-0.5 text-[10px] text-ink-soft">{formatDate(ad.created_at)}</p>
                   )}
-                  {ad.status === 'pending' && (
+                  {ad.status === 'pending' && ad.paid_at !== null && (
                     <div className="mt-2 flex gap-1">
                       <button
                         type="button"

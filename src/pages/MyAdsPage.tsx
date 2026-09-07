@@ -18,7 +18,7 @@ import LoginPanel from '../components/LoginPanel'
 import LazyImage from '../components/LazyImage'
 import PiPaymentLoader from '../components/PiPaymentLoader'
 
-function StatusBadge({ status }: { status?: string }) {
+function StatusBadge({ status, paidAt }: { status?: string; paidAt?: string | null }) {
   const { t } = useTranslation()
   if (status === 'validated') {
     return (
@@ -36,7 +36,7 @@ function StatusBadge({ status }: { status?: string }) {
       </span>
     )
   }
-  if (status === 'unpaid') {
+  if (paidAt === null || paidAt === undefined) {
     return (
       <span className="flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-[10px] font-bold text-red-500">
         <Clock size={12} />
@@ -345,7 +345,7 @@ export default function MyAdsPage() {
               const reasons = rejectionReasons(ad)
               const customReason = rejectionCustomReason(ad)
               const rejected = ad.status === 'rejected' && (reasons.length > 0 || !!customReason)
-              const showActions = ad.status === 'unpaid' || ad.status === 'rejected'
+              const showActions = ad.paid_at === null || ad.status === 'rejected'
               return (
                 <div
                   key={ad.id}
@@ -360,7 +360,7 @@ export default function MyAdsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
                         <p className="truncate text-sm font-semibold text-ink">{ad.name}</p>
-                        <StatusBadge status={ad.status} />
+                        <StatusBadge status={ad.status} paidAt={ad.paid_at} />
                       </div>
                       <p className="mt-0.5 flex items-center gap-1 text-[11px] text-ink-soft">
                         <Megaphone size={12} />
@@ -380,7 +380,7 @@ export default function MyAdsPage() {
                       )}
                       {showActions && (
                         <div className="mt-2 flex flex-wrap gap-1.5">
-                          {ad.status === 'unpaid' && (
+                          {ad.paid_at === null && (
                             <button
                               type="button"
                               onClick={() => setWalletAd(ad)}
@@ -402,7 +402,7 @@ export default function MyAdsPage() {
                               ? t('custom_ads.edit_resubmit', { defaultValue: 'Edit & resubmit' })
                               : t('custom_ads.edit', { defaultValue: 'Edit' })}
                           </button>
-                          {ad.status === 'unpaid' && (
+                          {ad.paid_at === null && (
                             <button
                               type="button"
                               onClick={() => void confirmDelete(ad)}
@@ -440,7 +440,7 @@ export default function MyAdsPage() {
                       </p>
                     </div>
                   )}
-                  {ad.status === 'pending' && (
+                  {ad.status === 'pending' && ad.paid_at !== null && (
                     <div className="border-t border-yellow-100 bg-yellow-50 px-3 py-2">
                       <p className="text-[11px] font-medium text-yellow-700">
                         {t('custom_ads.pending_hint', {

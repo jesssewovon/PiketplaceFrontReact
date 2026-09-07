@@ -112,7 +112,7 @@ export interface CustomAd {
   url?: string | null
   image: string
   country_code?: string | null
-  status?: 'unpaid' | 'pending' | 'validated' | 'rejected'
+  status?: 'pending' | 'validated' | 'rejected'
   validated_at?: string | null
   expires_at?: string | null
   paid_at?: string | null

@@ -87,7 +87,7 @@ export default function SubmitCustomAdPage() {
             setNotEditable(true)
             return
           }
-          if (ad.status !== 'unpaid' && ad.status !== 'rejected') {
+          if (ad.status !== 'rejected' && ad.paid_at !== null) {
             setNotEditable(true)
             return
           }
@@ -106,7 +106,14 @@ export default function SubmitCustomAdPage() {
     }
     fetchMyCustomAds(token ?? undefined, 1)
       .then((res) => {
-        if (typeof res.can_create === 'boolean') setCanCreate(res.can_create)
+        if (typeof res.can_create === 'boolean') {
+          setCanCreate(res.can_create)
+          return
+        }
+        const blocked = (res.ads?.data ?? []).some(
+          (a) => a.paid_at === null || a.status === 'pending' || a.status === 'rejected',
+        )
+        setCanCreate(!blocked)
       })
       .catch(() => undefined)
   }, [editId, token])
@@ -165,6 +172,17 @@ export default function SubmitCustomAdPage() {
   }
 
   const submit = async () => {
+    if (editId == null && !canCreate) {
+      void showAlert(
+        t('error', { defaultValue: 'Error' }),
+        t('custom_ads.create_blocked', {
+          defaultValue:
+            'You can only create a new ad when your latest ad is paid and approved. Pay, wait for the review, or delete your unpaid ad first.',
+        }),
+        'error',
+      )
+      return
+    }
     if (!validateForm() || !imageFile) return
     setSubmitting(true)
     try {
