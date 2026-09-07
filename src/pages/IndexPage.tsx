@@ -376,36 +376,38 @@ export default function IndexPage() {
               </div>
             )}
 
-            <div className={`flex ${customAds.length === 0 ? 'items-center justify-center gap-2' : ''}`}>
-              {customAds.length === 0 && <CustomAdsSlider ads={customAds} />}
+            {customAds.length === 0 && (
+              <div className="flex justify-center">
+                <CustomAdsSlider ads={customAds} />
+              </div>
+            )}
+
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => navigate('/unlock-boost')}
-                className={`rounded-3xl bg-primary py-2 text-sm font-bold text-white shadow-soft transition hover:bg-primary-dark ${
-                  customAds.length === 0 ? 'px-6' : 'w-full'
-                }`}
+                className="min-w-0 flex-1 rounded-2xl bg-primary px-3 py-1.5 text-xs font-bold text-white shadow-soft transition hover:bg-primary-dark"
               >
                 {t('boost_your_account', { defaultValue: 'Boost your account' })}
               </button>
-            </div>
-
-            {dataLink?.show && dataLink.text && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (dataLink.link) {
-                    if (dataLink.link.startsWith('/')) {
-                      navigate(dataLink.link)
-                    } else {
-                      window.location.href = dataLink.link
+              {dataLink?.show && dataLink.text && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (dataLink.link) {
+                      if (dataLink.link.startsWith('/')) {
+                        navigate(dataLink.link)
+                      } else {
+                        window.location.href = dataLink.link
+                      }
                     }
-                  }
-                }}
-                className="w-full rounded-3xl border-2 border-primary px-4 py-2 text-sm font-bold text-primary transition hover:bg-primary/5"
-              >
-                {dataLink.text}
-              </button>
-            )}
+                  }}
+                  className="min-w-0 flex-1 rounded-2xl border-2 border-primary px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary/5"
+                >
+                  {dataLink.text}
+                </button>
+              )}
+            </div>
           </div>
         )}
 
