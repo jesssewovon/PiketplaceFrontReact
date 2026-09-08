@@ -37,10 +37,6 @@ function OrderCard({ line }: { line: LineOrder }) {
   const date = line.shipped_at ? line.shipped_at : line.order?.ordered_at
   const quantity = line.quantity ?? 0
   const purchaseTotal = line.purchaseData?.total ?? (line.total ?? 0) + (line.fee ?? 0)
-  const currency = line.currency_conversion ?? ''
-  const total = line.shipped_at
-    ? (line.price ?? 0) * quantity
-    : (line.total ?? 0) + (line.fee ?? 0)
   const shipping = line.order?.shipping
   const isDigital = product?.is_digital === true
 

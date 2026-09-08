@@ -37,7 +37,6 @@ function AdminOrderCard({ line }: { line: LineOrder }) {
   const date = line.shipped_at ? line.shipped_at : line.order?.ordered_at
   const quantity = line.quantity ?? 0
   const purchaseTotal = line.purchaseData?.total ?? (line.total ?? 0) + (line.fee ?? 0)
-  const total = line.total ?? 0
   const fee = line.fee ?? 0
 
   return (
