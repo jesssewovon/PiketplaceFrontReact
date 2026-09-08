@@ -448,6 +448,16 @@ export default function MyAdsPage() {
                       </p>
                     </div>
                   )}
+                  {ad.paid_at === null && ad.status !== 'rejected' && (
+                    <div className="border-t border-red-100 bg-red-50 px-3 py-2">
+                      <p className="text-[11px] font-medium text-red-600">
+                        {t('custom_ads.unpaid_hint', {
+                          defaultValue:
+                            'Your ad has not been paid yet. Pay for it so it can be reviewed and approved.',
+                        })}
+                      </p>
+                    </div>
+                  )}
                   {ad.status === 'pending' && ad.paid_at !== null && (
                     <div className="border-t border-yellow-100 bg-yellow-50 px-3 py-2">
                       <p className="text-[11px] font-medium text-yellow-700">

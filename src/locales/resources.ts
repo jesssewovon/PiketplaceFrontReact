@@ -15,6 +15,7 @@ import nl_json from "../../lang/nl.json";
 import hi_json from "../../lang/hi.json";
 import ru_json from "../../lang/ru.json";
 import ms_json from "../../lang/ms.json";
+import th_json from "../../lang/th.json";
 
 export default {
   en: {
@@ -74,5 +75,8 @@ export default {
   },
   ms: {
     translation: ms_json
+  },
+  th: {
+    translation: th_json
   }
 }

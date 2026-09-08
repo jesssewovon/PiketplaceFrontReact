@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ImagePlus, Loader2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -8,38 +8,7 @@ import { getPeriodLabel } from '../lib/format'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
-import countriesJson from '../locales/countries.json'
 import { periodsStore } from '../lib/customAdsStore'
-
-type CountryOption = [string, string]
-
-function buildCountryOptions(raw: unknown): CountryOption[] {
-  const list: CountryOption[] = []
-  if (Array.isArray(raw)) {
-    for (const entry of raw) {
-      if (entry && typeof entry === 'object') {
-        const item = entry as Record<string, unknown>
-        const code =
-          typeof item.code === 'string'
-            ? item.code
-            : typeof item.iso2 === 'string'
-              ? item.iso2
-              : null
-        const name =
-          typeof item.name === 'string'
-            ? item.name
-            : typeof item.libelle === 'string'
-              ? item.libelle
-              : null
-        if (code && name) list.push([code, name])
-      }
-    }
-  }
-  if (list.length > 0) return list
-  return countriesJson
-    .filter((c) => c.iso2 && c.name)
-    .map((c) => [c.iso2, c.name] as CountryOption)
-}
 
 const inputClass =
   'w-full rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20'
@@ -52,10 +21,7 @@ export default function SubmitCustomAdPage() {
   const { id } = useParams()
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn)
   const token = useAppSelector((state) => state.auth.token)
-  const storedCountries = useAppSelector((state) => state.attributes.countries)
-
   const editId = id ? Number(id) : null
-  const countries = useMemo(() => buildCountryOptions(storedCountries), [storedCountries])
 
   const [periods, setPeriods] = useState<CustomAdPeriod[]>(periodsStore.periods)
   const [periodsLoading, setPeriodsLoading] = useState(!periodsStore.loaded)
@@ -63,7 +29,7 @@ export default function SubmitCustomAdPage() {
   const [loadingAd, setLoadingAd] = useState(editId != null)
   const [periodId, setPeriodId] = useState('')
   const [name, setName] = useState('')
-  const [countryCode, setCountryCode] = useState('')
+
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -102,7 +68,6 @@ export default function SubmitCustomAdPage() {
           setIsRejected(ad.status === 'rejected')
           setPeriodId(ad.period_id != null ? String(ad.period_id) : '')
           setName(ad.name ?? '')
-          setCountryCode(ad.country_code ?? '')
           setImagePreview(ad.image ?? null)
         })
         .catch(() => {
@@ -126,6 +91,7 @@ export default function SubmitCustomAdPage() {
   }, [editId, token])
 
   const selectedPeriod = periods.find((p) => p.id === Number(periodId))
+  const formDisabled = editId == null && !canCreate
 
   const pickImage = (file: File | undefined) => {
     if (!file) return
@@ -155,14 +121,6 @@ export default function SubmitCustomAdPage() {
       void showAlert(
         t('info', { defaultValue: 'Info' }),
         t('custom_ads.required_name', { defaultValue: 'Please enter a name for your ad.' }),
-        'error',
-      )
-      return false
-    }
-    if (!countryCode) {
-      void showAlert(
-        t('info', { defaultValue: 'Info' }),
-        t('custom_ads.required_country', { defaultValue: 'Please choose a country.' }),
         'error',
       )
       return false
@@ -207,7 +165,6 @@ export default function SubmitCustomAdPage() {
       const res = await submitCustomAd(token ?? undefined, {
         period_id,
         name: name.trim(),
-        country_code: countryCode,
         image: imageFile,
       })
       if (res.status === true) {
@@ -253,7 +210,6 @@ export default function SubmitCustomAdPage() {
       const res = await updateCustomAd(token ?? undefined, editId, {
         period_id,
         name: name.trim(),
-        country_code: countryCode,
         image: imageFile ?? undefined,
       })
       if (res.status === true) {
@@ -334,11 +290,11 @@ export default function SubmitCustomAdPage() {
                   })}
             </p>
 
-            {editId == null && !canCreate && (
+            {formDisabled && (
               <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-700">
-                {t('custom_ads.create_blocked', {
+                {t('custom_ads.pending_ad_blocked', {
                   defaultValue:
-                    'You can only create a new ad when your latest ad is paid and approved. Pay, wait for the review, or delete your unpaid ad first.',
+                    'The form is disabled. You already have a pending ad. You can only create a new ad once your latest ad is paid and approved.',
                 })}
               </div>
             )}
@@ -352,7 +308,7 @@ export default function SubmitCustomAdPage() {
                   value={periodId}
                   onChange={(e) => setPeriodId(e.target.value)}
                   className={inputClass}
-                  disabled={periodsLoading || (editId != null && isRejected)}
+                  disabled={formDisabled || periodsLoading || (editId != null && isRejected)}
                 >
                   <option value="">
                     {periodsLoading
@@ -384,29 +340,10 @@ export default function SubmitCustomAdPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   maxLength={100}
+                  disabled={formDisabled}
                   placeholder={t('custom_ads.name_placeholder', { defaultValue: 'Your ad name' })}
                   className={inputClass}
                 />
-              </div>
-
-              <div>
-                <label className={labelClass}>
-                  {t('custom_ads.country', { defaultValue: 'Country' })} *
-                </label>
-                <select
-                  value={countryCode}
-                  onChange={(e) => setCountryCode(e.target.value)}
-                  className={inputClass}
-                >
-                  <option value="">
-                    {t('custom_ads.choose_country', { defaultValue: 'Choose a country' })}
-                  </option>
-                  {countries.map(([code, countryName]) => (
-                    <option key={code} value={code}>
-                      {countryName}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div>
@@ -425,12 +362,17 @@ export default function SubmitCustomAdPage() {
                 </p>
                 <div
                   role="button"
-                  tabIndex={0}
-                  onClick={() => fileInputRef.current?.click()}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click()
+                  tabIndex={formDisabled ? -1 : 0}
+                  onClick={() => {
+                    if (!formDisabled) fileInputRef.current?.click()
                   }}
-                  className="flex h-40 w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/30 bg-mist/40 text-xs font-medium text-ink-soft transition hover:border-primary hover:bg-primary/5"
+                  onKeyDown={(e) => {
+                    if (!formDisabled && (e.key === 'Enter' || e.key === ' '))
+                      fileInputRef.current?.click()
+                  }}
+                  className={`flex h-40 w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/30 bg-mist/40 text-xs font-medium text-ink-soft transition hover:border-primary hover:bg-primary/5 ${
+                    formDisabled ? 'cursor-not-allowed opacity-50 hover:border-primary/30 hover:bg-mist/40' : ''
+                  }`}
                 >
                   {imagePreview ? (
                     <>
@@ -458,7 +400,7 @@ export default function SubmitCustomAdPage() {
                   className="hidden"
                   onChange={(e) => pickImage(e.target.files?.[0])}
                 />
-                {imagePreview && (
+                {imagePreview && !formDisabled && (
                   <button
                     type="button"
                     onClick={() => {
@@ -474,7 +416,7 @@ export default function SubmitCustomAdPage() {
                 )}
               </div>
 
-              <div className="mt-4 space-y-2">
+              <div className={`mt-4 space-y-2 ${formDisabled ? 'pointer-events-none opacity-50' : ''}`}>
                 <Link
                   to="/ad-terms"
                   className="text-xs font-semibold text-primary underline underline-offset-2"

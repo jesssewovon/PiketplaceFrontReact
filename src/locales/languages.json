@@ -15,5 +15,6 @@
     {"name": "Nederlands", "code": "nl", "country_code": "nl", "active": true, "order": 14},
     {"name": "हिन्दी", "code": "hi", "country_code": "in", "active": true, "order": 15},
     {"name": "Русский", "code": "ru", "country_code": "ru", "active": true, "order": 16},
-    {"name": "Bahasa Melayu", "code": "ms", "country_code": "my", "active": true, "order": 17}
+    {"name": "Bahasa Melayu", "code": "ms", "country_code": "my", "active": true, "order": 17},
+    {"name": "ไทย", "code": "th", "country_code": "th", "active": true, "order": 18}
 ]
