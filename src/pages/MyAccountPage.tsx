@@ -166,7 +166,7 @@ const telegramCountries = [
 function ActionGrid({ items, onLanguages }: { items: AccountLink[]; onLanguages: () => void }) {
   const { t } = useTranslation()
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-4 gap-1">
       {items.map(({ to, labelKey, labelFallback, icon: Icon, onClick, blink }) => {
         const content = (
           <>
@@ -178,7 +178,7 @@ function ActionGrid({ items, onLanguages }: { items: AccountLink[]; onLanguages:
             </span>
           </>
         )
-        const className = `flex w-full flex-col items-center gap-2 rounded-2xl bg-white p-3.5${blink ? ' animate-blink' : ''}`
+        const className = `flex w-full flex-col items-center gap-2 rounded-2xl bg-white p-1.5${blink ? ' animate-blink' : ''}`
         return to ? (
           <Link key={labelKey} to={to} className={className}>
             {content}
