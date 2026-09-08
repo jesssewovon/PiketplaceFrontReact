@@ -9,6 +9,7 @@ import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
 import { periodsStore } from '../lib/customAdsStore'
+import { getStoredCountryCode, getCountryCode } from '../lib/geo'
 
 const inputClass =
   'w-full rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-slate-400 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20'
@@ -29,6 +30,7 @@ export default function SubmitCustomAdPage() {
   const [loadingAd, setLoadingAd] = useState(editId != null)
   const [periodId, setPeriodId] = useState('')
   const [name, setName] = useState('')
+  const [countryCode, setCountryCode] = useState(() => getStoredCountryCode() ?? getCountryCode())
 
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -68,6 +70,7 @@ export default function SubmitCustomAdPage() {
           setIsRejected(ad.status === 'rejected')
           setPeriodId(ad.period_id != null ? String(ad.period_id) : '')
           setName(ad.name ?? '')
+          if (ad.country_code) setCountryCode(ad.country_code)
           setImagePreview(ad.image ?? null)
         })
         .catch(() => {
@@ -165,6 +168,7 @@ export default function SubmitCustomAdPage() {
       const res = await submitCustomAd(token ?? undefined, {
         period_id,
         name: name.trim(),
+        country_code: countryCode,
         image: imageFile,
       })
       if (res.status === true) {
@@ -210,6 +214,7 @@ export default function SubmitCustomAdPage() {
       const res = await updateCustomAd(token ?? undefined, editId, {
         period_id,
         name: name.trim(),
+        country_code: countryCode,
         image: imageFile ?? undefined,
       })
       if (res.status === true) {
