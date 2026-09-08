@@ -861,7 +861,7 @@ export default function CartBuyNowPage() {
 
                   {!directPaidShipping && !directFreeShipping && !noShipping && (
                     <>
-                      {(paidZoneAnswer === 'no' && inAPaidzoneCity) ||
+                      {(freeZoneAnswer === 'no' && inAPaidzoneCity) ||
                       (inAPaidzoneCity && !inAFreezoneCity) ? (
                         <div className="mt-2">
                           <h4 className="text-xs font-semibold text-ink">
@@ -896,7 +896,7 @@ export default function CartBuyNowPage() {
                           </div>
                           {paidZoneAnswer === 'yes' && (
                             <div className="mt-2 rounded-xl bg-[#f0f0f0] p-2.5 text-left">
-                              <h3 className="text-[13px] font-semibold text-primary">
+                              <h3 className="text-[11px] font-semibold text-primary">
                                 {t('choose_shipping_zone', {
                                   defaultValue:
                                     'Click below to choose your matched shipping zone',
@@ -911,10 +911,11 @@ export default function CartBuyNowPage() {
                                       onClick={() => handleZoneSelect(zone)}
                                       className="mb-1 cursor-pointer rounded-md bg-slate-200 p-1.5 text-xs leading-[18px] text-black"
                                     >
-                                      {formatAmount(zone.fee_amount, product.currency)}
+                                      <span className="mr-2">{zone.zone}</span>&rarr;
+                                      <span className="ml-2">{formatAmount(zone.fee_amount, product.currency)}</span>
                                       {paidShippingSelected &&
                                         zone.zone === paidShippingSelected.zone && (
-                                          <span className="ml-1 text-green-600">✔</span>
+                                          <span className="ml-1 text-green-600 text-lg">✔</span>
                                         )}
                                     </li>
                                   ))}

@@ -123,10 +123,10 @@ function OrderCard({
             </p>
           ) : line.purchaseData?.shipping_fee ? (
             <p className="mt-1 text-[11px] text-ink-soft">
-              {t('shipping_cost', {
-                defaultValue: 'Shipping cost : {amount}',
-                amount: formatAmount(line.purchaseData.shipping_fee),
-              })}
+              {<div dangerouslySetInnerHTML={{ __html: t('shipping_cost', {
+                defaultValue: 'shipping fee : {amount}',
+                amount: line.purchaseData?.shipping_fee,
+              }) }} />}
             </p>
           ) : line.noshipping ? (
             <p className="mt-1 text-[11px] text-ink-soft">

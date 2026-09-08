@@ -96,7 +96,10 @@ function AdminOrderCard({ line }: { line: LineOrder }) {
             <p className="mt-1 text-[11px] text-ink-soft">{t('free_shipping.text', { defaultValue: 'Free shipping' })}</p>
           ) : fee > 0 ? (
             <p className="mt-1 text-[11px] text-ink-soft">
-              {t('shipping_cost', { defaultValue: 'Shipping cost : {amount}', amount: formatAmount(fee) })}
+              {<div dangerouslySetInnerHTML={{ __html: t('shipping_cost', {
+                defaultValue: 'shipping fee : {amount}',
+                amount: line.purchaseData?.shipping_fee,
+              }) }} />}
             </p>
           ) : line.noshipping ? (
             <p className="mt-1 text-[11px] text-ink-soft">{t('address.no_shipping', { defaultValue: 'No shipping' })}</p>
