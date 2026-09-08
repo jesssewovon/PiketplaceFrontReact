@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "Вы хотите добавить без {param} ?",
     "shipping_zones_and_fees": "Зоны и стоимость доставки",
     "free_shipping_zones": "Зоны бесплатной доставки",
+
+    "shipping_zone_everywhere_in_city": "По всему городу",
+
     "select_at_least_country": "Выберите хотя бы одну страну",
     "zone_exists_or_incompatible": "Зона существует или несовместима",
     "no_defined_shipping_cost": "Стоимость доставки не указана",

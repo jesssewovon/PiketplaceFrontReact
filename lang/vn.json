@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "Bạn có muốn thêm mà không có {param} không?",
     "shipping_zones_and_fees": "Khu vực vận chuyển & phí",
     "free_shipping_zones": "Khu giao hàng miễn phí",
+
+    "shipping_zone_everywhere_in_city": "Mọi nơi trong thành phố",
+
     "select_at_least_country": "Chọn ít nhất một quốc gia",
     "zone_exists_or_incompatible": "Khu vực tồn tại hoặc không tương thích",
     "no_defined_shipping_cost": "Không có phí vận chuyển xác định",

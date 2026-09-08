@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "{param} なしで追加しますか？",
     "shipping_zones_and_fees": "配送ゾーンと料金",
     "free_shipping_zones": "無料配送ゾーン",
+
+    "shipping_zone_everywhere_in_city": "市内全域",
+
     "select_at_least_country": "少なくとも1つの国を選択してください",
     "zone_exists_or_incompatible": "ゾーンが存在するか、互換性がありません",
     "no_defined_shipping_cost": "配送料が設定されていません",

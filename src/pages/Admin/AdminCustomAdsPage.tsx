@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { CustomAd, CancellationReason } from '../../types'
 import { approveCustomAd, fetchAdminCustomAds, rejectCustomAd } from '../../lib/api'
-import { formatDate, getPeriodLabel, normalizeCancellationReasons } from '../../lib/format'
+import { formatDate, formatDateTime, getPeriodLabel, normalizeCancellationReasons } from '../../lib/format'
 import { useAppSelector } from '../../store/hooks'
 import LoginPanel from '../../components/LoginPanel'
 import CancellationReasonsModal from '../../components/CancellationReasonsModal'
@@ -280,7 +280,7 @@ export default function AdminCustomAdsPage() {
                     {t('custom_ads.country', { defaultValue: 'Country' })}: {ad.country_code ?? '-'}
                   </p>
                   {ad.created_at && (
-                    <p className="mt-0.5 text-[10px] text-ink-soft">{formatDate(ad.created_at)}</p>
+                    <p className="mt-0.5 text-[10px] text-ink-soft">{formatDateTime(ad.created_at)}</p>
                   )}
                   {ad.status === 'pending' && ad.paid_at !== null && (
                     <div className="mt-2 flex gap-1">

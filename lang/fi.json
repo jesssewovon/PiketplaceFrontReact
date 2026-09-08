@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "Gusto mo bang magdagdag nang walang {param} ?",
     "shipping_zones_and_fees": "Mga zone at bayarin sa pagpapadala",
     "free_shipping_zones": "Mga zone ng libreng pagpapadala",
+
+    "shipping_zone_everywhere_in_city": "Kahit saan sa lungsod",
+
     "select_at_least_country": "Pumili ng hindi bababa sa isang bansa",
     "zone_exists_or_incompatible": "Ang zone ay umiiral o hindi tugma",
     "no_defined_shipping_cost": "Walang tinukoy na bayad sa pagpapadala",

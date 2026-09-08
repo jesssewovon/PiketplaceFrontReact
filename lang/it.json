@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "Vuoi aggiungere senza {param} ?",
     "shipping_zones_and_fees": "Zone e costi di spedizione",
     "free_shipping_zones": "Zone di spedizione gratuita",
+
+    "shipping_zone_everywhere_in_city": "Ovunque in città",
+
     "select_at_least_country": "Seleziona almeno un paese",
     "zone_exists_or_incompatible": "La zona esiste o è incompatibile",
     "no_defined_shipping_cost": "Nessun costo di spedizione definito",

@@ -5,7 +5,7 @@ import { Loader2, MapPin, Truck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { LineOrder } from '../../types'
 import { fetchPartnerOrders } from '../../lib/api'
-import { formatAmount, formatDate } from '../../lib/format'
+import { formatAmount, formatDate, formatDateTime } from '../../lib/format'
 import { useAppSelector } from '../../store/hooks'
 import LoginPanel from '../../components/LoginPanel'
 
@@ -52,7 +52,7 @@ function OrderCard({ line }: { line: LineOrder }) {
             ? t('shipped', { defaultValue: 'Shipped' })
             : t('ordered', { defaultValue: 'Ordered' })}
         </span>
-        {date && <em className="text-[11px] text-ink-soft">{formatDate(date)}</em>}
+        {date && <em className="text-[11px] text-ink-soft">{formatDateTime(date)}</em>}
       </div>
 
       <div className="my-2 h-px bg-black/5" />
@@ -115,7 +115,8 @@ function OrderCard({ line }: { line: LineOrder }) {
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium leading-snug text-ink">{product?.libelle ?? ''}</p>
           <p className="mt-1 text-xs font-semibold text-primary">
-            {formatAmount(price, currency)}
+            {/* {formatAmount(price, currency)} */}
+            {<span dangerouslySetInnerHTML={{ __html: line.purchaseData?.item_total?? '' }} />}
             <span className="ml-2 text-[11px] font-medium text-ink-soft">
               {quantity}x {t('item', { defaultValue: 'Item' })}
             </span>

@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "Apakah Anda ingin menambahkan tanpa {param} ?",
     "shipping_zones_and_fees": "Zona & biaya pengiriman",
     "free_shipping_zones": "Zona pengiriman gratis",
+
+    "shipping_zone_everywhere_in_city": "Di mana saja di kota",
+
     "select_at_least_country": "Pilih setidaknya satu negara",
     "zone_exists_or_incompatible": "Zona ada atau tidak kompatibel",
     "no_defined_shipping_cost": "Tidak ada biaya pengiriman yang ditentukan",

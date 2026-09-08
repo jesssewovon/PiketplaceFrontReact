@@ -1293,11 +1293,16 @@ export default function ProductPage() {
             </h2>
             {(product.shipping_zone ?? []).map((zone, index) => (
               <div key={index} className="border-b border-black/5 py-2 last:border-0">
-                <strong className="block text-[10px] font-semibold text-ink">
+                <strong className="block text-[12px] font-semibold text-ink">
                   {zone.country_name}, {zone.city ?? t('everywhere_in_country', { defaultValue: 'Everywhere in country' })}
                 </strong>
-                <p className="text-xs text-ink">
-                  {zone.city ? `${zone.zone ?? zone.city ?? zone.country_name}\n` : ''}
+                <p className="text-[11px] text-ink">
+                  {zone.city && (
+                    <strong>
+                      <em>{zone.zone ?? t('shipping_zone_everywhere_in_city', { defaultValue: 'Everywhere in city' })} <br/></em>
+                    </strong>
+                    )
+                  }
                   {t('shipping_cost', {
                     defaultValue: 'Shipping cost : {amount}',
                     amount: formatAmount(zone.fee_amount, product.currency),
@@ -1315,10 +1320,10 @@ export default function ProductPage() {
             </h2>
             {(product.free_shipping_zone ?? []).map((zone, index) => (
               <div key={index} className="border-b border-black/5 py-2 last:border-0">
-                <strong className="block text-[10px] font-semibold text-ink">
+                <strong className="block text-[12px] font-semibold text-ink">
                   {zone.country_name}, {zone.city ?? t('everywhere_in_country', { defaultValue: 'Everywhere in country' })}
                 </strong>
-                <p className="text-xs text-ink">
+                <p className="text-[11px] text-ink">
                   {zone.city
                     ? (zone.zone ?? zone.city ?? zone.country_name)
                     : t('everywhere_in_country', { defaultValue: 'Everywhere in country' })}

@@ -373,6 +373,9 @@
     "do_you_want_to_add_without": "Adakah anda mahu menambah tanpa {param}?",
     "shipping_zones_and_fees": "Zon penghantaran & yuran",
     "free_shipping_zones": "Zon penghantaran percuma",
+
+    "shipping_zone_everywhere_in_city": "Di mana-mana di bandar",
+
     "select_at_least_country": "Pilih sekurang-kurangnya satu negara",
     "zone_exists_or_incompatible": "Zon wujud atau tidak serasi",
     "no_defined_shipping_cost": "Tiada yuran penghantaran yang ditetapkan",

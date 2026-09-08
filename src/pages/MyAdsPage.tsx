@@ -12,7 +12,7 @@ import {
   postPiPayment,
 } from '../lib/api'
 import { createPiPayment, initPi, waitForPi } from '../lib/pi'
-import { formatDate, getPeriodLabel, normalizeCancellationReasons } from '../lib/format'
+import { formatDate, formatDateTime, getPeriodLabel, normalizeCancellationReasons } from '../lib/format'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
@@ -383,7 +383,7 @@ export default function MyAdsPage() {
                       )}
                       {ad.created_at && (
                         <p className="mt-0.5 text-[10px] text-ink-soft">
-                          {formatDate(ad.created_at)}
+                          {formatDateTime(ad.created_at)}
                         </p>
                       )}
                       {showActions && (
@@ -474,7 +474,7 @@ export default function MyAdsPage() {
                         {t('custom_ads.validated_hint', {
                           defaultValue: 'Your ad is running until',
                         })}{' '}
-                        {formatDate(ad.expires_at)}
+                        {formatDateTime(ad.expires_at)}
                       </p>
                     </div>
                   )}

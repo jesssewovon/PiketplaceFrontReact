@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "你想在没有 {param} 的情况下添加吗？",
     "shipping_zones_and_fees": "运输区域和费用",
     "free_shipping_zones": "免运费区",
+
+    "shipping_zone_everywhere_in_city": "城市内任意地点",
+
     "select_at_least_country": "至少选择一个国家",
     "zone_exists_or_incompatible": "区域存在或不兼容",
     "no_defined_shipping_cost": "没有明确的运费",

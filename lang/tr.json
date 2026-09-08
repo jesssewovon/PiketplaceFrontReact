@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "{param} olmadan eklemek istiyor musunuz?",
     "shipping_zones_and_fees": "Gönderim bölgeleri ve ücretleri",
     "free_shipping_zones": "Ücretsiz gönderim bölgeleri",
+
+    "shipping_zone_everywhere_in_city": "Şehrin her yeri",
+
     "select_at_least_country": "En az bir ülke seçin",
     "zone_exists_or_incompatible": "Bölge mevcut veya uyumsuz",
     "no_defined_shipping_cost": "Tanımlanmış gönderim ücreti yok",

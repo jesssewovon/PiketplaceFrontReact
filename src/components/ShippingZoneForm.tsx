@@ -8,6 +8,7 @@ export interface ShippingZone {
   country_code: string
   country_name: string
   city: string
+  zone?: string
   everywhere?: boolean
   fee?: string
 }
@@ -39,6 +40,8 @@ export default function ShippingZoneForm({
   const { t } = useTranslation()
   const [country, setCountry] = useState('')
   const [city, setCity] = useState('')
+  const [zone, setZone] = useState('')
+  const [zoneEverywhere, setZoneEverywhere] = useState(false)
   const [everywhere, setEverywhere] = useState(false)
   const [fee, setFee] = useState('')
   const [cities, setCities] = useState<string[]>([])
@@ -101,11 +104,14 @@ export default function ShippingZoneForm({
       country_code: country,
       country_name: selected[1],
       city: everywhere ? '' : city.trim(),
+      zone: zoneEverywhere ? undefined : zone.trim() || undefined,
       everywhere,
       ...(feeEnabled ? { fee } : {}),
     })
     setCountry('')
     setCity('')
+    setZone('')
+    setZoneEverywhere(false)
     setEverywhere(false)
     setFee('')
   }
@@ -158,45 +164,7 @@ export default function ShippingZoneForm({
           </div>
 
           <div>
-            <label className={labelClass}>
-              {t('address.city', { defaultValue: 'City' })}
-            </label>
-            {!everywhere &&
-              (citiesLoading ? (
-                <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-2.5 text-xs font-semibold text-ink-soft">
-                  <Loader2 size={14} className="animate-spin text-primary" />
-                  {t('loading', { defaultValue: 'Loading cities…' })}
-                </div>
-              ) : cities.length > 0 ? (
-                <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className={inputClass}
-                >
-                  <option value="" disabled>
-                    {t('select_city', { defaultValue: 'Select a city…' })}
-                  </option>
-                  {cities.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  maxLength={120}
-                  placeholder={t('select_city', { defaultValue: 'Type a city' })}
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className={inputClass}
-                />
-              ))}
-            {!everywhere && citiesError && showCityInput && (
-              <p className="mt-1.5 text-[10px] text-slate-400">{citiesError}</p>
-            )}
-
-            <label className="mt-2 flex cursor-pointer items-center gap-2">
+            <label className="mb-2 flex cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 checked={everywhere}
@@ -212,7 +180,83 @@ export default function ShippingZoneForm({
                 })}
               </span>
             </label>
+            {!everywhere && (
+              <>
+                <label className={labelClass}>
+                  {t('address.city', { defaultValue: 'City' })}
+                </label>
+                {citiesLoading ? (
+                  <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-2.5 text-xs font-semibold text-ink-soft">
+                    <Loader2 size={14} className="animate-spin text-primary" />
+                    {t('loading', { defaultValue: 'Loading cities…' })}
+                  </div>
+                ) : cities.length > 0 ? (
+                  <select
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className={inputClass}
+                  >
+                    <option value="" disabled>
+                      {t('select_city', { defaultValue: 'Select a city…' })}
+                    </option>
+                    {cities.map((item) => (
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    maxLength={120}
+                    placeholder={t('select_city', { defaultValue: 'Type a city' })}
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className={inputClass}
+                  />
+                )}
+                {citiesError && showCityInput && (
+                  <p className="mt-1.5 text-[10px] text-slate-400">{citiesError}</p>
+                )}
+              </>
+            )}
           </div>
+
+          {!everywhere && (
+            <div>
+              <label className="mb-2 flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={zoneEverywhere}
+                  onChange={(e) => {
+                    setZoneEverywhere(e.target.checked)
+                    if (e.target.checked) setZone('')
+                  }}
+                  className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                />
+                <span className="text-xs font-semibold text-ink">
+                  {t('shipping_zone_everywhere_in_city', {
+                    defaultValue: 'Everywhere in city',
+                  })}
+                </span>
+              </label>
+              {!zoneEverywhere && (
+                <>
+                  <label className={labelClass}>
+                    {t('shipping_zone_name', { defaultValue: 'Zone' })}
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={120}
+                    placeholder={t('shipping_zone_placeholder', { defaultValue: 'e.g. Downtown' })}
+                    value={zone}
+                    onChange={(e) => setZone(e.target.value)}
+                    className={inputClass}
+                  />
+                </>
+              )}
+            </div>
+          )}
 
           {feeEnabled && (
             <div>

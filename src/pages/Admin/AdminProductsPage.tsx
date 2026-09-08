@@ -5,7 +5,7 @@ import { Loader2, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Product, CancellationReason } from '../../types'
 import { fetchAdminProducts, validateProduct } from '../../lib/api'
-import { formatDate, normalizeCancellationReasons } from '../../lib/format'
+import { formatDate, formatDateTime, normalizeCancellationReasons } from '../../lib/format'
 import { useAppSelector } from '../../store/hooks'
 import LoginPanel from '../../components/LoginPanel'
 import CancellationReasonsModal from '../../components/CancellationReasonsModal'
@@ -58,7 +58,7 @@ function AdminProductCard({
         )}
         {product.created_at && (
           <p className="mt-0.5 text-[10px] text-ink-soft">
-            {formatDate(product.created_at)}
+            {formatDateTime(product.created_at)}
           </p>
         )}
         {approbation_active && product.status !== 'validated' && product.status !== 'rejected' && (

@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "{param} 없이 추가하시겠습니까?",
     "shipping_zones_and_fees": "배송 지역 및 수수료",
     "free_shipping_zones": "무료 배송 지역",
+
+    "shipping_zone_everywhere_in_city": "도시 어디든",
+
     "select_at_least_country": "국가를 하나 이상 선택하세요.",
     "zone_exists_or_incompatible": "영역이 존재하거나 호환되지 않습니다.",
     "no_defined_shipping_cost": "정의된 배송비 없음",

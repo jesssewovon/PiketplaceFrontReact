@@ -373,6 +373,9 @@
     "do_you_want_to_add_without": "Wil je toevoegen zonder {param}?",
     "shipping_zones_and_fees": "Verzendzones en -kosten",
     "free_shipping_zones": "Gratis verzendzones",
+
+    "shipping_zone_everywhere_in_city": "Overal in de stad",
+
     "select_at_least_country": "Selecteer minimaal een land",
     "zone_exists_or_incompatible": "Zone bestaat of is incompatibel",
     "no_defined_shipping_cost": "Geen gedefinieerde verzendkosten",

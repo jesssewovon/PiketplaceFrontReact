@@ -5,7 +5,7 @@ import { Loader2, Search, Info } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { CancellationReason, WithdrawalRequest } from '../../types'
 import { fetchAdminWithdrawals, confirmWithdrawal, cancelWithdrawalConfirmation, rejectWithdrawal } from '../../lib/api'
-import { formatDate, normalizeCancellationReasons } from '../../lib/format'
+import { formatDate, formatDateTime, normalizeCancellationReasons } from '../../lib/format'
 import { useAppSelector } from '../../store/hooks'
 import LoginPanel from '../../components/LoginPanel'
 import CancellationReasonsModal from '../../components/CancellationReasonsModal'
@@ -243,7 +243,7 @@ export default function AdminWithdrawalsPage() {
               <div key={withdraw.id} className="mb-3 rounded-2xl border border-black/5 bg-white p-3 shadow-soft">
                 <div className="flex items-start justify-between">
                   <span className="text-[11px] font-bold text-ink">
-                    {formatDate(withdraw.created_at)}
+                    {formatDateTime(withdraw.created_at)}
                   </span>
                   <span className="text-xs font-semibold text-primary">
                     {withdraw.real_amount} {currency}
@@ -258,7 +258,7 @@ export default function AdminWithdrawalsPage() {
 
                 {withdraw.confirmed_at ? (
                   <p className="mt-1 text-[10px] text-green-600">
-                    {t('confirmed_at', { defaultValue: 'Confirmed', date: formatDate(withdraw.confirmed_at) })}
+                    {t('confirmed_at', { defaultValue: 'Confirmed', date: formatDateTime(withdraw.confirmed_at) })}
                   </p>
                 ) : (
                   <p className="mt-1 text-[10px] text-yellow-600">

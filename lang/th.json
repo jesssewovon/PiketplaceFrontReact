@@ -374,6 +374,8 @@
     "do_you_want_to_add_without": "คุณต้องการเพิ่มโดยไม่มี {param} หรือไม่ ?",
     "shipping_zones_and_fees": "โซนจัดส่งและค่าธรรมเนียม",
     "free_shipping_zones": "โซนจัดส่งฟรี",
+    "shipping_zone_everywhere_in_city": "ทุกที่ในเมือง",
+
     "select_at_least_country": "เลือกอย่างน้อยหนึ่งประเทศ",
     "zone_exists_or_incompatible": "โซนมีอยู่แล้วหรือไม่เข้ากัน",
     "no_defined_shipping_cost": "ไม่มีการกำหนดค่าจัดส่ง",

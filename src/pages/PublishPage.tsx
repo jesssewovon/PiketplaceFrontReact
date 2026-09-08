@@ -223,6 +223,7 @@ export default function PublishPage() {
       country_code: String(zone.country_code ?? ''),
       country_name: String(zone.country_name ?? ''),
       city,
+      zone: String(zone.zone ?? '') || undefined,
       everywhere: !city,
       fee:
         zone.fee != null || zone.fee_amount != null
@@ -818,6 +819,9 @@ export default function PublishPage() {
                               ) : (
                                 zone.city && <span className="text-ink-soft"> · {zone.city}</span>
                               )}
+                              {zone.zone && !zone.everywhere && (
+                                <em className="mt-0.5 block text-sm text-ink-soft">{zone.zone}</em>
+                              )}
                             </div>
                             <div className="flex items-center gap-2">
                               {zone.fee && Number(zone.fee) > 0 ? (
@@ -900,6 +904,9 @@ export default function PublishPage() {
                                 </span>
                               ) : (
                                 zone.city && <span className="text-ink-soft"> · {zone.city}</span>
+                              )}
+                              {zone.zone && !zone.everywhere && (
+                                <em className="mt-0.5 block text-sm font-semibold text-ink-soft">{zone.zone}</em>
                               )}
                             </div>
                             <div className="flex items-center gap-2">

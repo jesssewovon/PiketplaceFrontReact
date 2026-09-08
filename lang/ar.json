@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "هل تريد الإضافة بدون {param} ؟",
     "shipping_zones_and_fees": "مناطق الشحن",
     "free_shipping_zones": "مناطق الشحن المجاني",
+
+    "shipping_zone_everywhere_in_city": "في كل مكان في المدينة",
+
     "select_at_least_country": "اختر دولة على الأقل",
     "zone_exists_or_incompatible": "المنطقة موجودة أو غير متوافقة",
     "no_defined_shipping_cost": "لا توجد رسوم شحن محددة",

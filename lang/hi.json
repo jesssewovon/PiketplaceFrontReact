@@ -374,6 +374,9 @@
     "do_you_want_to_add_without": "क्या आप {param} के बिना जोड़ना चाहते हैं?",
     "shipping_zones_and_fees": "शिपिंग ज़ोन और शुल्क",
     "free_shipping_zones": "मुफ़्त शिपिंग ज़ोन",
+
+    "shipping_zone_everywhere_in_city": "शहर में हर जगह",
+
     "select_at_least_country": "कम से कम एक देश चुनें",
     "zone_exists_or_incompatible": "ज़ोन मौजूद है या असंगत है",
     "no_defined_shipping_cost": "कोई परिभाषित शिपिंग शुल्क नहीं",
