@@ -104,7 +104,7 @@ const telegramCountries = [
   {
     code: 'CN',
     country: 'CN',
-    handle: 'piketplace_china',
+    handle: '+BkXsgnRzGJ01YmI0',
   },
   {
     code: 'VN',
