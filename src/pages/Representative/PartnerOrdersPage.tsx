@@ -5,7 +5,7 @@ import { Loader2, MapPin, Truck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { LineOrder } from '../../types'
 import { fetchPartnerOrders } from '../../lib/api'
-import { formatAmount, formatDateTime } from '../../lib/format'
+import { formatDateTime } from '../../lib/format'
 import { useAppSelector } from '../../store/hooks'
 import LoginPanel from '../../components/LoginPanel'
 
