@@ -265,13 +265,13 @@ export default function MyAccountPage() {
   return (
     <div className="relative animate-fade-in">
       <section className="px-4 py-6">
-        <div className="mb-5 grid grid-cols-3 gap-3">
+        <div className="mb-3 grid grid-cols-3 gap-2">
           {isAdmin && (
             <Link
               to="/administration"
               className="flex items-center justify-center rounded-2xl border border-black/5 bg-white p-[2px] shadow-soft transition-all duration-300 hover:shadow-hover"
             >
-              <span className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-white px-4 py-3 text-sm font-bold">
+              <span className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-white px-2 py-2 text-sm font-bold">
                 <Settings size={18} strokeWidth={2.2} className="text-primary" />
                 {/* <span className="text-ink">
                   {t('admin.administration', { defaultValue: 'Administration' })}
@@ -287,7 +287,7 @@ export default function MyAccountPage() {
               rel="noopener noreferrer"
               className="flex items-center justify-center rounded-2xl bg-gradient-to-r from-primary to-primary-deep p-[2px] shadow-soft transition-all duration-300 hover:shadow-hover"
             >
-              <span className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-white px-4 py-3 text-sm font-bold">
+              <span className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-white px-2 py-2 text-sm font-bold">
                 PIKET <Wallet size={18} strokeWidth={2.2} className="text-primary" />
                 {/* <span className="bg-gradient-to-r from-primary to-primary-deep bg-clip-text text-transparent">
                   {t('go to Piket wallet', { defaultValue: 'Open Pi Wallet' })}
@@ -301,7 +301,7 @@ export default function MyAccountPage() {
             onClick={() => setSocialOpen(true)}
             className="flex items-center justify-center rounded-2xl border border-black/5 bg-white p-[2px] shadow-soft transition-all duration-300 hover:shadow-hover"
           >
-            <span className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-white px-4 py-3 text-sm font-bold">
+            <span className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-white px-2 py-2 text-sm font-bold">
               <Globe size={18} strokeWidth={2.2} className="text-primary" />
             </span>
           </button>
