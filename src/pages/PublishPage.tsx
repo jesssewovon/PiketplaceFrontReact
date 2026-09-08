@@ -866,7 +866,7 @@ export default function PublishPage() {
                   className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-mist/40 px-3.5 py-3"
                 >
                   <span className="text-xs font-semibold text-ink-soft">
-                    {t('free_shipping', { defaultValue: 'Free shipping' })}
+                    {t('free_shipping.text', { defaultValue: 'Free shipping' })}
                     <span className="block text-[10px] font-normal text-slate-400">
                       {t('publish_free_shipping_hint', {
                         defaultValue: 'Offer free delivery to the buyer',

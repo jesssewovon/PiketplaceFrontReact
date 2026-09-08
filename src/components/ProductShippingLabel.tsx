@@ -19,7 +19,7 @@ export default function ProductShippingLabel({ product, className = '' }: Produc
     ? t('paid_free_shipping', { defaultValue: 'Paid & free shipping' })
     : hasPaid
       ? t('paid_shipping', { defaultValue: 'Paid shipping' })
-      : t('free_shipping', { defaultValue: 'Free shipping' })
+      : t('free_shipping.text', { defaultValue: 'Free shipping' })
 
   return (
     <p className={`mt-1 text-[11px] font-medium text-gray-500 ${className}`}>

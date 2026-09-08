@@ -802,7 +802,7 @@ export default function CartBuyNowPage() {
                     )}
                     {directFreeShipping && (
                       <span className="text-xs font-medium text-ink">
-                        {t('free_shipping', { defaultValue: 'Free shipping' })}
+                        {t('free_shipping.text', { defaultValue: 'Free shipping' })}
                       </span>
                     )}
                   </div>
