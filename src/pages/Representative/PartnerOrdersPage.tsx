@@ -36,6 +36,7 @@ function OrderCard({ line }: { line: LineOrder }) {
   const seller = line.product?.user
   const date = line.shipped_at ? line.shipped_at : line.order?.ordered_at
   const quantity = line.quantity ?? 0
+  const purchaseTotal = line.purchaseData?.total ?? (line.total ?? 0) + (line.fee ?? 0)
   const currency = line.currency_conversion ?? ''
   const total = line.shipped_at
     ? (line.price ?? 0) * quantity
@@ -136,11 +137,19 @@ function OrderCard({ line }: { line: LineOrder }) {
               {t('address.no_shipping', { defaultValue: 'No shipping' })}
             </p>
           ) : null}
+          {line.purchaseData?.handling_fee && (
+            <p className="mt-1 text-[11px] text-ink-soft">
+              {<div dangerouslySetInnerHTML={{ __html: t('handling_fee_percentage', {
+                defaultValue: 'Total : {amount}',
+                amount: line.purchaseData?.handling_fee,
+              }) }} />}
+            </p>
+          )}
           <p className="mt-1 text-right text-xs font-semibold text-primary">
-            {t('total_display', {
+            {<div dangerouslySetInnerHTML={{ __html: t('total_display', {
               defaultValue: 'Total : {amount}',
-              amount: formatAmount(total, currency),
-            })}
+              amount: purchaseTotal,
+            }) }} />}
           </p>
         </div>
       </div>

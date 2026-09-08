@@ -33,7 +33,7 @@ import {
   upgradeBoostProduct,
   validateProduct,
 } from '../lib/api'
-import { formatAmount, formatDate } from '../lib/format'
+import { formatAmount, formatDate, formatDateTime } from '../lib/format'
 import { flagEmoji } from '../lib/geo'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { createPiPayment, initPi, waitForPi } from '../lib/pi'
@@ -1360,13 +1360,13 @@ export default function ProductPage() {
             <div className="mt-3 space-y-4">
               {product.comments.map((comment, index) =>
                 comment && comment.user ? (
-                  <div key={index} className="leading-[14px]">
-                    <h6 className="inline text-sm font-semibold text-ink">@{comment.user.username}</h6>
-                    &nbsp;
-                    <span className="text-[10px] opacity-40">
-                      {formatDate(comment.created_at)}
+                  <div key={index} className="leading-[12px]">
+                    <h6 className="inline text-sm font-semibold text-ink mr-2">@{comment.user.username}</h6>
+                    &bull;
+                    <span className="text-[10px] opacity-40 ml-1">
+                      {formatDateTime(comment.created_at)}
                     </span>
-                    <p className="mt-3 text-xs text-ink">{comment.comment}</p>
+                    <p className="mt-0 text-xs text-ink">{comment.comment}</p>
                   </div>
                 ) : null,
               )}
