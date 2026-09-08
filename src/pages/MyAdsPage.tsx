@@ -12,7 +12,7 @@ import {
   postPiPayment,
 } from '../lib/api'
 import { createPiPayment, initPi, waitForPi } from '../lib/pi'
-import { formatDate, formatDateTime, getPeriodLabel, normalizeCancellationReasons } from '../lib/format'
+import { formatDateTime, getPeriodLabel, normalizeCancellationReasons } from '../lib/format'
 import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'

@@ -5,7 +5,7 @@ import { Loader2, MapPin, Truck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { LineOrder } from '../../types'
 import { fetchPartnerOrders } from '../../lib/api'
-import { formatAmount, formatDate, formatDateTime } from '../../lib/format'
+import { formatAmount, formatDateTime } from '../../lib/format'
 import { useAppSelector } from '../../store/hooks'
 import LoginPanel from '../../components/LoginPanel'
 
@@ -36,7 +36,6 @@ function OrderCard({ line }: { line: LineOrder }) {
   const seller = line.product?.user
   const date = line.shipped_at ? line.shipped_at : line.order?.ordered_at
   const quantity = line.quantity ?? 0
-  const price = line.price_converted ?? line.price ?? 0
   const currency = line.currency_conversion ?? ''
   const total = line.shipped_at
     ? (line.price ?? 0) * quantity
