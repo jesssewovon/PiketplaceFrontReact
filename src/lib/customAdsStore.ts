@@ -1,4 +1,4 @@
-import type { CustomAd } from '../types'
+import type { CustomAd, CustomAdPeriod } from '../types'
 
 export interface CustomAdsCache {
   ads: CustomAd[]
@@ -13,4 +13,14 @@ export const customAdsCache: CustomAdsCache = {
 export function cacheCustomAds(ads: CustomAd[]) {
   customAdsCache.ads = ads
   customAdsCache.fetchedAt = Date.now()
+}
+
+export interface PeriodsStore {
+  periods: CustomAdPeriod[]
+  loaded: boolean
+}
+
+export const periodsStore: PeriodsStore = {
+  periods: [],
+  loaded: false,
 }

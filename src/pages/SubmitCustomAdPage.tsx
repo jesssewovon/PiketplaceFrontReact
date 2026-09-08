@@ -9,6 +9,7 @@ import { showAlert } from '../lib/alert'
 import { useAppSelector } from '../store/hooks'
 import LoginPanel from '../components/LoginPanel'
 import countriesJson from '../locales/countries.json'
+import { periodsStore } from '../lib/customAdsStore'
 
 type CountryOption = [string, string]
 
@@ -56,8 +57,8 @@ export default function SubmitCustomAdPage() {
   const editId = id ? Number(id) : null
   const countries = useMemo(() => buildCountryOptions(storedCountries), [storedCountries])
 
-  const [periods, setPeriods] = useState<CustomAdPeriod[]>([])
-  const [periodsLoading, setPeriodsLoading] = useState(true)
+  const [periods, setPeriods] = useState<CustomAdPeriod[]>(periodsStore.periods)
+  const [periodsLoading, setPeriodsLoading] = useState(!periodsStore.loaded)
   const [canCreate, setCanCreate] = useState(true)
   const [loadingAd, setLoadingAd] = useState(editId != null)
   const [periodId, setPeriodId] = useState('')
@@ -73,8 +74,14 @@ export default function SubmitCustomAdPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    if (periodsStore.loaded) return
     fetchPeriods()
-      .then((res) => setPeriods(res.periods ?? []))
+      .then((res) => {
+        const list = res.periods ?? []
+        periodsStore.periods = list
+        periodsStore.loaded = true
+        setPeriods(list)
+      })
       .catch(() => setPeriods([]))
       .finally(() => setPeriodsLoading(false))
   }, [])

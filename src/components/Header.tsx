@@ -9,6 +9,7 @@ import { setFilterOpen } from '../store/uiSlice'
 const PAGE_TITLES: Record<string, { key: string; fallback: string }> = {
   '/publish': { key: 'publish', fallback: 'Publish' },
   '/submit-ad': { key: 'custom_ads.submit_title', fallback: 'Submit an ad' },
+  '/my-ads': { key: 'custom_ads.my_ads_title', fallback: 'My ads' },
   '/account': { key: 'side_menu.my_account', fallback: 'My Account' },
   '/account/sales': { key: 'side_menu.my_sales', fallback: 'My Sales' },
   '/account/orders': { key: 'side_menu.my_orders', fallback: 'My Orders' },
