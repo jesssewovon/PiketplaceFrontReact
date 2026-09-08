@@ -95,81 +95,73 @@ const groups: AccountGroup[] = [
 
 const languages = SUPPORTED_LANGUAGES.filter((l) => l.active).sort((a, b) => a.order - b.order)
 
-const telegramCountries_ = languages
-  .filter((l) => l.country_code)
-  .map((l) => ({
-    code: l.code,
-    country: l.country_code,
-    handle: `piketplace_${l.country_code.toLowerCase()}`,
-  }))
-
-  const telegramCountries = [
-    {
-      code: 'en',
-      country: 'US',
-      handle: 'piketplace_international',
-    },
-    {
-      code: 'CN',
-      country: 'CN',
-      handle: 'piketplace_china',
-    },
-    {
-      code: 'VN',
-      country: 'VN',
-      handle: 'piketplace_vietnam',
-    },
-    {
-      code: 'YE',
-      country: 'YE',
-      handle: 'piketplaceyemen',
-    },
-    {
-      code: 'EG',
-      country: 'EG',
-      handle: 'piketplace_egypt',
-    },
-    {
-      code: 'IN',
-      country: 'IN',
-      handle: 'piketplace_India',
-    },
-    {
-      code: 'TH',
-      country: 'TH',
-      handle: 'piketplace_thailand',
-    },
-    {
-      code: 'NG',
-      country: 'NG',
-      handle: 'piketplace_nigeria',
-    },
-    {
-      code: 'BJ',
-      country: 'BJ',
-      handle: 'piketplace_benin',
-    },
-    {
-      code: 'CI',
-      country: 'CI',
-      handle: 'piketplace_cotedivoire',
-    },
-    {
-      code: 'CM',
-      country: 'CM',
-      handle: 'piketplace_cameroun',
-    },
-    {
-      code: 'TG',
-      country: 'TG',
-      handle: 'piketplace_togo',
-    },
-    {
-      code: 'BF',
-      country: 'BF',
-      handle: 'piketplace_BurkinaFaso',
-    }
-  ]
+const telegramCountries = [
+  {
+    code: 'en',
+    country: 'US',
+    handle: 'piketplace_international',
+  },
+  {
+    code: 'CN',
+    country: 'CN',
+    handle: 'piketplace_china',
+  },
+  {
+    code: 'VN',
+    country: 'VN',
+    handle: 'piketplace_vietnam',
+  },
+  {
+    code: 'YE',
+    country: 'YE',
+    handle: 'piketplaceyemen',
+  },
+  {
+    code: 'EG',
+    country: 'EG',
+    handle: 'piketplace_egypt',
+  },
+  {
+    code: 'IN',
+    country: 'IN',
+    handle: 'piketplace_India',
+  },
+  {
+    code: 'TH',
+    country: 'TH',
+    handle: 'piketplace_thailand',
+  },
+  {
+    code: 'NG',
+    country: 'NG',
+    handle: 'piketplace_nigeria',
+  },
+  {
+    code: 'BJ',
+    country: 'BJ',
+    handle: 'piketplace_benin',
+  },
+  {
+    code: 'CI',
+    country: 'CI',
+    handle: 'piketplace_cotedivoire',
+  },
+  {
+    code: 'CM',
+    country: 'CM',
+    handle: 'piketplace_cameroun',
+  },
+  {
+    code: 'TG',
+    country: 'TG',
+    handle: 'piketplace_togo',
+  },
+  {
+    code: 'BF',
+    country: 'BF',
+    handle: 'piketplace_BurkinaFaso',
+  }
+]
 
 function ActionGrid({ items, onLanguages }: { items: AccountLink[]; onLanguages: () => void }) {
   const { t } = useTranslation()
