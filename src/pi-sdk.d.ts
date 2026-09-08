@@ -76,6 +76,7 @@ declare global {
       ): Promise<PiAuthResult>
       createPayment(paymentData: PiPaymentData, callbacks: PiPaymentCallbacks): void
       openShareDialog(title: string, message: string): void
+      openUrlInSystemBrowser(url: string): void
       Ads?: PiAds
     }
   }
