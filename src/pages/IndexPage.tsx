@@ -386,7 +386,7 @@ export default function IndexPage() {
               <button
                 type="button"
                 onClick={() => navigate('/unlock-boost')}
-                className="min-w-0 flex-1 rounded-2xl bg-primary px-3 py-1.5 text-[10px] font-bold text-white shadow-soft transition hover:bg-primary-dark"
+                className="min-w-0 w-3/5 rounded-2xl bg-primary px-3 py-1.5 text-[10px] font-bold text-white shadow-soft transition hover:bg-primary-dark"
               >
                 {t('boost_your_account', { defaultValue: 'Boost your account' })}
               </button>
@@ -402,7 +402,7 @@ export default function IndexPage() {
                       }
                     }
                   }}
-                  className="min-w-0 flex-1 rounded-2xl border-2 border-primary px-3 py-1.5 text-[10px] font-bold text-primary transition hover:bg-primary/5"
+                  className="min-w-0 w-2/5 rounded-2xl border-2 border-primary px-3 py-1.5 text-[10px] font-bold text-primary transition hover:bg-primary/5"
                 >
                   {dataLink.text}
                 </button>
