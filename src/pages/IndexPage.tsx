@@ -381,7 +381,6 @@ export default function IndexPage() {
                 <CustomAdsSlider ads={customAds} />
               </div>
             )}
-
             <div className="flex gap-2">
               <button
                 type="button"
@@ -425,6 +424,13 @@ export default function IndexPage() {
               t('index_latest_products', { defaultValue: 'Latest products' })
             )}
           </h2>
+          <button
+              type="button"
+              onClick={() => navigate('/submit-ad')}
+              className="min-w-0 rounded-2xl bg-primary px-3 py-1.5 text-[10px] font-bold text-white shadow-soft transition hover:bg-primary-dark"
+          >
+            {t('add_an_ad', { defaultValue: 'Add an ad' })}
+          </button>
           {/* {!loading && !error && !query && (
             <span className="text-[11px] font-medium text-ink-soft">
               {t('index_items', {
