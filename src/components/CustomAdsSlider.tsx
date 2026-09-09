@@ -1,6 +1,7 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { CustomAd } from '../types'
 import LazyImage from './LazyImage'
@@ -14,6 +15,9 @@ export default function CustomAdsSlider({ ads, onOpenUrl }: CustomAdsSliderProps
   const { t } = useTranslation()
   const navigate = useNavigate()
   const trackRef = useRef<HTMLDivElement | null>(null)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [zoomLevel, setZoomLevel] = useState(1)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const list = Array.isArray(ads) ? ads : []
 
@@ -43,16 +47,26 @@ export default function CustomAdsSlider({ ads, onOpenUrl }: CustomAdsSliderProps
   }
 
   const handleOpen = (ad: CustomAd) => {
-    const url = ad.url
-    if (!url) return
+    if (ad.image) {
+      setPreviewImage(ad.image)
+      setPreviewUrl(ad.url ?? null)
+      setZoomLevel(1)
+    }
+  }
+
+  const handleVisit = () => {
+    if (!previewUrl) return
+    setPreviewImage(null)
+    setPreviewUrl(null)
+    setZoomLevel(1)
     if (typeof onOpenUrl === 'function') {
-      onOpenUrl(url)
+      onOpenUrl(previewUrl)
       return
     }
-    if (url.startsWith('/')) {
-      navigate(url)
-    } else if (url.startsWith('http://') || url.startsWith('https://')) {
-      window.open(url, '_blank', 'noopener,noreferrer')
+    if (previewUrl.startsWith('/')) {
+      navigate(previewUrl)
+    } else if (previewUrl.startsWith('http://') || previewUrl.startsWith('https://')) {
+      window.open(previewUrl, '_blank', 'noopener,noreferrer')
     }
   }
 
@@ -131,6 +145,79 @@ export default function CustomAdsSlider({ ads, onOpenUrl }: CustomAdsSliderProps
       <div ref={trackRef} className="no-scrollbar flex snap-x gap-3 overflow-x-auto px-0.5 pb-1">
         {items}
       </div>
+
+      {previewImage &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 flex flex-col bg-black/95"
+            onClick={() => {
+              setPreviewImage(null)
+              setPreviewUrl(null)
+              setZoomLevel(1)
+            }}
+          >
+            <div
+              className="flex items-center justify-center gap-3 p-3"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => setZoomLevel((z) => Math.max(1, Number((z - 0.25).toFixed(2))))}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                aria-label={t('zoom_out', { defaultValue: 'Zoom out' })}
+              >
+                <ZoomOut size={20} />
+              </button>
+              <span className="min-w-[3.5rem] text-center text-sm font-bold text-white">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => setZoomLevel((z) => Math.min(4, Number((z + 0.25).toFixed(2))))}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                aria-label={t('zoom_in', { defaultValue: 'Zoom in' })}
+              >
+                <ZoomIn size={20} />
+              </button>
+              {previewUrl && (
+                <button
+                  type="button"
+                  onClick={handleVisit}
+                  className="ml-2 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-white transition hover:bg-primary-dark"
+                >
+                  {t('visit', { defaultValue: 'Visit' })}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setPreviewImage(null)
+                  setPreviewUrl(null)
+                  setZoomLevel(1)
+                }}
+                className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                aria-label={t('close', { defaultValue: 'Close' })}
+              >
+                <X size={22} />
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-hidden px-2 pb-2">
+              <div className="flex h-full items-center justify-center overflow-auto">
+                <img
+                  src={previewImage}
+                  alt=""
+                  className="max-h-full max-w-full object-contain"
+                  style={{ width: `${zoomLevel * 100}%` }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setZoomLevel((z) => (z >= 4 ? 1 : Math.min(4, z + 0.5)))
+                  }}
+                />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

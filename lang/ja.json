@@ -122,6 +122,7 @@
     "watch_piads_earn_pi": "PiAds を見て Pi を獲得！",
     "watch_an_ad": "広告を見る",
     "add_an_ad": "広告を追加",
+    "ad": "広告",
     "encountered network connection issues": "ネットワーク接続の問題が発生しました",
     "not authenticated try again": "認証されていません。再試行してください",
     "ad failed to be displayed": "広告の表示に失敗しました",

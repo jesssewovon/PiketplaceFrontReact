@@ -122,6 +122,7 @@
     "watch_piads_earn_pi": "ดู PiAds รับ Pi!",
     "watch_an_ad": "ดูโฆษณา",
     "add_an_ad": "เพิ่มโฆษณา",
+    "ad": "โฆษณา",
     "encountered network connection issues": "พบปัญหาการเชื่อมต่อเครือข่าย",
     "not authenticated try again": "ยังไม่ได้รับการยืนยัน ลองอีกครั้ง",
     "ad failed to be displayed": "โฆษณาไม่สามารถแสดงได้",

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { PackageX, Loader2, SearchX, SlidersHorizontal } from 'lucide-react'
+import { PackageX, Loader2, Plus, SearchX, SlidersHorizontal, Zap } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { DataLink, Product, CustomAd } from '../types'
 import { fetchProducts } from '../lib/api'
@@ -384,10 +384,17 @@ export default function IndexPage() {
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => navigate('/unlock-boost')}
-                className="min-w-0 w-3/5 rounded-2xl bg-primary px-3 py-1.5 text-[10px] font-bold text-white shadow-soft transition hover:bg-primary-dark"
+                onClick={() => navigate('/submit-ad')}
+                className="min-w-0 w-1/3 rounded-2xl bg-primary px-3 py-1.5 text-[10px] font-bold text-white shadow-soft transition hover:bg-primary-dark"
               >
-                {t('boost_your_account', { defaultValue: 'Boost your account' })}
+                <Plus size={19} className="inline" /> {t('ad', { defaultValue: 'Ad' })}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/unlock-boost')}
+                className="min-w-0 w-1/3 rounded-2xl bg-primary px-3 py-1.5 text-[10px] font-bold text-white shadow-soft transition hover:bg-primary-dark"
+              >
+                <Zap size={19} className="inline" /> {t('boost', { defaultValue: 'Boost' })}
               </button>
               {dataLink?.show && dataLink.text && (
                 <button
@@ -401,8 +408,9 @@ export default function IndexPage() {
                       }
                     }
                   }}
-                  className="min-w-0 w-2/5 rounded-2xl border-2 border-primary px-3 py-1.5 text-[10px] font-bold text-primary transition hover:bg-primary/5"
+                  className="min-w-0 w-1/3 rounded-2xl border-2 border-primary px-3 py-1.5 text-[10px] font-bold text-primary transition hover:bg-primary/5"
                 >
+                  ✨
                   {dataLink.text}
                 </button>
               )}
@@ -424,13 +432,6 @@ export default function IndexPage() {
               t('index_latest_products', { defaultValue: 'Latest products' })
             )}
           </h2>
-          <button
-              type="button"
-              onClick={() => navigate('/submit-ad')}
-              className="min-w-0 rounded-2xl bg-primary px-3 py-1.5 text-[10px] font-bold text-white shadow-soft transition hover:bg-primary-dark"
-          >
-            {t('add_an_ad', { defaultValue: 'Add an ad' })}
-          </button>
           {/* {!loading && !error && !query && (
             <span className="text-[11px] font-medium text-ink-soft">
               {t('index_items', {

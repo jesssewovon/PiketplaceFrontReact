@@ -122,6 +122,7 @@
     "watch_piads_earn_pi": "PiAds izleyin, Pi kazanın!",
     "watch_an_ad": "Reklam izle",
     "add_an_ad": "Reklam ekle",
+    "ad": "Reklam",
     "encountered network connection issues": "Ağ bağlantısı sorunlarıyla karşılaşıldı",
     "not authenticated try again": "Kimlik doğrulaması yapılmadı, tekrar deneyin",
     "ad failed to be displayed": "Reklam görüntülenemedi",
