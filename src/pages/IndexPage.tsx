@@ -401,11 +401,6 @@ export default function IndexPage() {
                   type="button"
                   onClick={() => {
                     if (dataLink.link) {
-                      /* if (dataLink.link.startsWith('/')) {
-                        navigate(dataLink.link)
-                      } else {
-                        window.Pi.openUrlInSystemBrowser(dataLink.link)
-                      } */
                      if (typeof window !== 'undefined' && window.Pi) {
                         window.Pi.openUrlInSystemBrowser(dataLink.link)
                       } else {

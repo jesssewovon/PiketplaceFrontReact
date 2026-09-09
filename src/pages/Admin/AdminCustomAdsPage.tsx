@@ -11,9 +11,10 @@ import LoginPanel from '../../components/LoginPanel'
 import CancellationReasonsModal from '../../components/CancellationReasonsModal'
 import LazyImage from '../../components/LazyImage'
 
-type AdStatus = '' | 'pending' | 'validated' | 'rejected'
+type AdStatus = '' | 'unpaid' | 'pending' | 'validated' | 'rejected'
 
 const STATUS_OPTIONS: { value: AdStatus; labelKey: string; labelFallback: string }[] = [
+  { value: 'unpaid', labelKey: 'admin.unpaid', labelFallback: 'Non payé' },
   { value: 'pending', labelKey: 'admin.pending', labelFallback: 'En attente' },
   { value: 'validated', labelKey: 'admin.validated', labelFallback: 'Validé' },
   { value: 'rejected', labelKey: 'admin.rejected', labelFallback: 'Rejeté' },
