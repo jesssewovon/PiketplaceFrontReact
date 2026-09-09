@@ -25,7 +25,27 @@ const SECTIONS: { title: string; html: string }[] = [
   },
   {
     title: 'Prohibited content',
-    html: `You agree not to submit any Ad that: (i) is illegal, threatening, fraudulent or harmful; (ii) contains indecent, offensive or prohibited material; (iii) attempts to impersonate another person or entity; or (iv) otherwise violates the general Terms of Service. We reserve the right to edit or remove any Ad for any reason at any time.`,
+    html: `The following categories are <strong>prohibited</strong> and Ads promoting them will not be accepted:<br />
+    <ul class="list-disc pl-5">
+      <li>Adult content — including sex, pornography, nudity and sexual services;</li>
+      <li>Illegal drugs — including drugs, substances and drug paraphernalia;</li>
+      <li>Alcohol and tobacco products;</li>
+      <li>Prescription-only medicines and pharmaceutical products;</li>
+      <li>Gambling, casinos and betting services;</li>
+      <li>Weapons, firearms, ammunition and explosives;</li>
+      <li>Violence, hate content and discrimination;</li>
+      <li>Harassment and personal attacks;</li>
+      <li>Misleading, false or deceptive content;</li>
+      <li>Counterfeit goods and intellectual property infringement;</li>
+      <li>Malware, viruses, phishing and hacking content;</li>
+      <li>Get-rich-quick schemes and fraudulent offers.</li>
+    </ul>
+    You agree not to submit any Ad that: (i) is illegal, threatening, fraudulent or harmful; (ii) contains indecent, offensive or prohibited material; (iii) attempts to impersonate another person or entity; or (iv) otherwise violates the general Terms of Service or these Ad Terms. We reserve the right to edit or remove any Ad for any reason at any time.`,
+  },
+  {
+    title: 'Non-refundable ads',
+    html: `Paid Ads are <strong>not refundable</strong> when they relate to sex, drugs or any other content or product that is not authorized and listed in the prohibited categories above. Please review that list of prohibited categories before paying for your Ad.<br />
+    No refund or credit will be issued for any Ad that is rejected, removed or taken down because its content falls within a prohibited category.`,
   },
   {
     title: 'Limitation of liability',
@@ -56,7 +76,7 @@ export default function AdTermsPage() {
           {SECTIONS.map((section) => (
             <div key={section.title} className="mb-5">
               <h3 className="mb-2 text-base font-bold text-primary-dark">{section.title}</h3>
-              <p
+              <div
                 className="text-xs leading-relaxed text-ink-soft"
                 dangerouslySetInnerHTML={{ __html: section.html }}
               />
