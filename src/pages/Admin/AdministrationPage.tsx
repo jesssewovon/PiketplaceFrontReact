@@ -165,7 +165,7 @@ export default function AdministrationPage() {
                 to="/admin-custom-ads"
                 icon={Megaphone}
                 label={t('admin.custom_ads', { defaultValue: 'Custom ads' })}
-                count={data.nb_custom_ads_pending ?? 0}
+                count={`unpaid:${data.nb_custom_ads_unpaid ?? 0}-pending:${data.nb_custom_ads_pending ?? 0}`}
               />
             </div>
           </>
