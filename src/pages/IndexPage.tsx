@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { PackageX, Loader2, Plus, SearchX, SlidersHorizontal, Zap, Pi } from 'lucide-react'
+import { PackageX, Loader2, Plus, SearchX, SlidersHorizontal, Zap } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { DataLink, Product, CustomAd } from '../types'
 import { fetchProducts } from '../lib/api'
