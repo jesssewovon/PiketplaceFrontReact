@@ -229,6 +229,8 @@ export default function MessageThreadPage() {
           <img
             src={correspondingUser.avatar}
             alt={title}
+            loading="lazy"
+            decoding="async"
             className="h-8 w-8 rounded-full object-cover"
           />
         )}
@@ -378,6 +380,8 @@ export default function MessageThreadPage() {
               <img
                 src={previewImage}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="object-contain"
                 style={{ width: `${zoomLevel * 100}%`, maxWidth: 'none', minWidth: '100%' }}
                 onClick={(e) => {

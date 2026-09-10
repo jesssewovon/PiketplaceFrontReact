@@ -212,6 +212,8 @@ export default function Header() {
                 <img
                   src={user.avatar}
                   alt={user.username}
+                  loading="lazy"
+                  decoding="async"
                   className="h-8 w-8 shrink-0 rounded-full object-cover ring-2 ring-primary/30"
                 />
               ) : (

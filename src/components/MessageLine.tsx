@@ -67,6 +67,8 @@ export default function MessageLine({
             <img
               src={sender.avatar}
               alt={sender.fullnameOrUsername ?? ''}
+              loading="lazy"
+              decoding="async"
               className="mr-1 inline h-4 w-4 rounded-full object-cover"
             />
           )}
@@ -79,6 +81,8 @@ export default function MessageLine({
             <img
               src={imgSrc}
               alt={message.imageName ?? ''}
+              loading="lazy"
+              decoding="async"
               className="h-24 w-24 cursor-pointer object-contain"
               onClick={() => onImageClick?.(imgSrc)}
             />

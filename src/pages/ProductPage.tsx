@@ -75,7 +75,7 @@ function PositionPreview({
         <div key={i} className="w-[18%]">
           <div className="flex h-[50px] items-center justify-center overflow-hidden rounded-[10px] border-2 border-slate-200 bg-slate-100">
             {i === indexShow && image && (
-              <img src={image} alt="" className="h-full w-full rounded-[10%] object-cover" />
+              <img src={image} alt="" loading="lazy" decoding="async" className="h-full w-full rounded-[10%] object-cover" />
             )}
           </div>
           <p className="mt-1 text-center text-[10px] text-ink-soft">
@@ -1099,7 +1099,7 @@ export default function ProductPage() {
         {image && (
           <div className="relative mb-7 overflow-hidden rounded-2xl border border-black/5 shadow-soft">
             {product.isBoosted && <BoostBadge className="absolute right-0 top-0 z-10" />}
-            <img src={image} alt={product.libelle} className="w-full" />
+            <img src={image} alt={product.libelle} loading="lazy" decoding="async" className="w-full" />
           </div>
         )}
 
@@ -1114,6 +1114,8 @@ export default function ProductPage() {
                 <img
                   src={product.user.avatar}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className="h-5 w-5 rounded-full object-cover"
                 />
               )}
@@ -1343,7 +1345,7 @@ export default function ProductPage() {
             </h2>
             <div className="mt-3 space-y-3">
               {product.images.map((img, index) => (
-                <img key={index} src={img.lien} alt="" className="w-full rounded-xl" />
+                <img key={index} src={img.lien} alt="" loading="lazy" decoding="async" className="w-full rounded-xl" />
               ))}
             </div>
           </div>

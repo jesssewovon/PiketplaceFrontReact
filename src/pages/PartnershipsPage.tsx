@@ -50,6 +50,8 @@ export default function PartnershipsPage() {
                   <img
                     src={p.logo_link}
                     alt={p.name ?? ''}
+                    loading="lazy"
+                    decoding="async"
                     className="mx-auto h-[50px] w-[50px] rounded-full object-cover"
                   />
                 ) : null}

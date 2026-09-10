@@ -34,7 +34,7 @@ function AdminProductCard({
     <div className="flex flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-soft">
       <Link to={`/product/${product.id}`} className="relative overflow-hidden">
         {image ? (
-          <img src={image} alt={product.libelle} className="h-[140px] w-full object-cover" />
+          <img src={image} alt={product.libelle} loading="lazy" decoding="async" className="h-[140px] w-full object-cover" />
         ) : (
           <div className="flex h-[140px] w-full items-center justify-center bg-slate-100 text-[10px] text-slate-400">
             {product.libelle}

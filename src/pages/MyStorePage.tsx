@@ -622,6 +622,8 @@ export default function MyStorePage() {
                   <img
                     src={`${import.meta.env.VITE_APP_BACKEND_URL ?? ''}/images/${category.img}`}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="h-6 w-6 object-contain"
                     onError={(e) => {
                       ;(e.currentTarget as HTMLImageElement).style.display = 'none'
@@ -705,6 +707,8 @@ export default function MyStorePage() {
             <img
               src={user?.avatar && user.avatar !== 'pi.png' ? user.avatar : '/site_images/pi.png'}
               alt={user?.username ?? ''}
+              loading="lazy"
+              decoding="async"
               className="-mt-7 h-[70px] w-[70px] rounded-full border-4 border-white object-cover shadow-soft"
             />
             <h1 className="mt-2 text-lg font-bold text-ink">

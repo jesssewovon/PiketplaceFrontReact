@@ -120,6 +120,8 @@ export default function StorePage() {
             <img
               src={userShop?.avatar && userShop.avatar !== 'pi.png' ? userShop.avatar : '/site_images/pi.png'}
               alt={shopName}
+              loading="lazy"
+              decoding="async"
               className="-mt-7 h-[70px] w-[70px] rounded-full border-4 border-white object-cover shadow-soft"
             />
             <h1 className="mt-2 text-lg font-bold text-ink">{shopName}</h1>

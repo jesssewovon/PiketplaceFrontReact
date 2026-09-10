@@ -735,6 +735,8 @@ export default function CartBuyNowPage() {
                     <img
                       src={image}
                       alt={product.libelle}
+                      loading="lazy"
+                      decoding="async"
                       className="h-[110px] w-[110px] rounded-xl border border-slate-200 object-cover"
                     />
                   )}

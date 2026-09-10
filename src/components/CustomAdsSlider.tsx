@@ -206,6 +206,8 @@ export default function CustomAdsSlider({ ads, onOpenUrl }: CustomAdsSliderProps
                 <img
                   src={previewImage}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className="max-h-full max-w-full object-contain"
                   style={{ width: `${zoomLevel * 100}%` }}
                   onClick={(e) => {

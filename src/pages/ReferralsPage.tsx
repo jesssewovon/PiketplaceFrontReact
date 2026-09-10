@@ -120,6 +120,8 @@ export default function ReferralsPage() {
                   <img
                     src={user.avatar}
                     alt={user.username ?? ''}
+                    loading="lazy"
+                    decoding="async"
                     className="h-[30px] w-[30px] shrink-0 rounded-[40%] object-cover"
                   />
                   <span className="truncate text-[11px] font-medium text-ink">@{user.username}</span>

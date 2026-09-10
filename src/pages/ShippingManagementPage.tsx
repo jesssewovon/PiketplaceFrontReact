@@ -237,6 +237,8 @@ export default function ShippingManagementPage() {
                 key={im.id ?? im.lien}
                 src={im.lien}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 onClick={() => setSelectedImage(im.lien)}
                 className="h-[100px] w-[100px] cursor-pointer rounded-md object-cover"
               />
@@ -371,6 +373,8 @@ export default function ShippingManagementPage() {
                   <img
                     src={product.imageFirst}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="w-[120px] shrink-0 cursor-pointer rounded-lg object-cover"
                     onClick={() => navigate(`/product/${product.id}`)}
                   />
@@ -454,7 +458,7 @@ export default function ShippingManagementPage() {
           >
             <X size={26} />
           </button>
-          <img src={selectedImage} alt="" className="max-h-[97%] w-full object-contain" />
+          <img src={selectedImage} alt="" loading="lazy" decoding="async" className="max-h-[97%] w-full object-contain" />
         </div>
       )}
     </div>

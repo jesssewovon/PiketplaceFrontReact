@@ -85,6 +85,8 @@ function SaleCard({
           <img
             src={buyer?.avatar}
             alt=""
+            loading="lazy"
+            decoding="async"
             className="h-4 w-4 rounded-full object-cover"
             onError={(e) => {
               ;(e.currentTarget as HTMLImageElement).style.visibility = 'hidden'
@@ -108,7 +110,7 @@ function SaleCard({
           className="h-[100px] w-[100px] shrink-0 overflow-hidden rounded-lg border border-black/10 bg-slate-100"
         >
           {product?.imageFirst ? (
-            <img src={product.imageFirst} alt={product?.libelle ?? ''} className="h-full w-full object-cover" />
+            <img src={product.imageFirst} alt={product?.libelle ?? ''} loading="lazy" decoding="async" className="h-full w-full object-cover" />
           ) : (
             <span className="flex h-full w-full items-center justify-center text-[10px] text-slate-400">
               {product?.libelle ?? ''}
