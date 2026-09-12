@@ -31,11 +31,11 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       <p className="px-1.5 pb-1 pt-2 text-sm font-semibold text-gray">
-        <span className="mr-1.5 align-middle text-base leading-none">
+        <span className="mr-0.5 align-middle text-base leading-none">
           {flagEmoji(product.country_code ?? '')}
         </span>
         <span className="align-middle text-black">•</span>
-        <span className="break-libelle-product ml-1.5 align-middle">
+        <span className="break-libelle-product ml-0.5 align-middle">
           {product.libelle}
         </span>
       </p>
