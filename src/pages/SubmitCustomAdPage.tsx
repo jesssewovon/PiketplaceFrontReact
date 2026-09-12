@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ImagePlus, Loader2, X } from 'lucide-react'
+import { ArrowLeft, ImagePlus, Loader2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { fetchPeriods, fetchMyCustomAds, fetchCustomAd, submitCustomAd, updateCustomAd } from '../lib/api'
 import type { CustomAdPeriod } from '../types'
@@ -246,15 +246,6 @@ export default function SubmitCustomAdPage() {
   return (
     <div className="relative animate-fade-in">
       <section className="px-4 py-6">
-        {/* <button
-          type="button"
-          onClick={() => navigate('/my-ads')}
-          className="mb-2 flex items-center gap-1 text-xs font-semibold text-ink-soft transition hover:text-primary"
-        >
-          <ArrowLeft size={14} />
-          {t('back_to_my_ads', { defaultValue: 'Back to my ads' })}
-        </button> */}
-
         {editId != null && loadingAd ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 size={24} className="animate-spin text-primary" />
@@ -276,11 +267,20 @@ export default function SubmitCustomAdPage() {
           </div>
         ) : (
           <>
-            <h1 className="text-lg font-bold text-primary-dark">
-              {editId != null
-                ? t('custom_ads.edit_title', { defaultValue: 'Edit your ad' })
-                : t('custom_ads.submit_title', { defaultValue: 'Submit an ad' })}
-            </h1>
+            <div className="flex items-center justify-between gap-2">
+              <h1 className="text-lg font-bold text-primary-dark">
+                {editId != null
+                  ? t('custom_ads.edit_title', { defaultValue: 'Edit your ad' })
+                  : t('custom_ads.submit_title', { defaultValue: 'Submit an ad' })}
+              </h1>
+              <button
+                type="button"
+                onClick={() => navigate('/my-ads')}
+                className="flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-primary/10 hover:text-primary"
+              >
+                {t('my_ads', { defaultValue: 'My Ads' })}
+              </button>
+            </div>
             <p className="mt-1 text-xs text-ink-soft">
               {editId != null
                 ? isRejected
