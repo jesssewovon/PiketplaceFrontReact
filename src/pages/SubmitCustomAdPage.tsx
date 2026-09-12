@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ImagePlus, Loader2, X } from 'lucide-react'
+import { ImagePlus, Loader2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { fetchPeriods, fetchMyCustomAds, fetchCustomAd, submitCustomAd, updateCustomAd } from '../lib/api'
 import type { CustomAdPeriod } from '../types'
