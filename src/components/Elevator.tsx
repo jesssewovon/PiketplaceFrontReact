@@ -22,7 +22,7 @@ export default function Elevator({ bottom = 16 }: ElevatorProps) {
       type="button"
       aria-label="Scroll to top"
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className={`fixed right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-soft transition-all duration-300 hover:bg-primary-dark ${
+      className={`fixed right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-soft transition-all duration-300 hover:bg-primary-dark md:right-8 xl:right-12 ${
         visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
       }`}
       style={{ bottom }}

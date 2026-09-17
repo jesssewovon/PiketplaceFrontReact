@@ -15,7 +15,7 @@ export default function Layout() {
   return (
     <div className="app-shell">
       {showChrome && <Header />}
-      <main className={showBottomNav ? 'flex-1 pb-24' : 'flex-1'}>
+      <main className={`app-container ${showBottomNav ? 'flex-1 pb-24' : 'flex-1'}`}>
         <Outlet />
       </main>
       {showBottomNav && <BottomNav />}

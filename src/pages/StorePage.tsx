@@ -135,7 +135,7 @@ export default function StorePage() {
                   {t('loading', { defaultValue: 'loading' })}
                 </div>
               ) : products.length > 0 ? (
-                <div className="columns-2 gap-1.5 [column-fill:_balance]">
+                <div className="columns-2 gap-1.5 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 [column-fill:_balance]">
                   {products.map((product) => (
                     <div key={product.id} className="mb-3 break-inside-avoid">
                       <ProductCard product={product} />

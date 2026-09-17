@@ -12,7 +12,7 @@ import ProductCard from '../components/ProductCard'
 import FilterModal from '../components/FilterModal'
 import CustomAdsSlider from '../components/CustomAdsSlider'
 import { defaultFilter, getStoredFilter, storeFilter, type FilterState } from '../lib/filterState'
-import { clearCountryCode, detectCountryByGeolocation, getStoredCountryCode, storeCountryCode } from '../lib/geo'
+import { clearCountryCode, getStoredCountryCode, storeCountryCode } from '../lib/geo'
 import i18n from '../i18n'
 
 const SKELETON_HEIGHTS = [200, 280, 240, 320, 180, 300, 220, 260]
@@ -48,16 +48,8 @@ function filterFromParams(params: URLSearchParams): FilterState {
   const iso2 = params.get('country')
   const valid = iso2 && iso2 !== 'all' && iso2.length === 2 ? iso2.toUpperCase() : 'all'
   const stored = getStoredFilter()
-  const countryFromStored = stored && stored.iso2 !== 'all' ? stored.iso2 : 'all'
-  const storedCode = getStoredCountryCode()
-  const chosen =
-    valid !== 'all'
-      ? valid
-      : countryFromStored !== 'all'
-        ? countryFromStored
-        : !stored && storedCode && storedCode !== 'all'
-          ? storedCode
-          : 'all'
+  const countryFromStored = stored && stored.explicit && stored.iso2 !== 'all' ? stored.iso2 : 'all'
+  const chosen = valid !== 'all' ? valid : countryFromStored
   return {
     ...defaultFilter,
     ...stored,
@@ -77,8 +69,6 @@ function filterIsActive(f: FilterState): boolean {
   )
 }
 
-let detectionInFlight = false
-
 export default function IndexPage() {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -93,7 +83,6 @@ export default function IndexPage() {
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
   const genRef = useRef(0)
-  const mountedRef = useRef(true)
 
   const rawSearch = searchParams.get('q') ?? ''
   const prevSearchRef = useRef(rawSearch)
@@ -111,42 +100,16 @@ export default function IndexPage() {
     const parsed = filterFromParams(searchParams)
     return filterIsActive(parsed) ? parsed : null
   })
-  const filterRef = useRef<FilterState>(filter)
 
   useEffect(() => {
-    filterRef.current = filter
-  }, [filter])
-
-  useEffect(() => {
-    mountedRef.current = true
     const initialFilter = filterFromParams(searchParams)
     dispatch(setAppliedFilter(initialFilter))
-    return () => {
-      mountedRef.current = false
-    }
   }, [])
 
   const filtered = useMemo(
     () => (query ? products.filter((p) => matchesQuery(p, query)) : products),
     [products, query],
   )
-
-  const columns = useMemo(() => {
-    const left: Product[] = []
-    const right: Product[] = []
-    let boostedPlaced = 0
-    filtered.forEach((product) => {
-      if (product.isBoosted) {
-        if (boostedPlaced++ % 2 === 0) left.push(product)
-        else right.push(product)
-      } else if (left.length <= right.length) {
-        left.push(product)
-      } else {
-        right.push(product)
-      }
-    })
-    return { left, right }
-  }, [filtered])
 
   const refreshProducts = useCallback(
     async (targetPage: number, activeFilter?: FilterState | null) => {
@@ -207,7 +170,7 @@ export default function IndexPage() {
 
   const applyFilter = useCallback(
     async (next: FilterState) => {
-      const normalized = { ...next, search: next.search.trim(), isUpdated: true }
+      const normalized = { ...next, search: next.search.trim(), isUpdated: true, explicit: true }
       setFilter(normalized)
       setActiveFilter(normalized)
       dispatch(setAppliedFilter(normalized))
@@ -245,37 +208,15 @@ export default function IndexPage() {
   }, [rawSearch, applyFilter])
 
   useEffect(() => {
-    const storedFilter = getStoredFilter()
-    if (storedFilter) {
-      if (storedFilter.iso2 !== 'all') {
-        if (filterRef.current.iso2 === 'all') {
-          void applyFilter({ ...filterRef.current, iso2: storedFilter.iso2, iso3: storedFilter.iso3 })
-        }
-        return
-      }
-      return
-    }
     const urlCountry = searchParams.get('country')
-    if (urlCountry && urlCountry !== 'all') {
-      if (urlCountry.length === 2 && !getStoredCountryCode()) storeCountryCode(urlCountry)
-      return
+    if (
+      urlCountry &&
+      urlCountry !== 'all' &&
+      urlCountry.length === 2 &&
+      !getStoredCountryCode()
+    ) {
+      storeCountryCode(urlCountry)
     }
-    const stored = getStoredCountryCode()
-    if (stored) {
-      if (filterRef.current.iso2 === 'all') {
-        void applyFilter({ ...filterRef.current, iso2: stored, iso3: stored })
-      }
-      return
-    }
-    if (detectionInFlight) return
-    detectionInFlight = true
-    void detectCountryByGeolocation().then((code) => {
-      detectionInFlight = false
-      storeCountryCode(code)
-      if (mountedRef.current && filterRef.current.iso2 === 'all') {
-        void applyFilter({ ...filterRef.current, iso2: code, iso3: code })
-      }
-    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -367,7 +308,7 @@ export default function IndexPage() {
         </p>
       </section> */}
 
-      <section className="px-1.5 pt-5">
+      <section className="px-1.5 pt-5 sm:px-3 md:px-4 lg:px-6">
         {productsLoaded && (
           <div className="mb-3 space-y-2">
             {customAds.length > 0 && (
@@ -451,7 +392,7 @@ export default function IndexPage() {
         </div>
 
         {loading ? (
-          <div className="columns-2 gap-3 [column-fill:_balance]">
+          <div className="columns-2 gap-3 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 [column-fill:_balance]">
             {SKELETON_HEIGHTS.map((height, i) => (
               <div key={i} className="mb-3 break-inside-avoid">
                 <CardSkeleton height={height} />
@@ -499,21 +440,12 @@ export default function IndexPage() {
           </div>
         ) : (
           <>
-            <div className="flex items-start gap-2">
-              <div className="flex-1 min-w-0">
-                {columns.left.map((product) => (
-                  <div key={product.id} className="mb-3">
-                    <ProductCard product={product} />
-                  </div>
-                ))}
-              </div>
-              <div className="flex-1 min-w-0">
-                {columns.right.map((product) => (
-                  <div key={product.id} className="mb-3">
-                    <ProductCard product={product} />
-                  </div>
-                ))}
-              </div>
+            <div className="columns-2 gap-3 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 [column-fill:_balance]">
+              {filtered.map((product) => (
+                <div key={product.id} className="mb-3 break-inside-avoid">
+                  <ProductCard product={product} />
+                </div>
+              ))}
             </div>
 
             {error && products.length > 0 && (

@@ -9,6 +9,8 @@ export interface FilterState {
   sortBy: SortBy
   category: number | null
   isUpdated: boolean
+  /** True only when the country was chosen by the user (not auto-detected). */
+  explicit?: boolean
 }
 
 export const defaultFilter: FilterState = {

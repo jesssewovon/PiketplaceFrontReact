@@ -133,7 +133,7 @@ export default function LoginPanel() {
                   <X size={18} />
                 </button>
               </div>
-              <div className="grid max-h-[67vh] grid-cols-2 gap-2 overflow-y-auto">
+              <div className="grid max-h-[67vh] grid-cols-2 gap-2 overflow-y-auto sm:grid-cols-3">
                 {languages.map((item) => (
                   <button
                     key={item.code}

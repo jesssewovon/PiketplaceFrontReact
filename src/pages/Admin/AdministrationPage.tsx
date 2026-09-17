@@ -108,7 +108,7 @@ export default function AdministrationPage() {
               </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-3 gap-4">
+            <div className="mt-5 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
               <AdminLink
                 to="/admin/settings"
                 icon={Settings}

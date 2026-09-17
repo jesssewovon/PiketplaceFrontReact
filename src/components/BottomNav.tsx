@@ -30,7 +30,7 @@ export default function BottomNav() {
   const { t } = useTranslation()
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-primary/10 bg-white/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-[430px] items-stretch">
+      <div className="app-container flex items-stretch px-2">
         {tabs.map(({ to, labelKey, labelFallback, icon }) => (
           <NavLink
             key={to}

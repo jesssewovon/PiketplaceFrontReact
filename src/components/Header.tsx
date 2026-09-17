@@ -79,7 +79,7 @@ export default function Header() {
   if (isHome) {
     return (
       <header className="sticky top-0 z-40 border-b border-black/10 bg-white/70 backdrop-blur-md">
-        <div className="flex items-center gap-1.5 px-3 py-1.5">
+        <div className="app-container flex items-center gap-1.5 px-3 py-1.5">
           <button
             type="button"
             onClick={handleBack}
@@ -195,7 +195,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-black/10 bg-white/70 backdrop-blur-md">
-      <div className="flex items-center justify-between px-3 py-1.5">
+      <div className="app-container flex items-center justify-between px-3 py-1.5">
         <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
