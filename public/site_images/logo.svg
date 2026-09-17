@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
+  <defs>
+    <radialGradient id="bg" cx="0.24" cy="0.63" r="1.05">
+      <stop offset="0" stop-color="#b06fa9"/>
+      <stop offset="0.32" stop-color="#9d4e95"/>
+      <stop offset="0.62" stop-color="#813d82"/>
+      <stop offset="1" stop-color="#5e2e6f"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="180" height="180" rx="48" fill="url(#bg)"/>
+  <g stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="12" fill="none">
+    <path d="M48 74 L55 40 L101 40 L100 72"/>
+  </g>
+  <text
+    x="90"
+    y="120"
+    text-anchor="middle"
+    font-family="Poppins, 'Segoe UI', Arial, Helvetica, sans-serif"
+    font-size="30"
+    font-weight="700"
+    fill="#ffffff"
+  >Piketplace</text>
+</svg>
