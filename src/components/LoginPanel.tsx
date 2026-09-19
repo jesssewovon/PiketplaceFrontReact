@@ -76,7 +76,7 @@ export default function LoginPanel() {
                   'Connect your Pi account to access your orders, sales, messages and more.',
               })}
             </p>
-            <span className="text-xs">Note : Use Pi browser for login, if not it should not work</span>
+            <span className="text-xs">{t("login_use_pi_browser")}</span>
           </div>
 
           <button
