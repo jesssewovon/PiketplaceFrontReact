@@ -31,6 +31,7 @@
     "suppression": "Suppression",
     "login_error": "Log in error",
     "try_again": "Try again",
+    "login_use_pi_browser": "Note : Use Pi browser for login, if not it should not work",
     "please_use_pi_browser": "Please use Pi Browser",
     "referral_success_message": "You are sponsored by {username} and you have received {amount}, congratulations",
     "referral_link": "Your referral link : {link}",

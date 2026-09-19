@@ -67,6 +67,7 @@
     "friday_shorten": "Vr",
     "saturday_shorten": "Za",
     "sunday_shorten": "Zo",
+    "login_use_pi_browser": "Opmerking: gebruik Pi Browser om in te loggen, anders werkt het niet",
     "please_use_pi_browser": "Gebruik Pi Browser",
     "redirect_to_support": "Je wordt doorgestuurd naar PIKETPLACE Home om ondersteuning te schrijven",
     "referral_success_message": "Je wordt gesponsord door {username} en je hebt {amount} ontvangen, gefeliciteerd",

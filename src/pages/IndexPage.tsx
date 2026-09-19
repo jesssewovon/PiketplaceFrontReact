@@ -69,6 +69,50 @@ function filterIsActive(f: FilterState): boolean {
   )
 }
 
+function getColumnCount(): number {
+  if (typeof window === 'undefined') return 2
+  if (window.innerWidth >= 1280) return 5
+  if (window.innerWidth >= 1024) return 4
+  if (window.innerWidth >= 768) return 3
+  return 2
+}
+
+function buildColumns(products: Product[], columnCount: number): Product[][] {
+  if (products.length === 0) return []
+  const boosted = products.filter((p) => p.isBoosted)
+  const normal = products.filter((p) => !p.isBoosted)
+  const perCol = Math.max(1, Math.ceil(products.length / Math.max(1, columnCount)))
+  const colCount = Math.min(Math.max(1, columnCount), products.length)
+  const slots: (Product | null)[] = new Array(products.length).fill(null)
+  let bi = 0
+  outer: for (let row = 0; row < perCol; row++) {
+    for (let col = 0; col < colCount; col++) {
+      const position = col * perCol + row
+      if (position >= products.length) break outer
+      if (bi < boosted.length) {
+        slots[position] = boosted[bi]
+        bi++
+      } else {
+        break outer
+      }
+    }
+  }
+  let ni = 0
+  for (let i = 0; i < slots.length; i++) {
+    if (slots[i] === null && ni < normal.length) {
+      slots[i] = normal[ni]
+      ni++
+    }
+  }
+  const columns: Product[][] = []
+  for (let col = 0; col < colCount; col++) {
+    const start = col * perCol
+    const end = Math.min((col + 1) * perCol, slots.length)
+    columns.push(slots.slice(start, end).filter((s): s is Product => s != null))
+  }
+  return columns
+}
+
 export default function IndexPage() {
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -106,9 +150,22 @@ export default function IndexPage() {
     dispatch(setAppliedFilter(initialFilter))
   }, [])
 
+  const [columnCount, setColumnCount] = useState(getColumnCount)
+
+  useEffect(() => {
+    const onResize = () => setColumnCount(getColumnCount())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
   const filtered = useMemo(
     () => (query ? products.filter((p) => matchesQuery(p, query)) : products),
     [products, query],
+  )
+
+  const productColumns = useMemo(
+    () => buildColumns(filtered, columnCount),
+    [filtered, columnCount],
   )
 
   const refreshProducts = useCallback(
@@ -342,7 +399,7 @@ export default function IndexPage() {
                   type="button"
                   onClick={() => {
                     if (dataLink.link) {
-                     if (typeof window !== 'undefined' && window.Pi) {
+                     if (typeof window !== 'undefined' && window.Pi && dataLink.link?.includes('ecosystem.pinet')) {
                         window.Pi.openUrlInSystemBrowser(dataLink.link)
                       } else {
                         window.open(dataLink.link, '_blank', 'noopener,noreferrer')
@@ -392,10 +449,12 @@ export default function IndexPage() {
         </div>
 
         {loading ? (
-          <div className="columns-2 gap-3 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 [column-fill:_balance]">
-            {SKELETON_HEIGHTS.map((height, i) => (
-              <div key={i} className="mb-3 break-inside-avoid">
-                <CardSkeleton height={height} />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {Array.from({ length: columnCount }, (_, col) => (
+              <div key={col} className="flex flex-col gap-3">
+                {SKELETON_HEIGHTS.map((height, i) =>
+                  i % columnCount === col ? <CardSkeleton key={i} height={height} /> : null,
+                )}
               </div>
             ))}
           </div>
@@ -440,13 +499,15 @@ export default function IndexPage() {
           </div>
         ) : (
           <>
-            <div className="columns-2 gap-3 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 [column-fill:_balance]">
-              {filtered.map((product) => (
-                <div key={product.id} className="mb-3 break-inside-avoid">
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {productColumns.map((column, col) => (
+                  <div key={col} className="flex flex-col gap-3">
+                    {column.map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                ))}
+              </div>
 
             {error && products.length > 0 && (
               <p className="mt-4 text-center text-xs text-red-500">{error}</p>

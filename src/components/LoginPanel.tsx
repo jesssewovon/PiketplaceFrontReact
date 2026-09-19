@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { AlertCircle, Check, Languages, Loader2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { loginWithPi } from '../lib/auth'
+import { isPiReady } from '../lib/pi'
 import { flagEmoji } from '../lib/geo'
 import { useAppDispatch } from '../store/hooks'
 import i18n, { SUPPORTED_LANGUAGES } from '../i18n'
@@ -15,6 +16,13 @@ export default function LoginPanel() {
   const [loggingIn, setLoggingIn] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [langOpen, setLangOpen] = useState(false)
+  const [piReady, setPiReady] = useState(() => isPiReady())
+
+  useEffect(() => {
+    if (piReady) return
+    const timer = setTimeout(() => setPiReady(isPiReady()), 3000)
+    return () => clearTimeout(timer)
+  }, [piReady])
 
   const currentLang = i18n.language.split('-')[0]
 
@@ -68,12 +76,13 @@ export default function LoginPanel() {
                   'Connect your Pi account to access your orders, sales, messages and more.',
               })}
             </p>
+            <span className="text-xs">Note : Use Pi browser for login, if not it should not work</span>
           </div>
 
           <button
             type="button"
             onClick={handleLogin}
-            disabled={loggingIn}
+            disabled={loggingIn || !piReady}
             className="flex w-full max-w-[260px] items-center justify-center gap-2.5 rounded-2xl bg-primary px-5 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-primary-dark disabled:opacity-60"
           >
             {loggingIn ? (
@@ -90,6 +99,13 @@ export default function LoginPanel() {
               </>
             )}
           </button>
+
+          {!piReady && (
+            <p className="flex items-center gap-1.5 text-xs font-medium text-red-600">
+              <AlertCircle size={14} />
+              {t('login_use_pi_browser', { defaultValue: 'Note : Use Pi browser for login, if not it should not work' })}
+            </p>
+          )}
 
           {error && (
             <p className="flex items-center gap-1.5 text-xs font-medium text-red-600">

@@ -67,6 +67,7 @@
     "friday_shorten": "Thứ sáu",
     "saturday_shorten": "Thứ bảy",
     "sunday_shorten": "Chủ nhật",
+    "login_use_pi_browser": "Lưu ý: Sử dụng Pi Browser để đăng nhập, nếu không sẽ không hoạt động",
     "please_use_pi_browser": "Vui lòng sử dụng Pi Browser",
     "redirect_to_support": "Bạn sẽ được chuyển hướng đến PIKETPLACE Home để viết thư hỗ trợ",
     "referral_success_message": "Bạn được tài trợ bởi {username} và bạn đã nhận được {amount}, xin chúc mừng",

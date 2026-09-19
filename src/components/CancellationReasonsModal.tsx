@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 import type { CancellationReason } from '../types'
@@ -11,6 +11,7 @@ interface CancellationReasonsModalProps {
   onClose: () => void
   onSubmit: (selected: CancellationReason[], extraText?: string) => void
   extraInputLabel?: string
+  submitting?: boolean
 }
 
 export default function CancellationReasonsModal({
@@ -19,6 +20,7 @@ export default function CancellationReasonsModal({
   onClose,
   onSubmit,
   extraInputLabel,
+  submitting = false,
 }: CancellationReasonsModalProps) {
   const { t } = useTranslation()
   const [selected, setSelected] = useState<CancellationReason[]>([])
@@ -122,8 +124,10 @@ export default function CancellationReasonsModal({
         <button
           type="button"
           onClick={submit}
-          className="mt-4 w-full rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3 text-sm font-bold text-white shadow-soft transition hover:shadow-hover"
+          disabled={submitting}
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-deep px-4 py-3 text-sm font-bold text-white shadow-soft transition hover:shadow-hover disabled:cursor-not-allowed disabled:opacity-70"
         >
+          {submitting ? <Loader2 size={18} className="animate-spin" /> : null}
           {t('continue', { defaultValue: 'Continue' })}
         </button>
       </div>

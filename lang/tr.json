@@ -67,6 +67,7 @@
     "friday_shorten": "Cum",
     "saturday_shorten": "Cmt",
     "sunday_shorten": "Paz",
+    "login_use_pi_browser": "Not: Giriş yapmak için Pi Browser kullanın, aksi halde çalışmayacaktır",
     "please_use_pi_browser": "Lütfen Pi Browser kullanın",
     "redirect_to_support": "Desteğe yazmak için PIKETPLACE Ana Sayfasına yönlendirileceksiniz",
     "referral_success_message": "{username} tarafından sponsor edildiniz ve {amount} aldınız, tebrikler",

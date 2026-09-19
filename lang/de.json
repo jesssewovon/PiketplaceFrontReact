@@ -67,6 +67,7 @@
     "friday_shorten": "Fr",
     "saturday_shorten": "Sa",
     "sunday_shorten": "So",
+    "login_use_pi_browser": "Hinweis: Verwenden Sie Pi Browser zum Anmelden, andernfalls funktioniert es nicht",
     "please_use_pi_browser": "Bitte Pi Browser verwenden",
     "redirect_to_support": "Sie werden zur PIKETPLACE Startseite weitergeleitet, um dem Support zu schreiben",
     "referral_success_message": "Sie wurden von {username} empfohlen und haben {amount} erhalten, herzlichen Glückwunsch",

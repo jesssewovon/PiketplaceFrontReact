@@ -67,6 +67,7 @@
     "friday_shorten": "金",
     "saturday_shorten": "土",
     "sunday_shorten": "日",
+    "login_use_pi_browser": "注：ログインには Pi Browser をご利用ください。そうでない場合は動作しません",
     "please_use_pi_browser": "Pi Browser をご利用ください",
     "redirect_to_support": "PIKETPLACE ホームにリダイレクトされ、サポートに連絡できます",
     "referral_success_message": "{username} の紹介で {amount} を受け取りました。おめでとうございます",

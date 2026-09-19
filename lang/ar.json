@@ -67,6 +67,7 @@
     "friday_shorten": "جمعة",
     "saturday_shorten": "السبت",
     "sunday_shorten": "الأحد",
+    "login_use_pi_browser": "ملاحظة: استخدم متصفح Pi لتسجيل الدخول، وإلا فلن يعمل",
     "please_use_pi_browser": "الرجاء استخدام متصفح Pi",
     "redirect_to_support": "ستتم إعادة توجيهك إلى  PIKETPLACE Home للكتابة للحصول على الدعم",
     "referral_success_message": "أنت تحت رعاية {username} وقد حصلت على {amount}، تهانينا",

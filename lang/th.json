@@ -67,6 +67,7 @@
     "friday_shorten": "ศ.",
     "saturday_shorten": "ส.",
     "sunday_shorten": "อา.",
+    "login_use_pi_browser": "หมายเหตุ: โปรดใช้ Pi Browser เพื่อเข้าสู่ระบบ หากใช้บราวเซอร์อื่นจะไม่ทำงาน",
     "please_use_pi_browser": "กรุณาใช้ Pi Browser",
     "redirect_to_support": "คุณจะถูกนำไปยังหน้าแรกของ PIKETPLACE เพื่อเขียนถึงฝ่ายสนับสนุน",
     "referral_success_message": "คุณได้รับการแนะนำโดย {username} และคุณได้รับ {amount} ยินดีด้วย",

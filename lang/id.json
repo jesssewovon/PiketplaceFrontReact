@@ -67,6 +67,7 @@
     "friday_shorten": "Jumat",
     "saturday_shorten": "Sabtu",
     "sunday_shorten": "Minggu",
+    "login_use_pi_browser": "Catatan: Gunakan Pi Browser untuk masuk, jika tidak maka tidak akan berfungsi",
     "please_use_pi_browser": "Silakan gunakan Pi Browser",
     "redirect_to_support": "Anda akan diarahkan ke PIKETPLACE Home untuk menulis surat ke dukungan",
     "referral_success_message": "Anda disponsori oleh {username} dan Anda telah menerima {amount}, selamat",

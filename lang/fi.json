@@ -67,6 +67,7 @@
     "friday_shorten": "Biyernes",
     "saturday_shorten": "Sabado",
     "sunday_shorten": "Linggo",
+    "login_use_pi_browser": "Tandaan: Gumamit ng Pi Browser upang mag-log in, kung hindi ay hindi ito gagana",
     "please_use_pi_browser": "Mangyaring gamitin ang Pi Browser",
     "redirect_to_support": "Ire-redirect ka sa PIKETPLACE Home para sa pagsulat upang suportahan",
     "referral_success_message": "Naka-sponsor ka ni {username} at nakatanggap ka ng {amount}, binabati kita",

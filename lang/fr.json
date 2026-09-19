@@ -67,6 +67,7 @@
     "friday_shorten": "Ven",
     "saturday_shorten": "Sam",
     "sunday_shorten": "Dim",
+    "login_use_pi_browser": "Remarque : Utilisez Pi Browser pour vous connecter, sinon cela ne fonctionnera pas",
     "please_use_pi_browser": "Veuillez utiliser Pi Browser",
     "redirect_to_support": "Vous serez redirigé vers PIKETPLACE Home pour écrire au support.",
     "referral_success_message": "Vous êtes parrainé par {username} et vous avez reçu {amount}, félicitations",

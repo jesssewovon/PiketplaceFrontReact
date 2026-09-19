@@ -10,7 +10,7 @@ import { useAppSelector } from '../../store/hooks'
 import LoginPanel from '../../components/LoginPanel'
 import CancellationReasonsModal from '../../components/CancellationReasonsModal'
 
-type WithdrawalStatus = 'pending' | 'confirmed'
+type WithdrawalStatus = 'pending' | 'confirmed' | 'rejected'
 
 export default function AdminWithdrawalsPage() {
   const { t, i18n } = useTranslation()
@@ -28,6 +28,7 @@ export default function AdminWithdrawalsPage() {
   const [reasonsOpen, setReasonsOpen] = useState(false)
   const [withdrawalReasons, setWithdrawalReasons] = useState<CancellationReason[]>([])
   const [selectedWithdraw, setSelectedWithdraw] = useState<WithdrawalRequest | null>(null)
+  const [processingId, setProcessingId] = useState<string | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
 
@@ -38,6 +39,7 @@ export default function AdminWithdrawalsPage() {
       if (append) setIsLoadingMore(true)
       try {
         const res = await fetchAdminWithdrawals(token ?? undefined, { page, search, status })
+        console.log("res", res)
         const pagination = res.withdrawal_requests ?? { current_page: page, data: [] }
         if (append) {
           setWithdrawals((prev) => {
@@ -100,6 +102,8 @@ export default function AdminWithdrawalsPage() {
       confirmButtonColor: '#ec11b5',
     })
     if (!result.isConfirmed) return
+    const actionKey = type === 'cancel' ? `cancel-${withdraw.id}` : `confirm-${withdraw.id}`
+    setProcessingId(actionKey)
     try {
       const res = type === 'cancel'
         ? await cancelWithdrawalConfirmation(token ?? undefined, withdraw.id)
@@ -127,6 +131,8 @@ export default function AdminWithdrawalsPage() {
         text: t('an_error_occured', { defaultValue: 'An error occurred' }),
         confirmButtonColor: '#ec11b5',
       })
+    } finally {
+      setProcessingId(null)
     }
   }
 
@@ -137,8 +143,9 @@ export default function AdminWithdrawalsPage() {
 
   const submitRejectionReasons = async (reasons: CancellationReason[]) => {
     if (!selectedWithdraw) return
-    const selected = reasons.filter((r) => r.selected).map((r) => r.code)
+    const selected = reasons.map((r) => r.code)
     if (selected.length === 0) return
+    setProcessingId(`reject-${selectedWithdraw.id}`)
     try {
       const res = await rejectWithdrawal(token ?? undefined, selectedWithdraw.id, selected)
       if (res.status === true) {
@@ -165,6 +172,7 @@ export default function AdminWithdrawalsPage() {
         confirmButtonColor: '#ec11b5',
       })
     } finally {
+      setProcessingId(null)
       setSelectedWithdraw(null)
     }
   }
@@ -200,6 +208,17 @@ export default function AdminWithdrawalsPage() {
               className="accent-[#ec11b5]"
             />
             {t('confirmed', { defaultValue: 'Confirmed' })}
+          </label>
+          <label className="flex items-center gap-1.5 text-xs font-semibold text-ink">
+            <input
+              type="radio"
+              name="wstatus"
+              value="rejected"
+              checked={status === 'rejected'}
+              onChange={() => setStatus('rejected')}
+              className="accent-[#ec11b5]"
+            />
+            {t('rejected', { defaultValue: 'Rejected' })}
           </label>
         </div>
 
@@ -260,6 +279,10 @@ export default function AdminWithdrawalsPage() {
                   <p className="mt-1 text-[10px] text-green-600">
                     {t('confirmed_at', { defaultValue: 'Confirmed', date: formatDateTime(withdraw.confirmed_at) })}
                   </p>
+                ) : (withdraw.cancelled_at && withdraw.cancellation_reason) ? (
+                  <p className="mt-1 text-[10px] text-yellow-600">
+                    {t('rejected', { defaultValue: 'Rejected' })}
+                  </p>
                 ) : (
                   <p className="mt-1 text-[10px] text-yellow-600">
                     {t('pending', { defaultValue: 'Pending' })}
@@ -267,30 +290,45 @@ export default function AdminWithdrawalsPage() {
                 )}
 
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {withdraw.confirmed_at === null ? (
+                  {withdraw.confirmed_at === null && withdraw.cancelled_at === null ? (
                     <button
                       type="button"
                       onClick={() => void handleConfirm(withdraw)}
-                      className="rounded-lg bg-green-500 px-3 py-1.5 text-[10px] font-bold text-white transition hover:opacity-90"
+                      disabled={processingId !== null}
+                      className="flex items-center justify-center gap-1 rounded-lg bg-green-500 px-3 py-1.5 text-[10px] font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {t('confirm', { defaultValue: 'Confirm' })}
+                      {processingId === `confirm-${withdraw.id}` ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        t('confirm', { defaultValue: 'Confirm' })
+                      )}
                     </button>
-                  ) : (
+                  ) : withdraw.confirmed_at !== null && (
                     <button
                       type="button"
                       onClick={() => void handleConfirm(withdraw, 'cancel')}
-                      className="rounded-lg bg-gray-500 px-3 py-1.5 text-[10px] font-bold text-white transition hover:opacity-90"
+                      disabled={processingId !== null}
+                      className="flex items-center justify-center gap-1 rounded-lg bg-gray-500 px-3 py-1.5 text-[10px] font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {t('cancel_confirmation', { defaultValue: 'Annuler confirmation' })}
+                      {processingId === `cancel-${withdraw.id}` ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        t('cancel_confirmation', { defaultValue: 'Annuler confirmation' })
+                      )}
                     </button>
                   )}
-                  {withdraw.confirmed_at === null && (
+                  {withdraw.confirmed_at === null && withdraw.cancelled_at === null && (
                     <button
                       type="button"
                       onClick={() => openRejection(withdraw)}
-                      className="rounded-lg bg-red-500 px-3 py-1.5 text-[10px] font-bold text-white transition hover:opacity-90"
+                      disabled={processingId !== null}
+                      className="flex items-center justify-center gap-1 rounded-lg bg-red-500 px-3 py-1.5 text-[10px] font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {t('reject', { defaultValue: 'Reject' })}
+                      {processingId === `reject-${withdraw.id}` ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        t('reject', { defaultValue: 'Reject' })
+                      )}
                     </button>
                   )}
                   <Link
@@ -331,6 +369,7 @@ export default function AdminWithdrawalsPage() {
           setSelectedWithdraw(null)
         }}
         onSubmit={submitRejectionReasons}
+        submitting={processingId?.startsWith('reject-') ?? false}
       />
     </div>
   )

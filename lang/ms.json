@@ -67,6 +67,7 @@
     "friday_shorten": "Jum",
     "saturday_shorten": "Sab",
     "sunday_shorten": "Aha",
+    "login_use_pi_browser": "Nota: Gunakan Pi Browser untuk log masuk, jika tidak ia tidak akan berfungsi",
     "please_use_pi_browser": "Sila gunakan Pi Browser",
     "redirect_to_support": "Anda akan diarahkan ke Laman Utama PIKETPLACE untuk menulis kepada sokongan",
     "referral_success_message": "Anda ditaja oleh {username} dan anda telah menerima {amount}, tahniah",

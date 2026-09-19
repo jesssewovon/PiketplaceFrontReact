@@ -67,6 +67,7 @@
     "friday_shorten": "금요일",
     "saturday_shorten": "토요일",
     "sunday_shorten": "일요일",
+    "login_use_pi_browser": "참고: 로그인하려면 Pi 브라우저를 사용하세요. 그렇지 않으면 작동하지 않습니다",
     "please_use_pi_browser": "Pi 브라우저를 사용해 주세요",
     "redirect_to_support": "지원을 위해 PIKETPLACE 홈으로 리디렉션됩니다.",
     "referral_success_message": "귀하는 {username}의 후원을 받고 있으며 {amount}을(를) 받았습니다. 축하합니다",

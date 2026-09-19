@@ -67,6 +67,7 @@
     "friday_shorten": "Пт",
     "saturday_shorten": "Сб",
     "sunday_shorten": "Вс",
+    "login_use_pi_browser": "Примечание: используйте Pi Browser для входа в систему, иначе это не сработает",
     "please_use_pi_browser": "Пожалуйста, используйте Pi Browser",
     "redirect_to_support": "Вы будете перенаправлены на главную страницу PIKETPLACE для обращения в поддержку",
     "referral_success_message": "Вы приглашены {username} и получили {amount}, поздравляем",

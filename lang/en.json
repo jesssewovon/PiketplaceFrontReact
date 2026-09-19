@@ -67,6 +67,7 @@
     "friday_shorten": "Fri",
     "saturday_shorten": "Sat",
     "sunday_shorten": "Sun",
+    "login_use_pi_browser": "Note : Use Pi browser for login, if not it should not work",
     "please_use_pi_browser": "Please use Pi Browser",
     "redirect_to_support": "You'll be redirect to PIKETPLACE Home to write to support",
     "referral_success_message": "You are sponsored by {username} and you have received {amount}, congratulations",
