@@ -681,6 +681,7 @@
     "not_enough_amount": "Hindi sapat na halaga, available : {amount}",
     "not_enough_balance_with_fee": "Hindi sapat na balanse, available : {amount}, kinakailangan : {total}",
     "donation_thanks": "Salamat sa iyong donasyon",
+    "payment_not_completed": "Hindi pa nakumpleto ang pagbabayad, mangyaring i-verify muli pagkatapos makumpleto ang pagbabayad",
     "donate": "Mag-donate",
     "donation": "Donasyon",
     "donate_with": "Mag-donate gamit ang",

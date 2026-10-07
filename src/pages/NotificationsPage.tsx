@@ -27,6 +27,7 @@ export default function NotificationsPage() {
   const pageRef = useRef(1)
   const lastPageRef = useRef(2)
   const loadingRef = useRef(false)
+  const initialLoadRef = useRef(false)
 
   const loadNotifications = useCallback(
     async (targetPage: number) => {
@@ -71,6 +72,8 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     if (!isLoggedIn) return
+    if (initialLoadRef.current) return
+    initialLoadRef.current = true
     void loadNotifications(1)
   }, [isLoggedIn, loadNotifications])
 

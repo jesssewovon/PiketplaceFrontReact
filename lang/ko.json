@@ -680,6 +680,7 @@
     "not_enough_amount": "금액이 충분하지 않습니다. 사용 가능: {amount}",
     "not_enough_balance_with_fee": "금액이 충분하지 않습니다. 사용 가능: {amount}, 필수: {total}",
     "donation_thanks": "기부해주셔서 감사합니다",
+    "payment_not_completed": "결제가 아직 완료되지 않았습니다. 결제를 완료한 후 다시 확인해 주세요",
     "donate": "기부",
     "donation": "기부",
     "donate_with": "다음으로 기부",

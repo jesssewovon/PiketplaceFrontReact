@@ -681,6 +681,7 @@
     "not_enough_amount": "Nicht genug Guthaben, verfügbar : {amount}",
     "not_enough_balance_with_fee": "Nicht genug Guthaben, verfügbar : {amount}, erforderlich : {total}",
     "donation_thanks": "Danke für Ihre Spende",
+    "payment_not_completed": "Zahlung noch nicht abgeschlossen, bitte verifizieren Sie nach Abschluss der Zahlung erneut",
     "donate": "Spenden",
     "donation": "Spende",
     "donate_with": "Spenden mit",

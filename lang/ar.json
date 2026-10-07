@@ -680,6 +680,7 @@
     "not_enough_amount": "المبلغ غير كافي، متاح: {amount}",
     "not_enough_balance_with_fee": "الرصيد غير كافي، متاح: {amount}، مطلوب: {total}",
     "donation_thanks": "شكرا لتبرعك",
+    "payment_not_completed": "لم يتم إتمام الدفع بعد، يرجى التحقق مرة أخرى بعد إتمام الدفع",
     "donate": "يتبرع",
     "donation": "هبة",
     "donate_with": "تبرع مع",

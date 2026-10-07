@@ -681,6 +681,7 @@
     "not_enough_amount": "Not enough amount, available : {amount}",
     "not_enough_balance_with_fee": "Not enough amount, available : {amount}, required : {total}",
     "donation_thanks": "Thanks for your donation",
+    "payment_not_completed": "Payment not completed yet, please verify again after completing the payment",
     "donate": "Donate",
     "donation": "Donation",
     "donate_with": "Donate with",

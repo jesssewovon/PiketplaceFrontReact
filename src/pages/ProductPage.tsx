@@ -215,9 +215,13 @@ export default function ProductPage() {
     }
   }, [productId, isLoggedIn, token, user?.email])
 
+  const loadedProductIdRef = useRef<number | null>(null)
+
   useEffect(() => {
+    if (loadedProductIdRef.current === productId) return
+    loadedProductIdRef.current = productId
     void loadProduct()
-  }, [loadProduct])
+  }, [productId, loadProduct])
 
   useEffect(() => {
     if (product) {

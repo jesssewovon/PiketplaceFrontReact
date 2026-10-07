@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Factory, Loader2, RotateCcw, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { checkMining as fetchCheckMining, countRewardAd, startMining as fetchStartMining } from '../lib/api'
@@ -70,8 +70,12 @@ export default function MiningPage() {
     }
   }
 
+  const checkedRef = useRef(false)
+
   useEffect(() => {
     if (!isLoggedIn) return
+    if (checkedRef.current) return
+    checkedRef.current = true
     void checkMining()
     if (store.getState().attributes.mining_activation === false) {
       void showAlert(

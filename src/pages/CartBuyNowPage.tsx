@@ -245,7 +245,7 @@ export default function CartBuyNowPage() {
           setAddress(selected)
           setAddressSet(true)
           if (selected.email && email === '') setEmail(selected.email)
-          compareCartAddresses(selected, prod, false)
+          compareCartAddresses(selected, prod, noShipping)
         }
       } else {
         setNotFound(true)
@@ -257,9 +257,13 @@ export default function CartBuyNowPage() {
     }
   }, [productId, token, user?.email, isLoggedIn, email, compareCartAddresses])
 
+  const loadedProductIdRef = useRef<number | null>(null)
+
   useEffect(() => {
+    if (loadedProductIdRef.current === productId) return
+    loadedProductIdRef.current = productId
     void loadProductData()
-  }, [loadProductData])
+  }, [productId, loadProductData])
 
   useEffect(() => {
     if (user?.email) setEmail(user.email)
@@ -393,6 +397,8 @@ export default function CartBuyNowPage() {
     if (noShipping === true) {
       setCanPay(true)
       setPreOrder(false)
+    }else if(product && addressSet) {
+      compareCartAddresses(address, product as Product, false)
     }
   }, [noShipping])
 
@@ -531,7 +537,7 @@ export default function CartBuyNowPage() {
     }
     setIsPaying(true)
     try {
-      console.log('Paying with Piketplace Wallet, payload:', payload)
+      //console.log('Paying with Piketplace Wallet, payload:', payload)
       const res = await payPiketplaceWallet(token ?? undefined, user?.uid, payload)
       setIsPaying(false)
       if (res.status === true) {

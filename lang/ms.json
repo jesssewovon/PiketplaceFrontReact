@@ -679,6 +679,7 @@
     "not_enough_amount": "Jumlah tidak mencukupi, tersedia: {amount}",
     "not_enough_balance_with_fee": "Jumlah tidak mencukupi, tersedia: {amount}, diperlukan: {total}",
     "donation_thanks": "Terima kasih atas derma anda",
+    "payment_not_completed": "Pembayaran belum selesai, sila sahkan semula selepas melengkapkan pembayaran",
     "donate": "Derma",
     "donation": "Derma",
     "donate_with": "Derma dengan",

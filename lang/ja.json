@@ -680,6 +680,7 @@
     "not_enough_amount": "残高が不足しています。利用可能: {amount}",
     "not_enough_balance_with_fee": "残高が不足しています。利用可能: {amount}、必要: {total}",
     "donation_thanks": "寄付ありがとうございます",
+    "payment_not_completed": "支払いはまだ完了していません。支払い完了後にもう一度確認してください",
     "donate": "寄付",
     "donation": "寄付",
     "donate_with": "寄付方法",

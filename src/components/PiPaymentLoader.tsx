@@ -66,6 +66,8 @@ export default function PiPaymentLoader({
           confirmButtonColor: '#ec11b5',
         })
       }
+      onClose()
+      window.scrollTo(0, 0)
     } catch {
       setVerifying(false)
       void Swal.fire({

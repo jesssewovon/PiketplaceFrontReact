@@ -679,6 +679,7 @@
     "not_enough_amount": "Onvoldoende saldo, beschikbaar: {amount}",
     "not_enough_balance_with_fee": "Onvoldoende saldo, beschikbaar: {amount}, vereist: {total}",
     "donation_thanks": "Bedankt voor je donatie",
+    "payment_not_completed": "Betaling is nog niet voltooid, controleer opnieuw nadat u de betaling hebt voltooid",
     "donate": "Doneren",
     "donation": "Donatie",
     "donate_with": "Doneren met",

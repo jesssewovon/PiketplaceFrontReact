@@ -304,8 +304,12 @@ export default function MyStorePage() {
     [token, user?.id, t],
   )
 
+  const initialLoadRef = useRef(false)
+
   useEffect(() => {
     if (!isLoggedIn) return
+    if (initialLoadRef.current) return
+    initialLoadRef.current = true
     setActiveTab(hasShop ? 'home' : 'products')
     reinitPagination()
     //setIsLoading(true)

@@ -76,6 +76,7 @@ export default function MyAdsPage() {
   const [noMoreData, setNoMoreData] = useState(false)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
+  const initialLoadRef = useRef(false)
 
   const [walletAd, setWalletAd] = useState<CustomAd | null>(null)
   const [isPaying, setIsPaying] = useState(false)
@@ -142,6 +143,8 @@ export default function MyAdsPage() {
 
   useEffect(() => {
     if (!isLoggedIn) return
+    if (initialLoadRef.current) return
+    initialLoadRef.current = true
     setIsLoading(true)
     void loadData(1, false)
   }, [isLoggedIn, loadData])

@@ -681,6 +681,7 @@
     "not_enough_amount": "Importo non sufficiente, disponibile : {amount}",
     "not_enough_balance_with_fee": "Importo non sufficiente, disponibile : {amount}, richiesto : {total}",
     "donation_thanks": "Grazie per la tua donazione",
+    "payment_not_completed": "Il pagamento non è ancora stato completato, verifica di nuovo dopo aver completato il pagamento",
     "donate": "Dona",
     "donation": "Donazione",
     "donate_with": "Dona con",

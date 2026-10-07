@@ -132,7 +132,7 @@ function SaleCard({
             </p>
           ) : line.purchaseData?.shipping_fee ? (
             <p className="mt-1 text-[11px] text-ink-soft">
-              {<div dangerouslySetInnerHTML={{ __html: t('shipping_cost', {
+              {<span dangerouslySetInnerHTML={{ __html: t('shipping_cost', {
                 defaultValue: 'shipping fee : {amount}',
                 amount: line.purchaseData?.shipping_fee,
               }) }} />}
@@ -144,14 +144,14 @@ function SaleCard({
           ) : null}
           {line.purchaseData?.handling_fee && (
             <p className="mt-1 text-[11px] text-ink-soft">
-              {<div dangerouslySetInnerHTML={{ __html: t('handling_fee_percentage', {
+              {<span dangerouslySetInnerHTML={{ __html: t('handling_fee_percentage', {
                 defaultValue: 'Total : {amount}',
                 amount: line.purchaseData?.handling_fee,
               }) }} />}
             </p>
           )}
           <p className="mt-1 text-right text-xs font-semibold text-primary">
-            {<div dangerouslySetInnerHTML={{ __html: t('total_display', {
+            {<span dangerouslySetInnerHTML={{ __html: t('total_display', {
               defaultValue: 'Total : {amount}',
               amount: purchaseTotal,
             }) }} />}
@@ -242,6 +242,7 @@ export default function MySalesPage() {
   const lockRef = useRef(false)
   const referenceRef = useRef(reference)
   referenceRef.current = reference
+  const loadedTabKeyRef = useRef('')
 
   const shipped = activeTab === 'shipped' ? 'true' : 'false'
 
@@ -286,13 +287,16 @@ export default function MySalesPage() {
 
   useEffect(() => {
     if (!isLoggedIn) return
+    const tabKey = `${activeTab}:${user?.id ?? ''}`
+    if (loadedTabKeyRef.current === tabKey) return
+    loadedTabKeyRef.current = tabKey
     setSales([])
     setCurrentPage(1)
     setLastPage(2)
     setNoMoreData(false)
     setIsLoading(true)
     void loadSales(1, false)
-  }, [isLoggedIn, loadSales])
+  }, [isLoggedIn, activeTab, loadSales])
 
   const callSearch = () => {
     setSales([])

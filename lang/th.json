@@ -680,6 +680,7 @@
     "not_enough_amount": "จำนวนเงินไม่เพียงพอ มีอยู่ : {amount}",
     "not_enough_balance_with_fee": "จำนวนเงินไม่เพียงพอ มีอยู่ : {amount} ต้องใช้ : {total}",
     "donation_thanks": "ขอบคุณสำหรับการบริจาค",
+    "payment_not_completed": "การชำระเงินยังไม่เสร็จสมบูรณ์ กรุณาตรวจสอบอีกครั้งหลังจากชำระเงินเสร็จสิ้น",
     "donate": "บริจาค",
     "donation": "การบริจาค",
     "donate_with": "บริจาคด้วย",

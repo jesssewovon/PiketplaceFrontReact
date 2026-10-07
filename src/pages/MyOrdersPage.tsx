@@ -123,7 +123,7 @@ function OrderCard({
             </p>
           ) : line.purchaseData?.shipping_fee ? (
             <p className="mt-1 text-[11px] text-ink-soft">
-              {<div dangerouslySetInnerHTML={{ __html: t('shipping_cost', {
+              {<span dangerouslySetInnerHTML={{ __html: t('shipping_cost', {
                 defaultValue: 'shipping fee : {amount}',
                 amount: line.purchaseData?.shipping_fee,
               }) }} />}
@@ -135,14 +135,14 @@ function OrderCard({
           ) : null}
           {line.purchaseData?.handling_fee && (
             <p className="mt-1 text-[11px] text-ink-soft">
-              {<div dangerouslySetInnerHTML={{ __html: t('handling_fee_percentage', {
+              {<span dangerouslySetInnerHTML={{ __html: t('handling_fee_percentage', {
                 defaultValue: 'Total : {amount}',
                 amount: line.purchaseData?.handling_fee,
               }) }} />}
             </p>
           )}
           <p className="mt-1 text-right text-xs font-semibold text-primary">
-            {<div dangerouslySetInnerHTML={{ __html: t('total_display', {
+            {<span dangerouslySetInnerHTML={{ __html: t('total_display', {
               defaultValue: 'Total : {amount}',
               amount: purchaseTotal,
             }) }} />}
@@ -255,6 +255,7 @@ export default function MyOrdersPage() {
   const lockRef = useRef(false)
   const referenceRef = useRef(reference)
   referenceRef.current = reference
+  const loadedTabKeyRef = useRef('')
 
   const loadOrders = useCallback(
     async (page: number, append: boolean) => {
@@ -303,13 +304,16 @@ export default function MyOrdersPage() {
 
   useEffect(() => {
     if (!isLoggedIn) return
+    const tabKey = `${activeTab}:${user?.id ?? ''}`
+    if (loadedTabKeyRef.current === tabKey) return
+    loadedTabKeyRef.current = tabKey
     setOrders([])
     setCurrentPage(1)
     setLastPage(2)
     setNoMoreData(false)
     setIsLoading(true)
     void loadOrders(1, false)
-  }, [isLoggedIn, loadOrders])
+  }, [isLoggedIn, activeTab, loadOrders])
 
   const callSearch = () => {
     setOrders([])

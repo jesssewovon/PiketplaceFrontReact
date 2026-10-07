@@ -681,6 +681,7 @@
     "not_enough_amount": "Yeterli miktar yok, mevcut : {amount}",
     "not_enough_balance_with_fee": "Yeterli bakiye yok, mevcut : {amount}, gerekli : {total}",
     "donation_thanks": "Bağışınız için teşekkürler",
+    "payment_not_completed": "Ödeme henüz tamamlanmadı, lütfen ödemeyi tamamladıktan sonra tekrar doğrulayın",
     "donate": "Bağışla",
     "donation": "Bağış",
     "donate_with": "Şununla bağış yap",

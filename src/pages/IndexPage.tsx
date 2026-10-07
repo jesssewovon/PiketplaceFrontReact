@@ -127,6 +127,7 @@ export default function IndexPage() {
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const lockRef = useRef(false)
   const genRef = useRef(0)
+  const initialLoadRef = useRef(false)
 
   const rawSearch = searchParams.get('q') ?? ''
   const prevSearchRef = useRef(rawSearch)
@@ -170,6 +171,7 @@ export default function IndexPage() {
 
   const refreshProducts = useCallback(
     async (targetPage: number, activeFilter?: FilterState | null) => {
+      console.log('refreshProducts called with targetPage: ' + targetPage + ', activeFilter: ' + JSON.stringify(activeFilter))
       if (lockRef.current) return
       const generation = ++genRef.current
       lockRef.current = true
@@ -282,6 +284,8 @@ export default function IndexPage() {
       dispatch(setProductsLoaded(true))
       return
     }
+    if (initialLoadRef.current) return
+    initialLoadRef.current = true
     setLoading(true)
     loadPage(1).finally(() => setLoading(false))
   }, [dispatch, loadPage])

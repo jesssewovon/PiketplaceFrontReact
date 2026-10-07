@@ -681,6 +681,7 @@
     "not_enough_amount": "金额不足，可用：{amount}",
     "not_enough_balance_with_fee": "余额不足，可用：{amount}，所需：{total}",
     "donation_thanks": "感谢您的捐赠",
+    "payment_not_completed": "付款尚未完成，完成付款后请再次验证",
     "donate": "捐",
     "donation": "捐款",
     "donate_with": "捐赠与",

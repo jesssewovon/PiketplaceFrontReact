@@ -25,6 +25,7 @@ export default function StorePage() {
 
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const loadingRef = useRef(false)
+  const loadedShopUserIdRef = useRef(0)
   const shopUserIdNum = Number(shopUserId) || 0
   const isOwner = isLoggedIn && user?.id === shopUserIdNum
 
@@ -45,9 +46,9 @@ export default function StorePage() {
       else setIsLoading(true)
       try {
         const res = await fetchShopProducts(page, shopUserIdNum)
-        console.log('Fetched shop products:', res)
+        //console.log('Fetched shop products:', res)
         const list = res.products.data ?? []
-        console.log('Fetched shop products list:', list)
+        //console.log('Fetched shop products list:', list)
         setProducts((prev) => (append ? [...prev, ...list] : list))
         setLastPage(res.products.last_page ?? 1)
         setCurrentPage(page)
@@ -67,6 +68,8 @@ export default function StorePage() {
 
   useEffect(() => {
     if (!shopUserIdNum) return
+    if (loadedShopUserIdRef.current === shopUserIdNum) return
+    loadedShopUserIdRef.current = shopUserIdNum
     setIsLoading(true)
     setProducts([])
     setCurrentPage(1)

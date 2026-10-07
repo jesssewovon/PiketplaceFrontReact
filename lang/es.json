@@ -680,6 +680,7 @@
     "not_enough_amount": "Saldo insuficiente, disponible: {amount}",
     "not_enough_balance_with_fee": "Saldo insuficiente, disponible: {amount}, requerido: {total}",
     "donation_thanks": "Gracias por tu donación",
+    "payment_not_completed": "El pago aún no se ha completado, verifícalo de nuevo después de completar el pago",
     "donate": "Donar",
     "donation": "Donación",
     "donate_with": "Donar con",

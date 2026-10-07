@@ -53,8 +53,12 @@ export default function UnlockBoostPage() {
     }
   }, [token])
 
+  const dataLoadedRef = useRef(false)
+
   useEffect(() => {
     if (!isLoggedIn) return
+    if (dataLoadedRef.current) return
+    dataLoadedRef.current = true
     void loadData()
     void loadRecentBalances()
   }, [isLoggedIn, loadData, loadRecentBalances])

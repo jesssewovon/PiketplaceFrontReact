@@ -680,6 +680,7 @@
     "not_enough_amount": "Jumlah tidak cukup, tersedia : {amount}",
     "not_enough_balance_with_fee": "Saldo tidak cukup, tersedia : {amount}, diperlukan : {total}",
     "donation_thanks": "Terima kasih atas donasi Anda",
+    "payment_not_completed": "Pembayaran belum selesai, silakan verifikasi lagi setelah menyelesaikan pembayaran",
     "donate": "Menyumbangkan",
     "donation": "Sumbangan",
     "donate_with": "Donasi dengan",

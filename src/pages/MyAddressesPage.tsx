@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Swal from 'sweetalert2'
 import { Loader2, Plus, Trash2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -65,6 +65,7 @@ export default function MyAddressesPage() {
   const [citiesLoading, setCitiesLoading] = useState(false)
   const [citiesError, setCitiesError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const initialLoadRef = useRef(false)
 
   const loadAddresses = useCallback(() => {
     setIsLoading(true)
@@ -83,6 +84,8 @@ export default function MyAddressesPage() {
 
   useEffect(() => {
     if (!isLoggedIn) return
+    if (initialLoadRef.current) return
+    initialLoadRef.current = true
     loadAddresses()
   }, [isLoggedIn, loadAddresses])
 

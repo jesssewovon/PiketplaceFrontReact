@@ -680,6 +680,7 @@
     "not_enough_amount": "पर्याप्त राशि नहीं, उपलब्ध: {amount}",
     "not_enough_balance_with_fee": "पर्याप्त राशि नहीं, उपलब्ध: {amount}, आवश्यक: {total}",
     "donation_thanks": "आपके दान के लिए धन्यवाद",
+    "payment_not_completed": "भुगतान अभी पूरा नहीं हुआ है, कृपया भुगतान पूरा करने के बाद फिर से जाँच करें",
     "donate": "दान करें",
     "donation": "दान",
     "donate_with": "दान करें",
