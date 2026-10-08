@@ -171,7 +171,6 @@ export default function IndexPage() {
 
   const refreshProducts = useCallback(
     async (targetPage: number, activeFilter?: FilterState | null) => {
-      console.log('refreshProducts called with targetPage: ' + targetPage + ', activeFilter: ' + JSON.stringify(activeFilter))
       if (lockRef.current) return
       const generation = ++genRef.current
       lockRef.current = true

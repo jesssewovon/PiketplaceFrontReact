@@ -13,7 +13,7 @@ export async function loginWithPi(dispatch: AppDispatch): Promise<void> {
     response.token ??
     response.access_token ??
     ((response.data as Record<string, unknown> | null | undefined)?.token as string | undefined)
-
+  console.log("token", token)
   if (!token) {
     throw new Error(response.message ?? 'Backend authentication failed')
   }

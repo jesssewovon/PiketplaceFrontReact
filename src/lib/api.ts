@@ -62,6 +62,7 @@ import type {
   PayCustomAdWalletPayload,
   PayCustomAdWalletResponse,
   CustomAd,
+  ProductComment,
 } from '../types'
 import type { FilterState } from './filterState'
 import { syncSettingsFromPayload } from '../store/settingsSync'
@@ -597,6 +598,27 @@ export async function postComment(
     throw new Error(`Failed to post comment (${response.status})`)
   }
   return data
+}
+
+export async function fetchOldComments(
+  productId: number,
+  lastCommentId: number,
+): Promise<ProductComment[]> {
+  const response = await authFetch(
+    `${API_BASE}/get-old-comments/${productId}/${lastCommentId}`,
+    { headers: authHeaders() },
+  )
+  if (!response.ok) {
+    throw new Error(`Failed to load old comments (${response.status})`)
+  }
+  const data = (await response.json().catch(() => ({}))) as unknown
+  if (Array.isArray(data)) return data as ProductComment[]
+  if (data && typeof data === 'object') {
+    const payload = data as { comments?: ProductComment[]; data?: ProductComment[] }
+    if (Array.isArray(payload.comments)) return payload.comments
+    if (Array.isArray(payload.data)) return payload.data
+  }
+  return []
 }
 
 export interface SalesQuery {

@@ -19,13 +19,14 @@ import {
 } from 'lucide-react'
 import { Trans, useTranslation } from 'react-i18next'
 import BoostBadge from '../components/BoostBadge'
-import type { BoostPeriod, CancellationReason, Product, ProductDetailResponse } from '../types'
+import type { BoostPeriod, CancellationReason, Product, ProductComment, ProductDetailResponse } from '../types'
 import {
   addStock,
   addToCart,
   boostProduct,
   deleteProduct as apiDeleteProduct,
   fetchProduct,
+  fetchOldComments,
   isEmail,
   postComment,
   updateProductVisibility,
@@ -134,6 +135,9 @@ export default function ProductPage() {
   const [deletionActive, setDeletionActive] = useState(false)
   const [updateActive, setUpdateActive] = useState(false)
   const [boostPeriods, setBoostPeriods] = useState<BoostPeriod[]>([])
+  const [comments, setComments] = useState<ProductComment[]>([])
+  const [isLoadingOldComments, setIsLoadingOldComments] = useState(false)
+  const [noMoreComments, setNoMoreComments] = useState(false)
   const [qty, setQty] = useState(1)
   const [email, setEmail] = useState('')
   const [inFreeShippingZone] = useState('')
@@ -184,6 +188,7 @@ export default function ProductPage() {
   }
 
   const loadProduct = useCallback(async () => {
+    console.log('loadProduct called with productId: ' + productId)
     if (!productId || Number.isNaN(productId)) {
       setNotFound(true)
       setIsLoading(false)
@@ -194,8 +199,11 @@ export default function ProductPage() {
     setProductUnavailable(false)
     try {
       const data = await fetchProduct(productId, isLoggedIn ? (token ?? undefined) : undefined)
+      //console.log('fetchProduct response:', data)
       if (data.status && data.product) {
         setProduct(data.product)
+        setComments(data.product.comments ?? [])
+        setNoMoreComments(false)
         setApprobationActive(Boolean(data.approbation_active))
         setDeletionActive(Boolean(data.deletion_active))
         setUpdateActive(Boolean(data.update_active))
@@ -343,6 +351,30 @@ export default function ProductPage() {
     } catch {
       setIsCommenting(false)
       showError(t('an_error_occured', { defaultValue: 'An error occurred' }))
+    }
+  }
+
+  const loadOlderComments = async () => {
+    if (!product || isLoadingOldComments || noMoreComments) return
+    const last = comments[comments.length - 1]
+    const lastCommentId = last?.id
+    if (!lastCommentId) return
+    setIsLoadingOldComments(true)
+    try {
+      const older = await fetchOldComments(product.id, lastCommentId)
+      if (older.length > 0) {
+        setComments((prev) => {
+          const seen = new Set(prev.map((c) => c.id))
+          const fresh = older.filter((c) => c.id != null && !seen.has(c.id))
+          return [...prev, ...fresh]
+        })
+      } else {
+        setNoMoreComments(true)
+      }
+    } catch {
+      // keep current comments on failure
+    } finally {
+      setIsLoadingOldComments(false)
     }
   }
 
@@ -1355,7 +1387,7 @@ export default function ProductPage() {
           </div>
         )}
 
-        {product.comments && product.comments.length > 0 && (
+        {comments && comments.length > 0 && (
           <div className="mt-4 rounded-2xl border border-black/5 bg-white p-4 shadow-soft">
             <p className="text-xs font-semibold text-primary">
               {t('product.what_pioneers_say', { defaultValue: 'What pioneers say' })}
@@ -1364,7 +1396,7 @@ export default function ProductPage() {
               {t('product.product_comments', { defaultValue: 'Product comments' })}
             </h2>
             <div className="mt-3 space-y-4">
-              {product.comments.map((comment, index) =>
+              {comments.map((comment, index) =>
                 comment && comment.user ? (
                   <div key={index} className="leading-[12px]">
                     <h6 className="inline text-sm font-semibold text-ink mr-2">@{comment.user.username}</h6>
@@ -1377,6 +1409,22 @@ export default function ProductPage() {
                 ) : null,
               )}
             </div>
+            {!noMoreComments && (
+              <button
+                type="button"
+                onClick={() => void loadOlderComments()}
+                disabled={isLoadingOldComments}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-ink transition hover:bg-slate-50 disabled:opacity-60"
+              >
+                {isLoadingOldComments && <Loader2 size={14} className="animate-spin" />}
+                {t('view_more_comments', { defaultValue: 'View more comments' })}
+              </button>
+            )}
+            {noMoreComments && (
+              <p className="mt-3 text-center text-xs font-medium text-ink-soft">
+                {t('no_more_comments', { defaultValue: 'No more comments' })}
+              </p>
+            )}
           </div>
         )}
       </section>
